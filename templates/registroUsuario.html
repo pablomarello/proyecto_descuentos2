@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Usuario</title>
+</head>
+<body>
+    <h1>Crear Usuario</h1>
+    <form method="post">
+        {% csrf_token %}
+
+        <div>
+            <label for="{{ form.username.id_for_label }}">Nombre de Usuario:</label>
+            {{ form.username }}
+            {{ form.username.errors }}
+        </div>
+
+        <div>
+            <label for="{{ form.clave.id_for_label }}">Clave:</label>
+            {{ form.clave }}
+            {{ form.clave.errors }}
+        </div>
+
+        <div>
+            <label for="{{ form.email.id_for_label }}">Email:</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+        </div>
+        <input type="text" name="persona_id" value="{{ form.persona_id.value }}">
+        <button type="submit">Guardar</button>
+    </form>
+</body>
+</html>
