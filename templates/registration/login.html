@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar sesion {% endblock %}
+
+{% block content %}
+<section class="page-section cta">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-9 mx-auto">
+                <div class="cta-inner bg-faded text-center rounded">
+                    <ul class="list-unstyled list-hours mb-5 text-left mx-auto">
+                        {% if form.errors %}                                              
+                            <p class="alert alert-danger" role="alert">Usuario y Contraseña No Coinciden. Intente Nuevamente</p>                        
+                        {% endif %}     
+                        <h2 class="section-heading mb-5">
+                            <span class="section-heading-upper">Ingrese sus Credenciales</span>                        
+                        </h2>   
+                                            
+                        <form method="post" action="{% url 'login' %}">
+                            {% csrf_token %}
+                            <div class="form-floating mb-3 mt-3">                               
+                               <input type="text" id="username" name="username" class="form-control" placeholder="Ingrese Usuario" srequired ><br>
+                               <label for="username">Usuario</label>
+                            </div>  
+
+                            <div class="form-floating mb-3 mt-3">                                
+                                <input type="password" id="password" name="password" class="form-control" placeholder="Ingrese Contraseña"required><br>
+                                <label for="password">Contraseña</label>
+                            </div> 
+
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="fa-solid fa-right-to-bracket"></i>
+                                Iniciar Sesión
+                            </button>
+                          </form>                                                                                    
+                    </ul>
+
+                    <p class="mb-0">
+                    <a href="{% url 'index' %}" class="card-link"> <i class="fa-solid fa-house"> </i>Inicio</a>
+                        &nbsp; &nbsp; &nbsp;
+                    <a href="#" class="card-link"> <i class="fa-solid fa-envelope"></i>Olvidaste tu Contraseña?</a>
+                    <!-- &nbsp; &nbsp; &nbsp;
+                       <a href="#" class="card-link">Registrarse</a>                    
+                    &nbsp; &nbsp; &nbsp;                      
+                    -->                                       
+                   </p>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
