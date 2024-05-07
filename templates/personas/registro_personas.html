@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+  {% block title %}
+    Registro Persona
+  {% endblock title %}
+    
+  {% block content %}
+    <h1>Registro Persona</h1>
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form.as_table }}
+        <input type="submit" value="Registrarse" class="btn btn-success">
+        
+          
+    </form>
+  {% endblock %}

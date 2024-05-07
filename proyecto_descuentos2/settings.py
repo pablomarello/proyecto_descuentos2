@@ -133,4 +133,8 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR,'static'),)
 MEDIA_URL = '/media/' #url publica que aparecera en la barra del navegador
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') #donde buscará los archivos media
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
