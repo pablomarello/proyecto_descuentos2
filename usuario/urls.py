@@ -16,9 +16,17 @@ Including another URLconf
 """
 
 from django.urls import path
+<<<<<<< HEAD
 from usuario.views import Index
 
 urlpatterns = [
    
     path('',Index.as_view(), name='index'),
+=======
+from usuario import views
+
+urlpatterns = [
+    path('procesarUsuario/<str:identificacion>/', views.procesarUsuario, name='procesarUsuario'),
+    path('formulario_exitoso/', views.formulario_exitoso, name='formulario_exitoso'),
+>>>>>>> parent of 608f4b1 (cambio de contraseña e inicio de sesion)
 ]
