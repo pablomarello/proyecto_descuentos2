@@ -80,7 +80,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'proyecto_descuentos2',
         'USER': 'postgres',
-        'PASSWORD': 'mm226',
+        'PASSWORD': 'posgret',
         'HOST': 'localhost',
         'PORT': '5432'
     }
@@ -118,9 +118,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-LOGIN_REDIRECT_URL='index'
-LOGIN_URL='login'
-LOGOUT_URL='accounts/logout'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
@@ -137,12 +134,3 @@ MEDIA_URL = '/media/' #url publica que aparecera en la barra del navegador
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') #donde buscará los archivos media
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = '587'
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'micaela.melian02@gmail.com'
-EMAIL_HOST_PASSWORD = 'ukkmuwkxgllteglw'
-EMAIL_BACKEND= 'django.core.mail.backends.smtp.EmailBackend'
