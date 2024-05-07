@@ -3,6 +3,9 @@ from django.views.generic import TemplateView
 from django.contrib.auth import authenticate,login, logout
 from django.contrib import messages
 from .forms import UsuarioCreationForm
+from django.shortcuts import render
+from django.views.generic import TemplateView
+from django.shortcuts import redirect, render
 
 class Index(TemplateView):
     template_name = 'usuarios/index.html'
@@ -42,8 +45,6 @@ def logout_user(request):
     logout(request)
     messages.success(request, 'Sesión cerrada')
     return redirect('login_user')
-
-
 
 
 
