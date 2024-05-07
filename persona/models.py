@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from usuario.models import Usuario
 
 class Persona(models.Model):
     GENERO=[('M','Masculino'),
@@ -17,6 +18,8 @@ class Persona(models.Model):
     eliminado = models.BooleanField(default=False)
     fecha_eliminacion= models.DateTimeField(null=True,blank=True)
     usuario_eliminacion= models.PositiveIntegerField(null=True,blank=True)
+
+    usuario_id = models.OneToOneField(Usuario, on_delete=models.CASCADE, blank=True,null=True)
     
     
 

@@ -1,6 +1,8 @@
+
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from persona.models import Persona
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+#from persona.models import Persona
+
 
 class Rol(models.Model):
     id = models.AutoField(primary_key=True)
@@ -14,42 +16,36 @@ class Rol(models.Model):
         return self.rol
 
 class UsuarioManager(BaseUserManager):
-    #crear usuario basico
-    def create_user(
-            self,
-            email,
-            username,
-            password= None
-            ):
+    
+    def _create_user(self,username,email,password,is_staff,is_superuser,**extra_fields):
         if not email:
             raise ValueError('El usuario deber tener un correo electrónico!')
         
         user = self.model(
             username = username,
             email = self.normalize_email(email),
+            is_staff= is_staff,
+            is_superuser = is_superuser,
+            **extra_fields
         )
-
         user.set_password(password)
-        user.save()
+        user.save(using=self.db)
         return user
-    
+    #crear usuario basico
+    def create_user(self, username, email,is_staff, password=None, **extra_fields):
+        return self._create_user(username, email, password,is_staff, False, **extra_fields)
     #crear usuario administrador
-    def create_superuser(self,username,email,password):
-        user = self.create_user(
-            email,
-            username = username,
-            password = password
-        )
-        user.usuario_administrador = True
-        user.save()
-        return user
+    def create_superuser(self,username,email,password = None, **extra_fields):
+        return self._create_user(username, email, password, True, True, **extra_fields)
+        
 
 
-class Usuario(AbstractBaseUser):
+class Usuario(AbstractBaseUser,PermissionsMixin):
     username = models.CharField('Nombre de usuario',unique=True,max_length=50)
     email = models.EmailField('Correo Electrónico',max_length=100,unique=True)
-    usuario_administrador = models.BooleanField(default=False)
+    # usuario_administrador = models.BooleanField(default=False)
     is_active = models.BooleanField(default= True)
+    is_staff = models.BooleanField(default=False)
     token= models.CharField(max_length=30,null=True,blank=True)
     fecha_creacion_token= models.DateTimeField(null=True,blank=True)
     actividad_inicio= models.DateTimeField(null=True,blank=True)
@@ -59,8 +55,9 @@ class Usuario(AbstractBaseUser):
     eliminado = models.BooleanField(default=False)
     fecha_eliminacion= models.DateTimeField(null=True,blank=True)
     usuario_eliminacion= models.PositiveIntegerField(null=True,blank=True)
+    #campos c/ clave foranea
     rol_id = models.OneToOneField(Rol, on_delete=models.CASCADE, blank=True,null=True) #depues sacar blank y null
-    persona_id = models.OneToOneField(Persona, on_delete=models.CASCADE, blank=True,null=True)  #depues sacar blank y null
+    #persona_id = models.OneToOneField(Persona, on_delete=models.CASCADE, blank=True,null=True)  #depues sacar blank y null
     objects = UsuarioManager()
     
 
@@ -70,23 +67,20 @@ class Usuario(AbstractBaseUser):
     REQUIRED_FIELDS = ['email']
 
     def __str__ (self):
-        return f'Usuario {self.username}'
+        return f'Usuario: {self.username}'
     
     #para que se pueda utilizar el modelo Usuario en el admin de django
-    def has_perm(self,perm,obj= None):
-        return True
+    """ def has_perm(self,perm,obj= None):
+        return True """
     #tmb para el admin de django, recibe la etiqueta de la app en la cual esta el modelo
-    def has_module_perms(self,app_label):
-        return True
+    """ def has_module_perms(self,app_label):
+        return True """
     
     #valida si un usuario es administrador o no
-    @property
+    """ @property
     def is_staff(self):
         return self.usuario_administrador
-""" 
-    @property
-    def is_active(self):
-        return self.is_staff """
+ """
     
 
 # Create your models here.

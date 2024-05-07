@@ -21,4 +21,5 @@ from usuario.views import Index
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('usuario.urls')),
+    path('persona/',include('persona.urls')),
 ]
