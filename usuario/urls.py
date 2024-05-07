@@ -16,9 +16,9 @@ Including another URLconf
 """
 
 from django.urls import path
-from usuario import views
+from usuario.views import Index
 
 urlpatterns = [
-    path('procesarUsuario/<str:identificacion>/', views.procesarUsuario, name='procesarUsuario'),
-    path('formulario_exitoso/', views.formulario_exitoso, name='formulario_exitoso'),
+   
+    path('',Index.as_view(), name='index'),
 ]

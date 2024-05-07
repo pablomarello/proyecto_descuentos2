@@ -1,21 +1,10 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import render
+from django.views.generic import TemplateView
 
-from usuario.forms import RegistroUsuario
+class Index(TemplateView):
+    template_name = 'usuarios/index.html'
 
 
-def procesarUsuario(request):
-    if request.method == 'POST':
-        form = RegistroUsuario(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('formulario_exitoso')
-    else:
-        form = RegistroUsuario()
-    return render(request, 'registroUsuario.html', {'form': form})
-    
-
-def formulario_exitoso(request):
-    return render(request, 'formulario_exitoso.html')
 
 
 # Create your views here.

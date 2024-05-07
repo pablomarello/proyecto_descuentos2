@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-
-from persona.models import Personas
+from persona.models import Persona
 
 class Rol(models.Model):
     id = models.AutoField(primary_key=True)
@@ -48,7 +47,6 @@ class UsuarioManager(BaseUserManager):
 
 class Usuario(AbstractBaseUser):
     username = models.CharField('Nombre de usuario',unique=True,max_length=50)
-    clave= models.CharField('Clave',max_length=10)
     email = models.EmailField('Correo Electrónico',max_length=100,unique=True)
     usuario_administrador = models.BooleanField(default=False)
     is_active = models.BooleanField(default= True)
@@ -62,7 +60,7 @@ class Usuario(AbstractBaseUser):
     fecha_eliminacion= models.DateTimeField(null=True,blank=True)
     usuario_eliminacion= models.PositiveIntegerField(null=True,blank=True)
     rol_id = models.OneToOneField(Rol, on_delete=models.CASCADE, blank=True,null=True) #depues sacar blank y null
-    persona_id = models.OneToOneField(Personas, on_delete=models.CASCADE)
+    persona_id = models.OneToOneField(Persona, on_delete=models.CASCADE, blank=True,null=True)  #depues sacar blank y null
     objects = UsuarioManager()
     
 
