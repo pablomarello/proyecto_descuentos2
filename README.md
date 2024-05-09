@@ -1,7 +1,14 @@
-Sprint 0
+Descripción del proyecto:
 
-creamos historias de usuarios
+Integrantes del proyecto:
+- Melian, Micaela Luz
+- Cabrera, Fernando Agustin
+- Quinteros, Alexis Carlos
+- Marello González, Pablo Leandro
 
-retrospective
 
-compromiso en el proyecto
+Sprint 0:
+-creamos historias de usuarios
+-retrospective: compromiso en el proyecto
+
+
