@@ -1,14 +1,106 @@
 {% extends 'base.html' %}
 
+
   {% block title %}
     Login
   {% endblock title %}
-    
+  
+  
+  
+
   {% block content %}
-    <h1>Login</h1>
-    <form action="" method="POST">
+  <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Inicio de sesión</h2>
+
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+
+      {% if messages %}
+            <div id="messages" style="display: none;">
+                {% for message in messages %}
+                    <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+      <form class="space-y-6" action="" method="POST">
         {% csrf_token %}
-        <div class="mb-3">
+        <div>
+          <label for="username" class="block text-sm font-medium leading-6 text-gray-900">Usuario</label>
+          <div class="mt-2">
+            <input id="username" name="username" type="text" placeholder=" Ingrese su nombre de usuario" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center justify-between">
+            <label for="password" class="block text-sm font-medium leading-6 text-gray-900">Contraseña</label>
+            <div class="text-sm">
+              <a href="#" class="font-semibold text-red-600 hover:text-red-500">Olvidaste tu contraseña?</a>
+            </div>
+          </div>
+          <div class="mt-2">
+            <input id="password" name="password" type="password" placeholder=" Ingrese su contraseña" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+          </div>
+        </div>
+
+        <div>
+          <button type="submit" class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">Ingresar</button>
+        </div>
+
+        
+
+        
+        <!-- <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong class="font-bold">{{mensaje}}</strong>
+          <span class="block sm:inline">Inténtalo nuevamente.</span>
+          <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+            <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+          </span>
+        </div> -->
+          
+        <!-- <script>
+          Swal.fire({
+            "title": "Inicio de sesión fallido",
+            "text": "{{mensaje}}",
+            "icon": "error"
+          })
+        </script> -->
+        
+      </form>
+
+    </div>
+  </div>
+    
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var messageContainer = document.getElementById('messages');
+      if (messageContainer) {
+          var messages = messageContainer.children;
+          for (var i = 0; i < messages.length; i++) {
+                    var message = messages[i].dataset.message;
+                    var tags = messages[i].dataset.tags;
+                    
+
+                    
+                    if (tags.includes('danger')) {
+                        icon = 'error'; //icono de error
+                    } else if (tags.includes('success')) {
+                        icon = 'success'; //icono de correcto
+                    } else if (tags.includes('warning')) {
+                        icon = 'question'; //icono de pregunta
+                    } else if (tags.includes('info')) {
+                        icon = 'info'; //icono de info
+                    } 
+
+                    notificacionSwal('', message, icon, 'OK');
+                }
+        }
+    });
+    </script>
+  
+  
+        
+        
+        <!-- <div class="mb-3">
               <label for="exampleInputEmail1" class="form-label">Usuario</label>
               <input type="text" name="username" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
               
@@ -19,7 +111,7 @@
         </div>
         
         <button type="submit" class="btn btn-primary">Ingresar</button>
-        <a href="{% url 'registrar' %}">No tienes cuenta? Crea una</a>
+        <a href="{% url 'registrar_persona' %}">No tienes cuenta? Crea una</a> -->
           
-    </form>
+  
   {% endblock %}

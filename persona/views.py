@@ -5,10 +5,10 @@ def registrar_persona(request):
     if request.method == 'POST':
         form = FormPersona(request.POST)
         if form.is_valid():
-            usu = form.save(commit=False) #no se guarda el formulario aun
-            usu.usuario_id = request.user #se le asigna el usuario que esta logeado(autenticado antes en el registro de usuario)
-            usu.save()
-            return redirect('index')
+            persona = form.save() # Guarda la instancia de Persona creada con los datos del formulario
+             # Redirige al formulario de registro de usuario pasando el ID de la persona creada como parámetro
+            print(persona.pk)
+            return redirect('registrar_usuario', persona_id=persona.pk)
     else:
         form = FormPersona()
     return render(request, 'personas/registro_personas.html', {'form': form})

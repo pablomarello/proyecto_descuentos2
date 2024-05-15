@@ -1,7 +1,7 @@
 
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-#from persona.models import Persona
+from persona.models import Persona
 
 
 class Rol(models.Model):
@@ -57,7 +57,7 @@ class Usuario(AbstractBaseUser,PermissionsMixin):
     usuario_eliminacion= models.PositiveIntegerField(null=True,blank=True)
     #campos c/ clave foranea
     rol_id = models.OneToOneField(Rol, on_delete=models.CASCADE, blank=True,null=True) #depues sacar blank y null
-    #persona_id = models.OneToOneField(Persona, on_delete=models.CASCADE, blank=True,null=True)  #depues sacar blank y null
+    persona_id = models.OneToOneField(Persona, on_delete=models.CASCADE,related_name='usuario', blank=True,null=True)  #depues sacar blank y null
     objects = UsuarioManager()
     
 
