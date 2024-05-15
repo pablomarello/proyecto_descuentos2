@@ -1,16 +1,40 @@
 {% extends 'base.html' %}
+{% load tailwind_filters %}
+{% load crispy_forms_tags %}
 
   {% block title %}
     Registro Usuario
   {% endblock title %}
     
   {% block content %}
-    <h1>Registro Usuario</h1>
-    <form action="" method="POST">
-        {% csrf_token %}
-        {{ form.as_table }}
-        <input type="submit" value="Registrarse" class="btn btn-success">
-        
+  <div class="flex min-h-full flex-col justify-center px-8 py-12 lg:px-8">
+      
+    <h2 class="mt-10 text-center text-2x1 font-bold leading-9 tracking-tight text-gray-900">Registro: 2° paso</h2>
+
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <form class="space-y-6" method="POST">
+        <div class="mt-2">
+          {% csrf_token %}
+          {{ form | crispy  }}
+          <input type="submit" value="Registrarse" class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
+        </div>
           
-    </form>
+          
+            
+      </form>
+      
+    </div>
+  </div>
+
+<!-- 
+  <div class="container mx-auto">
+      <h2>Registro: 2° paso</h2>
+      <form  method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" value="Registrarse" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">     
+      </form>
+  </div> -->
+    
+    
   {% endblock %}

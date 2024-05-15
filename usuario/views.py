@@ -6,6 +6,8 @@ from .forms import UsuarioCreationForm
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.shortcuts import redirect, render
+from persona.models import Persona
+from django.shortcuts import get_object_or_404
 
 class Index(TemplateView):
     template_name = 'usuarios/index.html'
@@ -17,26 +19,31 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, 'Bienvenido')
+            messages.success(request, 'Has iniciado sesión')
             return redirect('index')
         else:
-            messages.success(request, 'Algo salió mal')
-            return redirect('login')
+            messages.error(request, 'Datos incorrectos')
+            return redirect('login_user')
     else:
         return render(request, 'usuarios/login.html')
 
-def registrar(request):
+def registrar_usuario(request, persona_id):
+    persona = get_object_or_404(Persona, pk=persona_id)
     if request.method == 'POST':
+        """ persona_id = request.POST.get('identificacion')
+        persona = Persona.objects.get(identificacion=persona_id) """  # Obtiene la instancia de Persona utilizando el ID pasado como parámetro
         form = UsuarioCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            usuario = form.save(commit=False)
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
             email = form.cleaned_data['email']
-            user = authenticate(username=username, password=password, email=email)
-            login(request, user)
+            # Asigna la persona al usuario como una clave foránea
+            usuario.persona_id = persona
+            usuario.save()
+            login(request, usuario)
             messages.success(request, 'Registo completado con exito')
-            return redirect('registrar_persona')
+            return redirect('index')
     else:
         form = UsuarioCreationForm()
     return render(request, 'usuarios/registro.html', {'form': form})
