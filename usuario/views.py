@@ -9,6 +9,7 @@ from django.shortcuts import redirect, render
 from persona.models import Persona
 from django.shortcuts import get_object_or_404
 
+
 class Index(TemplateView):
     template_name = 'usuarios/index.html'
 
@@ -44,7 +45,10 @@ def registrar_usuario(request, persona_id):
             login(request, usuario)
             messages.success(request, 'Registo completado con exito')
             return redirect('index')
+        else:
+            messages.error(request, 'Verifique los datos que está ingresando')
     else:
+        
         form = UsuarioCreationForm()
     return render(request, 'usuarios/registro.html', {'form': form})
 
