@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+
+  {% block title %}
+    Login
+  {% endblock title %}
+  
+  
+  
+
+  {% block content %}
+  <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Ingresa el código</h2>
+
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+
+      {% if messages %}
+            <div id="messages" style="display: none;">
+                {% for message in messages %}
+                    <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    <form action="{% url 'token_input' %}" method="post">
+        {% csrf_token %}
+        <label for="token">Ingrese el Token de Verificación:</label><br>
+        <input type="text" id="token" name="token" required  autocomplete="off"><br><br>
+        <button type="submit">Verificar</button>
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          var messageContainer = document.getElementById('messages');
+          if (messageContainer) {
+              var messages = messageContainer.children;
+              for (var i = 0; i < messages.length; i++) {
+                        var message = messages[i].dataset.message;
+                        var tags = messages[i].dataset.tags;
+                        
+    
+                        
+                        if (tags.includes('danger')) {
+                            icon = 'error'; //icono de error
+                        } else if (tags.includes('success')) {
+                            icon = 'success'; //icono de correcto
+                        } else if (tags.includes('warning')) {
+                            icon = 'question'; //icono de pregunta
+                        } else if (tags.includes('info')) {
+                            icon = 'info'; //icono de info
+                        } 
+    
+                        notificacionSwal('', message, icon, 'OK');
+                    }
+            }
+        });
+        </script>
+
+    {% endblock %}
+
