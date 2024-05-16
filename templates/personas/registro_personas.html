@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
 
   {% block title %}
     Registro Persona
@@ -12,10 +11,19 @@
       <h2 class="mt-10 text-center text-2x1 font-bold leading-9 tracking-tight text-gray-900">Registro: 1° paso</h2>
 
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+
+        {% if messages %}
+          <div id="messages" style="display: none;">
+              {% for message in messages %}
+                 <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+              {% endfor %}
+          </div>
+        {% endif %}
+
         <form class="space-y-6" method="POST">
           <div class="mt-2">
             {% csrf_token %}
-            {{ form | crispy  }}
+            {{ form }}
             <input type="submit" value="Siguiente" class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
           </div>
             
@@ -25,5 +33,31 @@
         
       </div>
     </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        var messageContainer = document.getElementById('messages');
+        if (messageContainer) {
+            var messages = messageContainer.children;
+            for (var i = 0; i < messages.length; i++) {
+                      var message = messages[i].dataset.message;
+                      var tags = messages[i].dataset.tags;
+                      
+  
+                      
+                      if (tags.includes('danger')) {
+                          icon = 'error'; //icono de error
+                      } else if (tags.includes('success')) {
+                          icon = 'success'; //icono de correcto
+                      } else if (tags.includes('warning')) {
+                          icon = 'question'; //icono de pregunta
+                      } else if (tags.includes('info')) {
+                          icon = 'info'; //icono de info
+                      } 
+  
+                      notificacionSwal('', message, icon, 'OK');
+                  }
+          }
+      });
+      </script>
     
   {% endblock %}
