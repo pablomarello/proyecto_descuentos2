@@ -83,6 +83,7 @@ WSGI_APPLICATION = 'proyecto_descuentos2.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+#Base de datos en Postgres
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -92,8 +93,20 @@ DATABASES = {
         'HOST': config("DB_HOST"),
         'PORT': config("DB_PORT")
     }
-}
+} 
 
+
+#Base de datos en phpMyAdmin de Alexis. NO BORRAR -_- dejar comentado.
+""" DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'proyecto_descuentos',
+        'USER': 'root',
+        'PASSWORD': 'guitarra327273',
+        'HOST': 'localhost',
+        'PORT': '3306'
+    }
+} """
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -158,3 +171,11 @@ MESSAGE_TAGS= {
     mensajes_error.WARNING: 'warning',
     mensajes_error.ERROR: 'danger',
 }
+
+#datos del correo
+EMAIL_BACKEND=config("EMAIL_BACKEND")
+EMAIL_HOST=config("EMAIL_HOST")
+EMAIL_PORT=config("EMAIL_PORT")
+EMAIL_USE_TLS=config("EMAIL_USE_TLS")
+EMAIL_HOST_USER=config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD=config("EMAIL_HOST_PASSWORD")

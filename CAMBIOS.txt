@@ -1,0 +1,7 @@
+15/05 Alexis
+Se agregaron las vistas para verificar email en la app usuario
+Se agregó el archivo email.py
+se agregaron datos del correo en settings
+Se hicieron modificaciones en el modelo de usuario- is_active y fecha_creacion_token
+
+##########No olvidar agregar el archvo .env ##########
