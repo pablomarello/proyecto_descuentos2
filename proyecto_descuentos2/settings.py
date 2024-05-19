@@ -128,6 +128,10 @@ AUTH_PASSWORD_VALIDATORS = [
 #indicamos el modelo de usuario personalizado que queremos utilizar
 AUTH_USER_MODEL = 'usuario.Usuario'
 
+LOGIN_REDIRECT_URL='index'
+LOGIN_URL='accounts/login'
+LOGOUT_URL='accounts/logout'
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
