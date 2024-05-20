@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar sesion {% endblock %}
+
+{% block content %}
+    <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+        <div class="" text-aling="center">
+            <div class="flex flex-auto ">
+                <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm border border-rojo-claro px-6 py-2">
+                            
+                        <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+                            <span class="section-heading-upper">Iniciar sesion </span>                        
+                        </h2>  
+                        
+                        {% if messages %}
+                          <div id="messages" style="display: none;">
+                            {% for message in messages %}
+                              <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+                            {% endfor %}
+                          </div>
+                        {% endif %}
+                                            
+                        <form class="space-y-6" method="post" action="{% url 'login' %}">
+                            {% csrf_token %}
+                            <div >
+                                <label for="username" class="block text-sm font-medium leading-6 text-gray-900" placeholder="Ingrese su Usuario">Usuario</label>
+                                <div class="mt-2">
+                                  <input id="username" name="username" type="text" autocomplete="email" required class="block w-full rounded-md border-0 py-1.5 text-gray shadow-sm ring-1 ring-inset ring-gris-claro placeholder:text-gray focus:ring-2 focus:ring-inset focus:ring-orange sm:text-sm sm:leading-6">
+                                </div>
+                            </div>
+                        
+                              <div >
+                                <div class="flex items-center justify-between">
+                                  <label for="password" class="block text-sm font-medium leading-6 text-gray-900" placeholder="Ingrese su contraseña">Contraseña</label>
+                                  <div class="text-sm">
+                                    <a href="{%url 'reset_password'%}" class="font-semibold text-rojo hover:text-orange">Olvidaste tu contraseña?</a>
+                                  </div>
+                                </div>
+                                <div class="mt-2">
+                                  <input id="password" name="password" type="password" autocomplete="current-password" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gris-claro placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange sm:text-sm sm:leading-6">
+                                </div>
+                              </div>
+                        
+                              <div>
+                                <button type="submit" class="bg-rojo text-blanco border border-rojo  flex w-full justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6  shadow-sm hover:bg-blanco hover:text-rojo focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rojo">Iniciar</button>
+                              </div>
+                            
+                        
+                          </form>
+                        {% if form.errors %}                                              
+                            <p class="alert alert-danger" role="alert">Usuario y Contraseña No Coinciden. Intente Nuevamente</p>                        
+                        {% endif %} 
+                        <p class="mt-10 text-center text-sm text-gray-500">
+                          No tienes cuenta?
+                          <a href="#" class="font-semibold leading-6 text-rojo hover:text-orange">Registrate</a>
+                        </p>
+                   <!-- <p class="mb-0">
+                    <a href="{% url 'index' %}" class="card-link"> <i class="fa-solid fa-house"> </i>Inicio</a>
+                        &nbsp; &nbsp; &nbsp;
+                    <a href="{% url 'reset_password' %}" class="card-link"> <i class="fa-solid fa-envelope"></i>Olvidaste tu Contraseña?</a>
+                     &nbsp; &nbsp; &nbsp;
+                       <a href="#" class="card-link">Registrarse</a>                    
+                    &nbsp; &nbsp; &nbsp;                      
+                    -->                                       
+                   </p>                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var messageContainer = document.getElementById('messages');
+      if (messageContainer) {
+          var messages = messageContainer.children;
+          for (var i = 0; i < messages.length; i++) {
+                    var message = messages[i].dataset.message;
+                    var tags = messages[i].dataset.tags;
+                    
+
+                    
+                    if (tags.includes('danger')) {
+                        icon = 'error'; //icono de error
+                    } else if (tags.includes('success')) {
+                        icon = 'success'; //icono de correcto
+                    } else if (tags.includes('warning')) {
+                        icon = 'question'; //icono de pregunta
+                    } else if (tags.includes('info')) {
+                        icon = 'info'; //icono de info
+                    } 
+
+                    notificacionSwal('', message, icon, 'OK');
+                }
+        }
+    });
+    </script>
+{% endblock %}

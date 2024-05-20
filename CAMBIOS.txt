@@ -4,4 +4,12 @@ Se agregó el archivo email.py
 se agregaron datos del correo en settings
 Se hicieron modificaciones en el modelo de usuario- is_active y fecha_creacion_token
 
+19/05 Melian
+Agregue en settings configuracion de las urls de login y logout 
+cree una carpeta en templates "registrations" donde estan los html de login y cambio de contraseña
+reemplace las views de login_user y logout_user por login y cierre de sesion
+agregue views de reset_password y demas
+agregue en forms.py "login_form"
+y agregue las urls de login, cerrar sesion y cambio de contraseña
+
 ##########No olvidar agregar el archvo .env ##########

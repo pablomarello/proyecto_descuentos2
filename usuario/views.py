@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
+from .forms import LoginForm
 from django.contrib.auth import authenticate,login, logout
+from django.urls import reverse_lazy
+from django.contrib.auth.views import PasswordChangeView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.auth import get_user_model
 from django.contrib import messages
 from .forms import UsuarioCreationForm
-from django.shortcuts import render
-from django.views.generic import TemplateView
-from django.shortcuts import redirect, render
 from persona.models import Persona
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -20,26 +21,26 @@ class Index(TemplateView):
     template_name = 'usuarios/index.html'
 
 #Logueo de usuario
-def login_user(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            messages.success(request, 'Has iniciado sesión')
-            return redirect('index')
-        else:
-            messages.error(request, 'Verifique los datos ingresados')
-            return redirect('login_user')
-    else:
-        return render(request, 'usuarios/login.html')
+#def log(request):
+ #   if request.method == 'POST':
+  #      username = request.POST['username']
+   #     password = request.POST['password']
+    #    user = authenticate(request, username=username, password=password)
+     #   if user is not None:
+      #      login(request, user)
+       #     messages.success(request, 'Has iniciado sesión')
+        #    return redirect('index')
+        #else:
+         #   messages.error(request, 'Verifique los datos ingresados')
+          #  return redirect('login')
+    #else:
+     #   return render(request, 'usuarios/login.html')
     
     
-def logout_user(request):
-    logout(request)
-    messages.success(request, 'Sesión cerrada')
-    return redirect('login_user')
+#def logout_user(request):
+ #   logout(request)
+  #  messages.success(request, 'Sesión cerrada')
+   # return redirect('logi')
 
 
 
@@ -91,13 +92,70 @@ def token_input(request):
                 profile.is_active = True
                 profile.save()
                 messages.success(request, 'Tu email ha sido verificado exitosamente')
-                return redirect('login_user')
+                return redirect('login')
         except Usuario.DoesNotExist:
             messages.error(request, 'Error, verifique los datos igresados')
     return render(request, 'usuarios/verificar_token.html')
 
 
+class CustomPasswordResetView(PasswordResetView):
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        User = get_user_model()
+        # Verifica si existe un usuario con el correo electrónico proporcionado
+        if User.objects.filter(email=email).exists():
+            print('Existe email: '+email)
+            # Si existe, envía el correo de restablecimiento de contraseña
+            #return super().form_valid(form)
+            return super().form_valid(form)
+        else:
+            # Si no existe, muestra un mensaje de error y redirige a una página de error
+            print('No Existe email: '+email)
+            #messages.error(self.request, 'No existe una cuenta con este correo electrónico. ' +email)
+            #return self.form_invalid(form)
+            return redirect('password_reset_error')       
+        
+#Logueo de usuario
 
+def login(request):
+    if request.method=='POST':
+        form= LoginForm(request.POST)
+        if form.is_valid():
+            username = request.POST['username']
+            password = request.POST['password']
+            user=authenticate(request,username=username, password=password)
+            if user is not None:
+                    login(request, user)
+                    return redirect('index')
+            else:
+                    messages.error(request, 'Verifique los datos ingresados')
+                    return redirect('login')
+    else:
+        form = LoginForm()  
+    return render(request,'registration/login.html', {'form':form})
+
+def cerrar_sesion(request):
+    logout(request)
+    messages.success(request, 'Sesión cerrada')
+    return render(request,'base.html')
+
+#cambiar contraseña
+
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'registration/password_change_form.html'
+    success_url = reverse_lazy('index')
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'registration/password_reset_done.html'        
+
+class CustomPasswordResetErrorView(TemplateView):
+    template_name = 'registration/password_reset_error.html'    
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'registration/password_reset_confirm.html'
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'registration/password_reset_complete.html'
 
 
 # Create your views here.
