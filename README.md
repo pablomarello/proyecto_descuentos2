@@ -1,8 +1,14 @@
-Descripción del proyecto:
-
-
+Objetivo general del proyecto:
+-Generar un mecanismo de interaccion digital entre oferta y demanda para mejorar las condiciiones economicas. 
+-
+Objetivos especificos:
+-Implementar un modelo de gestion digital para la unificacion de ofertas y descuentos permitiendo el ahorro en la Sociedad mejorando asi la economia  
+-Crear un sitio/app donde se encuentre la concentracion de ofertas y descuentos
+-Facilitar la registracion de los comercios y oferentes en el sitio
+-Incentivar el creciminiento del sitio mediante publicidad
+-
 Integrantes del proyecto:
-- Melian, Micaela Luz
+- Melian, Luz Micaela
 - Cabrera, Fernando Agustin
 - Quinteros, Alexis Carlos
 - Marello González, Pablo Leandro
