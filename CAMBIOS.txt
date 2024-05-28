@@ -12,4 +12,10 @@ agregue views de reset_password y demas
 agregue en forms.py "login_form"
 y agregue las urls de login, cerrar sesion y cambio de contraseña
 
+24/05 Pablo Marello
+en settings del proyecto agregue la configuracion para trabajar con imagenes
+en el forms.py de personas agregué el campo 'foto'
+en el template de registro de persona en <form> agregue el atributo enctype y agregue codigo js para la
+previsualizacion de la foto
+
 ##########No olvidar agregar el archvo .env ##########
