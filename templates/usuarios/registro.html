@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load custom_filters %}
 
   {% block title %}
     Registro Usuario
@@ -24,7 +24,45 @@
       <form class="space-y-6" method="POST">
         <div class="mt-2">
           {% csrf_token %}
-          {{ form }}
+          {{ form.non_field_errors }}
+
+          <div class="mb-4">
+            {{ form.username.label_tag }}
+            {{ form.username|add_class:"w-full px-3 py-2 border rounded-md" }}
+            {% if form.username.errors %}
+            <div class="text-red-500 mt-1 text-sm">
+              {{ form.username.errors }}
+            </div>
+            {% endif %}
+          </div>
+          <div class="mb-4">
+            {{ form.password1.label_tag }}
+            {{ form.password1|add_class:"w-full px-3 py-2 border rounded-md" }}
+            {% if form.password1.errors %}
+            <div class="text-red-500 mt-1 text-sm">
+              {{ form.password1.errors }}
+            </div>
+            {% endif %}
+          </div>
+          <div class="mb-4">
+            {{ form.password2.label_tag }}
+            {{ form.password2|add_class:"w-full px-3 py-2 border rounded-md" }}
+            {% if form.password2.errors %}
+            <div class="text-red-500 mt-1 text-sm">
+              {{ form.password2.errors }}
+            </div>
+            {% endif %}
+          </div>
+          <div class="mb-4">
+            {{ form.email.label_tag }}
+            {{ form.email|add_class:"w-full px-3 py-2 border rounded-md" }}
+            {% if form.email.errors %}
+            <div class="text-red-500 mt-1 text-sm">
+              {{ form.email.errors }}
+            </div>
+            {% endif %}
+          </div>
+
           <input type="submit" value="Registrarse" class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
         </div>
           

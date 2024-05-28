@@ -1,63 +1,125 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
-  {% block title %}
-    Registro Persona
-  {% endblock title %}
-    
-  {% block content %}
-    
-    <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-      
-      <h2 class="mt-10 text-center text-2x1 font-bold leading-9 tracking-tight text-gray-900">Registro: 1° paso</h2>
+{% block title %}
+Registro Persona
+{% endblock title %}
 
-      <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+{% block content %}
 
-        {% if messages %}
-          <div id="messages" style="display: none;">
-              {% for message in messages %}
-                 <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
-              {% endfor %}
-          </div>
-        {% endif %}
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
 
-        <form class="space-y-6" method="POST">
-          <div class="mt-2">
-            {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Siguiente" class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
-          </div>
-            
-            
-              
-        </form>
-        
-      </div>
+  <h2 class="mt-10 text-center text-2x1 font-bold leading-9 tracking-tight text-gray-900">Registro: 1° paso</h2>
+
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+
+    {% if messages %}
+    <div id="messages" style="display: none;">
+      {% for message in messages %}
+      <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+      {% endfor %}
     </div>
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        var messageContainer = document.getElementById('messages');
-        if (messageContainer) {
-            var messages = messageContainer.children;
-            for (var i = 0; i < messages.length; i++) {
-                      var message = messages[i].dataset.message;
-                      var tags = messages[i].dataset.tags;
-                      
-  
-                      
-                      if (tags.includes('danger')) {
-                          icon = 'error'; //icono de error
-                      } else if (tags.includes('success')) {
-                          icon = 'success'; //icono de correcto
-                      } else if (tags.includes('warning')) {
-                          icon = 'question'; //icono de pregunta
-                      } else if (tags.includes('info')) {
-                          icon = 'info'; //icono de info
-                      } 
-  
-                      notificacionSwal('', message, icon, 'OK');
-                  }
-          }
-      });
-      </script>
-    
-  {% endblock %}
+    {% endif %}
+
+    <form class="space-y-6" method="POST" enctype="multipart/form-data">
+      <div class="mt-2">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="mb-4">
+          {{ form.identificacion.label_tag }}
+          {{ form.identificacion|add_class:"w-full px-3 py-2 border rounded-md" }}
+          {% if form.identificacion.errors %}
+          <div class="text-red-500 mt-1 text-sm">
+            {{ form.identificacion.errors }}
+          </div>
+          {% endif %}
+        </div>
+        <div class="mb-4">
+          {{ form.nombres.label_tag }}
+          {{ form.nombres|add_class:"w-full px-3 py-2 border rounded-md" }}
+          {% if form.nombres.errors %}
+          <div class="text-red-500 mt-1 text-sm">
+            {{ form.nombres.errors }}
+          </div>
+          {% endif %}
+        </div>
+        <div class="mb-4">
+          {{ form.apellidos.label_tag }}
+          {{ form.apellidos|add_class:"w-full px-3 py-2 border rounded-md" }}
+          {% if form.apellidos.errors %}
+          <div class="text-red-500 mt-1 text-sm">
+            {{ form.apellidos.errors }}
+          </div>
+          {% endif %}
+        </div>
+        <div class="mb-4">
+          {{ form.foto.label_tag }}
+          {{ form.foto|add_class:"w-full px-3 py-2 border rounded-md" }}
+          {% if form.foto.errors %}
+          <div class="text-red-500 mt-1 text-sm">
+            {{ form.foto.errors }}
+          </div>
+          {% endif %}
+        </div>
+        <img id="previewImage" src="#" alt="Vista previa de la imagen" style="display: none;">
+        <input type="submit" value="Siguiente" class="flex w-full justify-center rounded-md bg-red-600 px-3
+             py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline
+             focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
+      </div>
+    </form>
+
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var messageContainer = document.getElementById('messages');
+    if (messageContainer) {
+      var messages = messageContainer.children;
+      for (var i = 0; i < messages.length; i++) {
+        var message = messages[i].dataset.message;
+        var tags = messages[i].dataset.tags;
+
+
+
+        if (tags.includes('danger')) {
+          icon = 'error'; //icono de error
+        } else if (tags.includes('success')) {
+          icon = 'success'; //icono de correcto
+        } else if (tags.includes('warning')) {
+          icon = 'question'; //icono de pregunta
+        } else if (tags.includes('info')) {
+          icon = 'info'; //icono de info
+        }
+
+        notificacionSwal('', message, icon, 'OK');
+      }
+    }
+  });
+
+
+  /* VISTA PREVIA FOTO */
+  document.getElementById('inputFile').addEventListener('change', function () {
+    const file = this.files[0]; //0 porque es 1 elemento
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // Creo un elemento img para la vista previa
+        const img = document.createElement('img');
+        img.src = e.target.result;
+
+        // Muestro la imagen en una alerta de SweetAlert2
+        Swal.fire({
+          title: 'Vista previa de la imagen cargada',
+          html: img.outerHTML, // Utilizo el HTML de la imagen
+          imageWidth: 400,
+          imageHeight: 200,
+          imageAlt: 'Vista previa de la imagen'
+        });
+      }
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+
+{% endblock %}

@@ -2,10 +2,15 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from usuario.models import Usuario
 from django.contrib import messages
-
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV3
+from django.forms.utils import ErrorList
+from django.contrib.auth import authenticate
 
 
 class UsuarioCreationForm(UserCreationForm):
+    
+
     class Meta(UserCreationForm.Meta):
         model = Usuario
         fields = ('username', 'password1', 'password2','email')  # Personaliza los campos según tus necesidades
@@ -24,7 +29,8 @@ class UsuarioCreationForm(UserCreationForm):
                     label and label % field.label or ''
                 )
                 field.label_attrs = {'class': 'block text-sm font-medium leading-6 text-red-900'}  # Añadir clases personalizadas a los labels
-
+        
+        #validacion email
         def clean_email(self):
             email = self.cleaned_data.get['email']
             if Usuario.objects.filter(email=email).exists():
@@ -32,5 +38,24 @@ class UsuarioCreationForm(UserCreationForm):
             return email
         
 class LoginForm(forms.Form):
+    
     username= forms.CharField(max_length=50)
     password= forms.CharField(widget=forms.PasswordInput)
+
+    class Meta:
+        model = Usuario
+        fields = ('username', 'password')
+
+    #VALIDACIONES
+
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get('username')
+        password = cleaned_data.get('password')
+
+        if username and password:
+            user = authenticate(username=username, password=password)
+            if user is None:
+                raise forms.ValidationError("El nombre de usuario y/o la contraseña no son correctos")
+        return cleaned_data
+    

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 
 {% block title %}Iniciar sesion {% endblock %}
 
@@ -26,6 +27,9 @@
                                 <label for="username" class="block text-sm font-medium leading-6 text-gray-900" placeholder="Ingrese su Usuario">Usuario</label>
                                 <div class="mt-2">
                                   <input id="username" name="username" type="text" autocomplete="email" required class="block w-full rounded-md border-0 py-1.5 text-gray shadow-sm ring-1 ring-inset ring-gris-claro placeholder:text-gray focus:ring-2 focus:ring-inset focus:ring-orange sm:text-sm sm:leading-6">
+                                  {% if form.username.errors %}
+                                    <p class="text-sm text-red-500">{{ form.username.errors }}</p>
+                                  {% endif %}
                                 </div>
                             </div>
                         
@@ -38,6 +42,11 @@
                                 </div>
                                 <div class="mt-2">
                                   <input id="password" name="password" type="password" autocomplete="current-password" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gris-claro placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange sm:text-sm sm:leading-6">
+                                  {% if form.password.errors %}
+                                    <div class="text-red-500 mt-1 text-sm">
+                                      {{ form.password.errors }}
+                                    </div>
+                                  {% endif %}
                                 </div>
                               </div>
                         
@@ -47,8 +56,14 @@
                             
                         
                           </form>
-                        {% if form.errors %}                                              
-                            <p class="alert alert-danger" role="alert">Usuario y Contraseña No Coinciden. Intente Nuevamente</p>                        
+                        {% if form.errors %}                                             
+                        <script>
+                          Swal.fire({
+                              icon: 'error',
+                              title: 'Error',
+                              text: 'Usuario y/o contraseña incorrectos. Intente nuevamente.',
+                          });
+                        </script>
                         {% endif %} 
                         <p class="mt-10 text-center text-sm text-gray-500">
                           No tienes cuenta?
@@ -69,29 +84,29 @@
     </div>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      var messageContainer = document.getElementById('messages');
-      if (messageContainer) {
-          var messages = messageContainer.children;
-          for (var i = 0; i < messages.length; i++) {
-                    var message = messages[i].dataset.message;
-                    var tags = messages[i].dataset.tags;
-                    
-
-                    
-                    if (tags.includes('danger')) {
-                        icon = 'error'; //icono de error
-                    } else if (tags.includes('success')) {
-                        icon = 'success'; //icono de correcto
-                    } else if (tags.includes('warning')) {
-                        icon = 'question'; //icono de pregunta
-                    } else if (tags.includes('info')) {
-                        icon = 'info'; //icono de info
-                    } 
-
-                    notificacionSwal('', message, icon, 'OK');
-                }
-        }
-    });
-    </script>
+      document.addEventListener("DOMContentLoaded", function() {
+        var messageContainer = document.getElementById('messages');
+        if (messageContainer) {
+            var messages = messageContainer.children;
+            for (var i = 0; i < messages.length; i++) {
+                      var message = messages[i].dataset.message;
+                      var tags = messages[i].dataset.tags;
+                      
+  
+                      
+                      if (tags.includes('danger')) {
+                          icon = 'error'; //icono de error
+                      } else if (tags.includes('success')) {
+                          icon = 'success'; //icono de correcto
+                      } else if (tags.includes('warning')) {
+                          icon = 'question'; //icono de pregunta
+                      } else if (tags.includes('info')) {
+                          icon = 'info'; //icono de info
+                      } 
+  
+                      notificacionSwal('', message, icon, 'OK');
+                  }
+          }
+      });
+      </script>
 {% endblock %}

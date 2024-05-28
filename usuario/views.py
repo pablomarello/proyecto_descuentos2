@@ -128,8 +128,8 @@ def login(request):
                     login(request, user)
                     return redirect('index')
             else:
-                    messages.error(request, 'Verifique los datos ingresados')
-                    return redirect('login')
+                messages.error(request, 'Verifique los datos ingresados')
+                  
     else:
         form = LoginForm()  
     return render(request,'registration/login.html', {'form':form})
@@ -137,7 +137,7 @@ def login(request):
 def cerrar_sesion(request):
     logout(request)
     messages.success(request, 'Sesión cerrada')
-    return render(request,'base.html')
+    return render(request,'registration/login.html')
 
 #cambiar contraseña
 
