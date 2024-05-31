@@ -5,7 +5,6 @@ from django_recaptcha.widgets import ReCaptchaV3
 from django.forms.utils import ErrorList
 
 class FormPersona(forms.ModelForm):
-    # captcha = ReCaptchaField(widget=ReCaptchaV3)
 
     def __init__(self, *args, **kwargs):
         super(FormPersona, self).__init__(*args, **kwargs)

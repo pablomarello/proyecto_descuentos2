@@ -13,6 +13,7 @@ from django.urls import reverse
 from .email import *
 from .models import *
 import random
+from .sms import send_sms
 
 
 
@@ -51,32 +52,45 @@ def generate_verification_token():
     return ''.join([str(random.randint(0, 9)) for _ in range(6)])
 
 
+#Creación de usuario y verificacion de email O TELEFONO
+def generate_verification_token():
+    return ''.join([str(random.randint(0, 9)) for _ in range(6)])
+
+
+
 def registrar_usuario(request, persona_id):
     persona = get_object_or_404(Persona, pk=persona_id)
     if request.method == 'POST':
-        """ persona_id = request.POST.get('identificacion')
-        persona = Persona.objects.get(identificacion=persona_id) """  # Obtiene la instancia de Persona utilizando el ID pasado como parámetro
         form = UsuarioCreationForm(request.POST)
         if form.is_valid():
             usuario = form.save(commit=False)
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password1']
-            email = form.cleaned_data['email']
-            # Asigna la persona al usuario como una clave foránea
             usuario.persona_id = persona
 
-            #Genera token y se guarda en la base de datos
+            # Genera token y se guarda en la base de datos
             verification_token = generate_verification_token()
-            usuario.token=verification_token
+            usuario.token = verification_token
             usuario.save()
 
-            #enviamos el email y redireccionamos a la vista token_input
-            send_email_token(email,usuario.token)
+            metodo_verificacion = form.cleaned_data['metodo_verificacion']
+            email = form.cleaned_data['email']
+            telefono = form.cleaned_data['telefono']
+            nombreUsuario=usuario.username
+            if metodo_verificacion == 'email':
+                # Enviar token por email
+                send_email_token(email, usuario.token,nombreUsuario)
+
+            elif metodo_verificacion == 'telefono':
+                # Enviar token por SMS
+                texto = f'Hola {nombreUsuario} - Ingresa el token de seguridad para completar tu registro: {verification_token}-'
+                response_text = send_sms(telefono, texto)
+                if "ERROR" in response_text:
+                    messages.error(request, f'Error al enviar SMS: {response_text}')
+                    return render(request, 'usuarios/registro.html', {'form': form})
+
             return redirect(reverse('token_input'))
         else:
             messages.error(request, 'Verifique los datos que está ingresando')
     else:
-        
         form = UsuarioCreationForm()
     return render(request, 'usuarios/registro.html', {'form': form})
 

@@ -18,4 +18,16 @@ en el forms.py de personas agregué el campo 'foto'
 en el template de registro de persona en <form> agregue el atributo enctype y agregue codigo js para la
 previsualizacion de la foto
 
+
+31/05 Alexis
+Agregué los campos telefono y metodo_verificacion en el modelo usuario.
+Modifiqué el forms.py de usuario y agregué las validaciones para telefono-email
+agregué el archivo sms.py a usuario
+modifique la vista registrar_usuario para agregar la funcion de envio de sms
+modifiqué el formulario de registro de usuario para agregar las funciones de envio de sms y agregue codigo js. para el dinamismo de email-telefono
+agregué la biblioteca "requests" al archivo requeriments.txt
+(no hice cambios en el .env)
+ 
+
+
 ##########No olvidar agregar el archvo .env ##########
