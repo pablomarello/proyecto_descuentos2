@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'proyecto_descuentos2.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 #Base de datos en Postgres
-DATABASES = {
+""" DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': config("DB_NAME"),
@@ -93,11 +93,11 @@ DATABASES = {
         'HOST': config("DB_HOST"),
         'PORT': config("DB_PORT")
     }
-} 
+}  """
 
 
 #Base de datos en phpMyAdmin de Alexis. NO BORRAR -_- dejar comentado.
-""" DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'proyecto_descuentos',
@@ -106,7 +106,7 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306'
     }
-} """
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

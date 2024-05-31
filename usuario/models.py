@@ -42,9 +42,12 @@ class UsuarioManager(BaseUserManager):
 
 
 #SE CAMBIÓ EL is_active a False! y la fecha de creacion del token
+#Se agregaron los campos metodo_verificacion y telefono
 class Usuario(AbstractBaseUser,PermissionsMixin):
+    metodo_verificacion = models.CharField(max_length=80, default='email')
     username = models.CharField('Nombre de usuario',unique=True,max_length=50)
-    email = models.EmailField('Correo Electrónico',max_length=100,unique=True)
+    email = models.EmailField('Correo Electrónico',max_length=100, null=True)
+    telefono=models.CharField('SU TELEFONO: ',max_length=40, null=True)
     # usuario_administrador = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
