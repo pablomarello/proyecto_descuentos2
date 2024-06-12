@@ -1,5 +1,5 @@
 Objetivo general del proyecto:
--Generar un mecanismo de interaccion digital entre oferta y demanda para mejorar las condiciiones economicas. 
+-Generar un mecanismo de interaccion digital entre oferta y demanda de productos y servicios para mejorar las condiciiones economicas mediante un sitio web. 
 
 Objetivos especificos:
 -Implementar un modelo de gestion digital para la unificacion de ofertas y descuentos permitiendo el ahorro en la Sociedad mejorando asi la economia  
