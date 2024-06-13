@@ -1,5 +1,5 @@
 Objetivo general del proyecto:
--Generar un mecanismo de interaccion digital entre oferta y demanda de productos y servicios para mejorar las condiciiones economicas mediante un sitio web. 
+- Generar un mecanismo de interaccion digital entre oferta y demanda de productos y servicios para mejorar las condiciiones economicas mediante un sitio web. 
 
 Objetivos especificos:
 - Desarrollar un software que integre esta unificacion de ofertas y demandas de productos y servicios
@@ -8,14 +8,6 @@ Objetivos especificos:
 - Generar una estrategia para que el el usuario se informe sobre el sitio y sus bondades
 - Establecer una politica de limite de publicaciones y reglas de convivencia que impidan la cartelizacion de ofertas
 - Generar un mecanismo agil de vinculacion que sirva para la cotidianidad de la demanda de productos y servicios
-
-
-
--Implementar un modelo de gestion digital para la unificacion de ofertas y descuentos permitiendo el ahorro en la Sociedad mejorando asi la economia  
--Facilitar la registracion de los comercios y oferentes en el sitio
--Incentivar el creciminiento del sitio mediante publicidad
-
-
 
 Integrantes del proyecto:
 - Melian, Luz Micaela
