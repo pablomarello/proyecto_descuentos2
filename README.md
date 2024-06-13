@@ -2,12 +2,12 @@ Objetivo general del proyecto:
 -Generar un mecanismo de interaccion digital entre oferta y demanda de productos y servicios para mejorar las condiciiones economicas mediante un sitio web. 
 
 Objetivos especificos:
--Desarrollar un software que integre esta unificacion de ofertas y demandas de productos y servicios
--Generar una estrategia de difusion y publicidad
--Establecer convenios con comercios con el fin de establecerlos en el sitio
--Generar una estrategia para que el el usuario se informe sobre el sitio y sus bondades
--Politica de limite de publicaciones
--Establecer reglas de convivencia que permitan la cartelizacion de ofertas
+- Desarrollar un software que integre esta unificacion de ofertas y demandas de productos y servicios
+- Generar una estrategia de difusion y publicidad
+- Establecer convenios con comercios con el fin de establecerlos en el sitio
+- Generar una estrategia para que el el usuario se informe sobre el sitio y sus bondades
+- Establecer una politica de limite de publicaciones y reglas de convivencia que impidan la cartelizacion de ofertas
+- Generar un mecanismo agil de vinculacion que sirva para la cotidianidad de la demanda de productos y servicios
 
 
 
