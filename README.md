@@ -7,7 +7,7 @@ Objetivos especificos:
 - Establecer convenios con comercios con el fin de establecerlos en el sitio
 - Generar una estrategia para que el el usuario se informe sobre el sitio y sus bondades
 - Establecer una politica de limite de publicaciones y reglas de convivencia que impidan la cartelizacion de ofertas
-- Generar un mecanismo agil de vinculacion que sirva para la cotidianidad de la demanda de productos y servicios
+- Generar un mecanismo agil de vinculacion que sirva para la cotidianeidad de la demanda de productos y servicios
 
 Integrantes del proyecto:
 - Melian, Luz Micaela
