@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'usuario',
     'persona',
+    'oferente',
+    'django_recaptcha',
+    'django_select2',
     
 ]
 
@@ -129,8 +132,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'usuario.Usuario'
 
 LOGIN_REDIRECT_URL='index'
-LOGIN_URL='accounts/login'
-LOGOUT_URL='accounts/logout'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -147,10 +149,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT=os.path.join(BASE_DIR, "staticfiles")
 
 #donde se alojan los archivos estaticos
 STATICFILES_DIRS = (os.path.join(BASE_DIR,'static'),)
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -183,3 +187,13 @@ EMAIL_PORT=config("EMAIL_PORT")
 EMAIL_USE_TLS=config("EMAIL_USE_TLS")
 EMAIL_HOST_USER=config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD=config("EMAIL_HOST_PASSWORD")
+
+#ReCaptcha
+#API_KEY = 'AIzaSyD8I6b-GtswsS4OvckuRcXwcPt60SnV2Wk'
+
+SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
+
+
+RECAPTCHA_PUBLIC_KEY = '6LdBNegpAAAAAARTf3pLUTxikRi6B3XD7delajxJ'
+RECAPTCHA_PRIVATE_KEY = '6LdBNegpAAAAAMaay4f5ZRre8okm7n3IITJT3Wnj'
+RECAPTCHA_USE_SSL = True

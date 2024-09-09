@@ -1,25 +1,36 @@
+from importlib import simple
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
-from .forms import LoginForm
+import folium.map
+from requests import request
+from .forms import LogeoForm
 from django.contrib.auth import authenticate,login, logout
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordChangeView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from .forms import UsuarioCreationForm
+from django.conf import settings
 from persona.models import Persona
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from .email import *
 from .models import *
 import random
+import folium
 
 
 
 
 class Index(TemplateView):
-    template_name = 'usuarios/index.html'
+   template_name='usuarios/index.html'
 
+
+def mapa(request):
+    initial_map=folium.Map(location=[-28.4993802,-65.8233128],zoom_start=5)
+    map_html=initial_map._repr_html_()
+    context={'map':map_html}
+    return render(request, 'usuarios/mapa.html',context)
 #Logueo de usuario
 #def log(request):
  #   if request.method == 'POST':
@@ -117,13 +128,14 @@ class CustomPasswordResetView(PasswordResetView):
         
 #Logueo de usuario
 
-def login(request):
+def iniciar_sesion(request):
     if request.method=='POST':
-        form= LoginForm(request.POST)
+        form= LogeoForm(request.POST)
         if form.is_valid():
-            username = request.POST['username']
-            password = request.POST['password']
-            user=authenticate(request,username=username, password=password)
+            username = request.POST['usuario']
+            password = request.POST['contraseña']
+            #captcha = request.POST['captcha']
+            user=authenticate(request,username=username, password=password)#, captcha=captcha
             if user is not None:
                     login(request, user)
                     return redirect('index')
@@ -131,7 +143,7 @@ def login(request):
                     messages.error(request, 'Verifique los datos ingresados')
                     return redirect('login')
     else:
-        form = LoginForm()  
+        form = LogeoForm()  
     return render(request,'registration/login.html', {'form':form})
 
 def cerrar_sesion(request):
