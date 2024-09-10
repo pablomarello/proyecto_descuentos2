@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Verificar Cuit
+{% endblock title %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <h1>Verificar CUIT</h1>
+
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        {% if messages %}
+            <div id="messages" style="display: none;">
+                {% for message in messages %}
+                    <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var messageContainer = document.getElementById('messages');
+                if (messageContainer) {
+                    var messages = messageContainer.children;
+                    for (var i = 0; i < messages.length; i++) {
+                        var message = messages[i].dataset.message;
+                        var tags = messages[i].dataset.tags;
+                        var icon = 'info'; // Default icon
+                        
+                        if (tags.includes('danger') || tags.includes('error')) {
+                            icon = 'error'; // Error icon
+                        } else if (tags.includes('success')) {
+                            icon = 'success'; // Success icon
+                        } else if (tags.includes('warning')) {
+                            icon = 'warning'; // Warning icon
+                        } else if (tags.includes('info')) {
+                            icon = 'info'; // Info icon
+                        }
+                        
+                        Swal.fire({
+                            text: message,
+                            icon: icon,
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                }
+            });
+        </script>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+        <button type="submit" class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">Verificar</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 
 {% block title %}Iniciar sesion {% endblock %}
+<head>
+  <script src="https://www.google.com/recaptcha/api.js?render={{site_key}}" async defer></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  
+
+</head>
 
 {% block content %}
     <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -22,30 +28,10 @@
                                             
                         <form class="space-y-6" method="post" action="{% url 'login' %}">
                             {% csrf_token %}
-                            <div >
-                                <label for="username" class="block text-sm font-medium leading-6 text-gray-900" placeholder="Ingrese su Usuario">Usuario</label>
-                                <div class="mt-2">
-                                  <input id="username" name="username" type="text" autocomplete="email" required class="block w-full rounded-md border-0 py-1.5 text-gray shadow-sm ring-1 ring-inset ring-gris-claro placeholder:text-gray focus:ring-2 focus:ring-inset focus:ring-orange sm:text-sm sm:leading-6">
-                                </div>
+                            {% include "registration/forms_snipets.html" %}
+                            <div>
+                              <button type="submit" class="bg-rojo text-blanco border border-rojo  flex w-full justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6  shadow-sm hover:bg-blanco hover:text-rojo focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rojo">Iniciar</button>
                             </div>
-                        
-                              <div >
-                                <div class="flex items-center justify-between">
-                                  <label for="password" class="block text-sm font-medium leading-6 text-gray-900" placeholder="Ingrese su contraseña">Contraseña</label>
-                                  <div class="text-sm">
-                                    <a href="{%url 'reset_password'%}" class="font-semibold text-rojo hover:text-orange">Olvidaste tu contraseña?</a>
-                                  </div>
-                                </div>
-                                <div class="mt-2">
-                                  <input id="password" name="password" type="password" autocomplete="current-password" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gris-claro placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange sm:text-sm sm:leading-6">
-                                </div>
-                              </div>
-                        
-                              <div>
-                                <button type="submit" class="bg-rojo text-blanco border border-rojo  flex w-full justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6  shadow-sm hover:bg-blanco hover:text-rojo focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rojo">Iniciar</button>
-                              </div>
-                            
-                        
                           </form>
                         {% if form.errors %}                                              
                             <p class="alert alert-danger" role="alert">Usuario y Contraseña No Coinciden. Intente Nuevamente</p>                        

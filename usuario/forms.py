@@ -2,10 +2,13 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from usuario.models import Usuario
 from django.contrib import messages
+from django_recaptcha.fields import ReCaptchaField
+from django.contrib.auth import authenticate
 
 
 
 class UsuarioCreationForm(UserCreationForm):
+    captcha=ReCaptchaField()
     class Meta(UserCreationForm.Meta):
         model = Usuario
         fields = ('username', 'password1', 'password2','email')  # Personaliza los campos según tus necesidades
@@ -31,6 +34,28 @@ class UsuarioCreationForm(UserCreationForm):
                 raise forms.ValidationError('Este correo electrónico ya está registrado.')
             return email
         
-class LoginForm(forms.Form):
-    username= forms.CharField(max_length=50)
-    password= forms.CharField(widget=forms.PasswordInput)
+class LogeoForm(forms.Form):
+    
+    usuario= forms.CharField(max_length=50)
+    contraseña= forms.CharField(widget=forms.PasswordInput)
+    captcha = ReCaptchaField()
+
+    class Meta():
+        model = Usuario
+        fields = ('usuario', 'contraseña','captcha')
+
+    #VALIDACIONES
+
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get('usuario')
+        password = cleaned_data.get('contraseña')
+        captcha = cleaned_data.get('captcha')
+
+        if username and password:
+            user = authenticate(username=username, password=password, capctha=captcha)
+            if user is None:
+                raise forms.ValidationError("El nombre de usuario y/o la contraseña no son correctos")
+        return cleaned_data
+    
+ 
