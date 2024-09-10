@@ -113,7 +113,7 @@ class ubicaciones(models.Model):
     persona_id=models.OneToOneField(Persona,blank=True,null=True,on_delete=models.CASCADE,related_name='ubicacion',db_column="identificacion")
     pais=models.ForeignKey(TablaPais,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_pais")
     provincia=models.ForeignKey(TablaProvincia,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_pcia")
-    departamento=models.ForeignKey(TablaDepartamento,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_depto")
+    departamento=models.ForeignKey(TablaDepartamento, blank=False,null=False ,on_delete=models.CASCADE,db_column="cod_depto")
     municipio=models.ForeignKey(TablaMunicipio,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_agl")
     localidad=models.ForeignKey(TablaLocalidad,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_ase")
     barrio=models.CharField(max_length=100,blank=False,null=False)

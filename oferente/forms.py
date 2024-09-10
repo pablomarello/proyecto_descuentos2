@@ -24,7 +24,7 @@ class OferenteForm(forms.ModelForm):
 
     class Meta:
         model = Oferente
-        fields = ('nombrecomercio', 'direccion',) # Personaliza los campos según tus necesidades
+        fields = ('nombrecomercio', 'categoria',) # Personaliza los campos según tus necesidades
         widgets = {
             'nombrecomercio': forms.TextInput(attrs={
                 'class': "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6",
@@ -32,9 +32,9 @@ class OferenteForm(forms.ModelForm):
                 'autocomplete': 'off'
             }),
             
-            'direccion': forms.TextInput(attrs={
+            'categoria': forms.TextInput(attrs={
                 'class': 'block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
-                'placeholder': 'Ingrese su DIRECCION',
+                'placeholder': 'Ingrese la categoria a la que pertenece su comercio',
                 'autocomplete': 'off'
             }),
            

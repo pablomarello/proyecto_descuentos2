@@ -12,6 +12,6 @@ urlpatterns = [
     path('ajax/load-deptos/', views.load_deptos, name='ajax_load_deptos'),
     path('ajax/load-municipios/', views.load_municipios, name='ajax_load_municipios'),
     path('ajax/load-localidad/', views.load_localidad, name='ajax_load_localidad'),
-    path('registrarubicacion',views.registrar_ubicacion, name='registrarubi'),
+    
     
 ]
