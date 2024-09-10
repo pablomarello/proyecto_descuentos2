@@ -2,6 +2,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from persona.models import Persona
+from django.core.validators import RegexValidator
+
+
+#validacion_usuario=RegexValidator(
+ #   regex=r'^[a-zA-Z0-9]{4,15}*$',
+  #  message='Introduzca un nombre de usuario valido. Este solo puede incluir letras y numeros'
+#)
 
 
 class Rol(models.Model):
@@ -43,7 +50,7 @@ class UsuarioManager(BaseUserManager):
 
 #SE CAMBIÓ EL is_active a False! y la fecha de creacion del token
 class Usuario(AbstractBaseUser,PermissionsMixin):
-    username = models.CharField('Nombre de usuario',unique=True,max_length=50)
+    username = models.CharField('Nombre de usuario',unique=True,max_length=50)#,validators=[validacion_usuario]
     email = models.EmailField('Correo Electrónico',max_length=100,unique=True)
     # usuario_administrador = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
