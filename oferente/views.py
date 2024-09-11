@@ -1,6 +1,10 @@
 from django.contrib import messages
-from django.shortcuts import redirect, render
-from .forms import CuitForm, OferenteForm
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+
+from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, TablaProvincia
+from .forms import CuitForm, OferenteForm, UbiComercio
+from .models import Oferente
 from afip import Afip
 
 cert = open('oferente/certificado.crt').read()
@@ -64,12 +68,65 @@ def registrarComercio(request):
         if form.is_valid():
             oferente = form.save(commit=False)
             oferente.cuit = cuit
+            oferente.id_usuario=request.user
             oferente.save()
             messages.success(request, "El comercio ha sido registrado exitosamente.")
-            return redirect('login_user')
+            return redirect('ubicacion_comercio',oferente.pk)
         else:
             messages.error(request, "Verifique los datos ingresados.")
     else:
         form = OferenteForm()
     
     return render(request, 'oferente/registrarComercio.html', {'form': form})
+
+
+def load_provincias(request):
+    pais_id = request.GET.get('cod_pais') 
+    if pais_id:
+        provincias = TablaProvincia.objects.filter(pais_id_id=pais_id).order_by('nom_pcia')
+        data = list(provincias.values('cod_pcia', 'nom_pcia'))
+    else:
+        data = []
+    return JsonResponse(data, safe=False)
+
+def load_deptos(request):
+    provincia_id = request.GET.get('cod_pcia')  
+    if provincia_id:
+        departamentos = TablaDepartamento.objects.filter(provincia_id_id=provincia_id).order_by('nom_depto')
+        data = list(departamentos.values('cod_depto', 'nom_depto'))
+    else:
+        data = []
+    return JsonResponse(data, safe=False)
+
+def load_municipios(request):
+    depto_id = request.GET.get('depto_id')  
+    if depto_id:
+        municipios = TablaMunicipio.objects.filter(departamento_id_id=depto_id).order_by('nom_agl')
+        data = list(municipios.values('cod_agl', 'nom_agl'))
+    else:
+        data = []
+    return JsonResponse(data, safe=False)
+
+
+def load_localidad(request):
+    municipio_id = request.GET.get('municipio_id')  
+    if municipio_id:
+        localidades = TablaLocalidad.objects.filter(municipio_id_id=municipio_id).order_by('nombre')
+        data = list(localidades.values('cod_ase', 'nombre'))
+    else:
+        data = []
+    return JsonResponse(data, safe=False)
+
+def ubicacion_comercio(request,comercio_id):
+    comercio=get_object_or_404(Oferente,pk=comercio_id)
+    if request.method=='POST':
+        form=UbiComercio(request.POST)
+        if form.is_valid():
+            ubicacion= form.save(commit=False)
+            ubicacion.comercio_id=comercio
+            ubicacion.save()
+            return redirect('index')
+        else: messages.error(request, 'Verifique los datos registrados')
+    else:
+        form = UbiComercio()
+    return render(request, 'oferente/ubicaciones_comercio.html', {'form': form})
