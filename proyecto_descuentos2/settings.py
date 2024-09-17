@@ -43,9 +43,9 @@ INSTALLED_APPS = [
     'usuario',
     'persona',
     'oferente',
+    'producto',
     'django_recaptcha',
     'django_select2',
-    
 ]
 
 #crispy tailwind css settings
@@ -90,9 +90,9 @@ WSGI_APPLICATION = 'proyecto_descuentos2.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'proyecto_descuentos2',
+        'NAME': 'Proyecto_descuentos',
         'USER': 'postgres',
-        'PASSWORD': 'mm226',
+        'PASSWORD': 'yanina823',
         'HOST': 'localhost',
         'PORT': '5432'
     }

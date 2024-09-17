@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404, render, redirect
-
 from persona.models import Persona, TablaMunicipio, TablaProvincia, ubicaciones,TablaDepartamento,TablaLocalidad
 from persona.forms import FormPersona, Formubi
 from django.contrib import messages
@@ -18,7 +17,7 @@ def registrar_persona(request):
         if form.is_valid():
             persona = form.save()
                 # Guarda la instancia de Persona creada con los datos del formulario
-             # Redirige al formulario de registro de usuario pasando el ID de la persona creada como parámetro
+            # Redirige al formulario de registro de usuario pasando el ID de la persona creada como parámetro
             print(persona.pk)
             return redirect('registrar_ubicacion', persona_id=persona.pk)#, persona_id=persona.pk
         else: messages.error(request, 'Verifique los datos registrados')
@@ -54,7 +53,6 @@ def load_municipios(request):
         data = []
     return JsonResponse(data, safe=False)
 
-
 def load_localidad(request):
     municipio_id = request.GET.get('municipio_id')  
     if municipio_id:
@@ -64,9 +62,18 @@ def load_localidad(request):
         data = []
     return JsonResponse(data, safe=False)
 
-
-
-
+def cordenadas_localidades(request):
+    localidad_id = request.GET.get('localidad_id')
+    if localidad_id:
+        try:
+            localidad = TablaLocalidad.objects.get(cod_ase=localidad_id)
+            data = {
+                'lat_gd':localidad.lat_gd,
+                'long_gd':localidad.long_gd,
+            }
+            return JsonResponse(data)
+        except TablaLocalidad.DoesNotExist:
+            return JsonResponse({'error': 'Localidad no encontrada'}, status=404)
 
 def mostrar_mapa(request):
     ubicacion = ubicaciones.objects.all()  # Obtener todas las ubicaciones

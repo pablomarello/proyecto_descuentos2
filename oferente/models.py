@@ -1,6 +1,6 @@
 from django.db import models
 from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, TablaPais, TablaProvincia
-from usuario.models import Usuario
+from usuario.models import Usuario, Rol
 
 class Oferente(models.Model):
     nombrecomercio = models.CharField(db_column='nombreComercio', max_length=30)  # Field name made lowercase.
@@ -20,6 +20,20 @@ class Oferente(models.Model):
     class Meta:
         managed = True
         db_table = 'oferente'
+
+# Sobrescribimos el método save para cambiar el rol del usuario a 'Oferente'
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            super().save(*args, **kwargs)
+            try:
+                rol_oferente = Rol.objects.get(rol='Oferente')
+                usuario = self.id_usuario
+                usuario.rol_id = rol_oferente
+                usuario.save()
+            except Rol.DoesNotExist:
+                raise ValueError("El rol 'Oferente' no existe. Debe crearse primero.")
+        else:
+            super().save(*args, **kwargs)
 
 class ubicacionesComercio(models.Model):
     comercio_id=models.OneToOneField(Oferente,blank=True,null=True,on_delete=models.CASCADE,related_name='ubicaion',db_column="identificacion")

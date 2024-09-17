@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+  {% block title %}
+
+  {% endblock title %}
+
+  {% block js %}
+  
+  {% endblock %}
+    
+  {% block content %}
+  <div class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Galería de imágenes -->
+      <div class="space-y-4">
+        <div class="aspect-square relative overflow-hidden rounded-lg">
+          <img src="1-42.png" alt="Smartphone TechPro X1 128GB" class="w-full h-full object-cover" />
+        </div>
+      </div>
+  
+      <!-- Información del producto -->
+      <div class="space-y-6">
+        <div>
+          <h1 class="text-2xl font-bold mt-2">Smartphone TechPro X1 128GB</h1>
+        </div>
+  
+        <div>
+          <span class="text-3xl font-semibold">$499.99</span>
+          <div class="flex items-center mt-2">
+            <span class="text-lg line-through text-gray-400">$599.99</span>
+            <span class="ml-2 bg-green-500 text-white py-1 px-2 rounded">17% OFF</span>
+          </div>
+        </div>
+  
+        <div class="space-y-4">
+          <button class="w-full bg-blue-600 text-white py-2 px-4 rounded flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A2 2 0 013 15.382V5.618a2 2 0 011.553-1.894l5-1.25A2 2 0 0111 4.618V19.38a2 2 0 01-1.553 1.894l-5 1.25A2 2 0 013 21.618V10m6 10l6-3.447M21 14.618a2 2 0 00-1.553-1.894l-5-1.25A2 2 0 0113 11.618V4.618a2 2 0 011.553-1.894l5-1.25A2 2 0 0121 2.618V15.382a2 2 0 01-1.553 1.894l-5 1.25a2 2 0 00-1.447 1.618V21.618a2 2 0 001.553 1.894l5 1.25A2 2 0 0121 24v-9.382z" />
+            </svg>
+            Ver ubicación
+          </button>
+  
+          <button class="w-full bg-white text-blue-600 border border-blue-600 py-2 px-4 rounded flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="mr-2 h-6 w-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+            Agregar a favoritos
+          </button>
+        </div>
+  
+        <div>
+          <h2 class="text-xl font-semibold mb-2">Descripción</h2>
+          <p class="text-gray-600">El TechPro X1 es un smartphone de última generación con una pantalla AMOLED de 6.5 pulgadas, cámara triple de 64MP y batería de larga duración.</p>
+        </div>
+  
+        <div>
+          <h2 class="text-xl font-semibold mb-2">Características principales</h2>
+          <ul class="list-disc pl-5 space-y-1">
+            <li class="text-gray-600">Pantalla AMOLED de 6.5"</li>
+            <li class="text-gray-600">Procesador Octa-core</li>
+            <li class="text-gray-600">RAM 6GB</li>
+            <li class="text-gray-600">Almacenamiento 128GB</li>
+            <li class="text-gray-600">Cámara triple 64MP + 12MP + 5MP</li>
+            <li class="text-gray-600">Batería 4500mAh</li>
+            <li class="text-gray-600">Android 12</li>
+          </ul>
+        </div>
+        
+        <button class="w-full h-9 bg-white text-blue-600 border border-blue-600 py-2 px-4 rounded flex items-center justify-center">
+          Ver más
+        </button>
+      </div>
+    </div>
+  
+    <!-- Productos relacionados -->
+    <div class="mt-12">
+      <h2 class="text-2xl font-semibold mb-4">Productos relacionados</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="p-4 border rounded-lg">
+          <div class="aspect-square relative overflow-hidden rounded-lg mb-4">
+            <img src="/placeholder.svg?height=200&width=200" alt="Funda TechPro X1" class="w-full h-full object-cover" />
+          </div>
+          <h3 class="font-semibold text-sm mb-2">Funda TechPro X1</h3>
+          <p class="text-lg font-bold">$19.99</p>
+        </div>
+        <div class="p-4 border rounded-lg">
+          <div class="aspect-square relative overflow-hidden rounded-lg mb-4">
+            <img src="/placeholder.svg?height=200&width=200" alt="Protector de pantalla" class="w-full h-full object-cover" />
+          </div>
+          <h3 class="font-semibold text-sm mb-2">Protector de pantalla</h3>
+          <p class="text-lg font-bold">$9.99</p>
+        </div>
+        <div class="p-4 border rounded-lg">
+          <div class="aspect-square relative overflow-hidden rounded-lg mb-4">
+            <img src="/placeholder.svg?height=200&width=200" alt="Cargador rápido" class="w-full h-full object-cover" />
+          </div>
+          <h3 class="font-semibold text-sm mb-2">Cargador rápido</h3>
+          <p class="text-lg font-bold">$29.99</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock %}
