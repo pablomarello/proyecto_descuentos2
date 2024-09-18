@@ -1,6 +1,7 @@
 from django import forms
-from oferente.models import Oferente
+from oferente.models import Oferente, ubicacionesComercio
 from django_recaptcha.fields import ReCaptchaField
+from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, TablaPais, TablaProvincia
 from proyecto_descuentos2.settings import RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY
 
 
@@ -52,3 +53,78 @@ def clean_cuit(self):
         if cuit and Oferente.objects.filter(cuit=cuit).exists():
             raise forms.ValidationError('Este cuit ya está registrado.')
         return cuit
+    
+    
+class UbiComercio(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(UbiComercio, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.label_suffix = ""
+            
+            if isinstance(field.widget, forms.Select):
+                field.widget.attrs.update({'class': 'form-control select2'})
+            else:
+                field.widget.attrs.update({'class': 'form-control'})
+        
+        # Cargar dinámicamente las provincias, departamentos, etc.
+        if 'pais' in self.data:
+            try:
+                pais_id = int(self.data.get('pais'))
+                self.fields['provincia'].queryset = TablaProvincia.objects.filter(pais_id_id=pais_id).order_by('nom_pcia')
+            except (ValueError, TypeError):
+                self.fields['provincia'].queryset = TablaProvincia.objects.none()
+
+        if 'provincia' in self.data:
+            try:
+                provincia_id = int(self.data.get('provincia'))
+                self.fields['departamento'].queryset = TablaDepartamento.objects.filter(provincia_id_id=provincia_id).order_by('nom_depto')
+            except (ValueError, TypeError):
+                self.fields['departamento'].queryset = TablaDepartamento.objects.none()
+
+        if 'departamento' in self.data:
+            try:
+                departamento_id = int(self.data.get('departamento'))
+                self.fields['municipio'].queryset = TablaMunicipio.objects.filter(departamento_id_id=departamento_id).order_by('nom_agl')
+            except (ValueError, TypeError):
+                self.fields['municipio'].queryset = TablaMunicipio.objects.none()
+
+        if 'municipio' in self.data:
+            try:
+                municipio_id = int(self.data.get('municipio'))
+                self.fields['localidad'].queryset = TablaLocalidad.objects.filter(municipio_id_id=municipio_id).order_by('nombre')
+            except (ValueError, TypeError):
+                self.fields['localidad'].queryset = TablaLocalidad.objects.none()
+       
+       
+       
+    class Meta:
+        model = ubicacionesComercio
+        fields = [
+            'pais', 'provincia', 'departamento', 'municipio', 'localidad',
+            'barrio', 'calle', 'altura','latitud','longitud'
+        ]
+        widgets = {
+            'pais': forms.Select(attrs={'class': 'form-control select2'}),
+            'provincia': forms.Select(attrs={'class': 'form-control select2'}),
+            'departamento': forms.Select(attrs={'class': 'form-control select2'}),
+            'municipio': forms.Select(attrs={'class': 'form-control select2'}),
+            'localidad': forms.Select(attrs={'class': 'form-control select2'}),
+            'barrio': forms.TextInput(attrs={'class':'block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
+                                              'placeholder': 'Ingrese el barrio','autocomplete': 'off'}),
+            'calle': forms.TextInput(attrs={'class':'block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
+                                                'placeholder': 'Ingrese la calle','autocomplete': 'off'}),
+            'altura': forms.TextInput(attrs={'class':'block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
+                                              'placeholder': 'Ingrese la altura','autocomplete': 'off'}),
+            'latitud': forms.HiddenInput(),
+            'longitud': forms.HiddenInput(),
+        }
+           
+            # Agrega más widgets si es necesario
+        
+
+    pais = forms.ModelChoiceField(queryset=TablaPais.objects.all(), widget=forms.Select(attrs={'class': 'form-control select2'}))
+    provincia = forms.ModelChoiceField(queryset=TablaProvincia.objects.none(), widget=forms.Select(attrs={'class': 'form-control select2'}))
+    departamento = forms.ModelChoiceField(queryset=TablaDepartamento.objects.none(), widget=forms.Select(attrs={'class': 'form-control select2'}))
+    municipio = forms.ModelChoiceField(queryset=TablaMunicipio.objects.none(), widget=forms.Select(attrs={'class': 'form-control select2'}))
+    localidad = forms.ModelChoiceField(queryset=TablaLocalidad.objects.none(), widget=forms.Select(attrs={'class': 'form-control select2'}))
+    

@@ -1,15 +1,16 @@
-
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Permission
 from persona.models import Persona
-from django.core.validators import RegexValidator
+from django.utils import timezone
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
+# Create your models here.
 
 #validacion_usuario=RegexValidator(
  #   regex=r'^[a-zA-Z0-9]{4,15}*$',
   #  message='Introduzca un nombre de usuario valido. Este solo puede incluir letras y numeros'
 #)
-
 
 class Rol(models.Model):
     id = models.AutoField(primary_key=True)
@@ -50,8 +51,10 @@ class UsuarioManager(BaseUserManager):
 
 #SE CAMBIÓ EL is_active a False! y la fecha de creacion del token
 class Usuario(AbstractBaseUser,PermissionsMixin):
-    username = models.CharField('Nombre de usuario',unique=True,max_length=50)#,validators=[validacion_usuario]
-    email = models.EmailField('Correo Electrónico',max_length=100,unique=True)
+    metodo_verificacion = models.CharField(max_length=80, default='email')
+    username = models.CharField('Nombre de usuario',unique=True,max_length=50)
+    email = models.EmailField('Correo Electrónico',max_length=100, null=True)
+    telefono=models.CharField('SU TELEFONO: ',max_length=40, null=True)
     # usuario_administrador = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -77,7 +80,36 @@ class Usuario(AbstractBaseUser,PermissionsMixin):
 
     def __str__ (self):
         return f'Usuario: {self.username}'
-    
+
+    class Meta:
+        verbose_name = 'Usuario'
+        verbose_name_plural = 'Usuarios'
+        
+        
+#AUIDITORIAS
+    # Señal para registrar el usuario que crea la cuenta
+@receiver(pre_save, sender=Usuario)
+def set_usuario_creacion(sender, instance, **kwargs):
+    if not instance.pk and hasattr(instance, '_current_user'):
+        instance.usuario_creacion = instance._current_user.id
+class ActividadUsuario(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    actividadinicio = models.DateTimeField(null=True, blank=True)
+    actividadfin = models.DateTimeField(null=True, blank=True)
+
+    # Método para registrar el inicio de sesión
+    def registrar_inicio_sesion(self):
+        self.actividadinicio = timezone.now()
+        self.save()
+
+    # Método para registrar el cierre de sesión
+    def registrar_cierre_sesion(self):
+        self.actividadfin = timezone.now()
+        self.save()
+
+    def __str__(self):
+        return f'Sesión de {self.usuario} desde {self.actividadinicio} hasta {self.actividadfin}'
+
     #para que se pueda utilizar el modelo Usuario en el admin de django
     """ def has_perm(self,perm,obj= None):
         return True """
@@ -90,6 +122,3 @@ class Usuario(AbstractBaseUser,PermissionsMixin):
     def is_staff(self):
         return self.usuario_administrador
  """
-    
-
-# Create your models here.

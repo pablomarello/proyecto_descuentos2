@@ -43,9 +43,10 @@ INSTALLED_APPS = [
     'usuario',
     'persona',
     'oferente',
+    'producto',
     'django_recaptcha',
     'django_select2',
-    
+    'django_extensions'
 ]
 
 #crispy tailwind css settings
@@ -86,30 +87,29 @@ WSGI_APPLICATION = 'proyecto_descuentos2.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-#Base de datos en Postgres
+#Base de datos DE MICA -_-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'proyecto_descuentos2',
-        'USER': 'postgres',
-        'PASSWORD': 'mm226',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'NAME': 'DB_NAME',
+        'USER': 'DB_USER',
+        'PASSWORD': 'DB_PASSWORD',
+        'HOST': 'DB_HOST',
+        'PORT': 'DB_PORT'
     }
-} 
+}  
 
-
-#Base de datos en phpMyAdmin de Alexis. NO BORRAR -_- dejar comentado.
 """ DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'proyecto_descuentos',
-        'USER': 'root',
-        'PASSWORD': 'guitarra327273',
-        'HOST': 'localhost',
-        'PORT': '3306'
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'DB_NAME',
+        'USER': 'DB_USER',
+        'PASSWORD': 'DB_PASSWORD',
+        'HOST': 'DB_HOST',
+        'PORT': 'DB_PORT',
     }
-} """
+}
+ """
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

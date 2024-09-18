@@ -1,6 +1,6 @@
 from django.db import models
 from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, TablaPais, TablaProvincia
-from usuario.models import Usuario
+from usuario.models import Usuario, Rol
 
 class Oferente(models.Model):
     nombrecomercio = models.CharField(db_column='nombreComercio', max_length=30)  # Field name made lowercase.
@@ -8,7 +8,6 @@ class Oferente(models.Model):
     categoria=models.CharField(max_length=25, null=True, blank=True)
     id_usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='id_usuario',null=True)
     fecha_creacion= models.DateTimeField(auto_now_add=True,null=True,blank=True)
-    usuario_creacion= models.PositiveIntegerField(null=True,blank=True)
     habilitado = models.BooleanField(default=True)
     eliminado = models.BooleanField(default=False)
     fecha_eliminacion= models.DateTimeField(null=True,blank=True)
@@ -20,6 +19,8 @@ class Oferente(models.Model):
     class Meta:
         managed = True
         db_table = 'oferente'
+
+
 
 class ubicacionesComercio(models.Model):
     comercio_id=models.OneToOneField(Oferente,blank=True,null=True,on_delete=models.CASCADE,related_name='ubicaion',db_column="identificacion")

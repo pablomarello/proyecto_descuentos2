@@ -1,5 +1,3 @@
-
-
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from . import views
@@ -12,6 +10,5 @@ urlpatterns = [
     path('ajax/load-deptos/', views.load_deptos, name='ajax_load_deptos'),
     path('ajax/load-municipios/', views.load_municipios, name='ajax_load_municipios'),
     path('ajax/load-localidad/', views.load_localidad, name='ajax_load_localidad'),
-    
-    
+    path('ajax/cordenadas_localidades/', views.cordenadas_localidades, name='ajax_cordenadas_localidades'),
 ]
