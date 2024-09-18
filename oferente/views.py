@@ -19,6 +19,7 @@ afip = Afip({
 })
 
 def verificarCuit(request):
+    nombre = apellido = direccion = '-----'  # Inicializa las variables
     if request.method == 'POST':
         form = CuitForm(request.POST)
         if form.is_valid():
@@ -39,6 +40,9 @@ def verificarCuit(request):
                     
                     messages.success(request, f"ESTÁS INSCRIPTO EN AFIP. El CUIT {cuit} pertenece a {nombre} {apellido} con dirección {direccion}. Puedes continuar")
                     request.session['cuit_validado'] = cuit
+                    request.session['nombre']=nombre
+                    request.session['apellido']=apellido
+                    request.session['direccion']=direccion
                     return redirect('registrar_comercio')
                 
                 elif error_constancia:
@@ -50,6 +54,9 @@ def verificarCuit(request):
                     
                     messages.success(request, f"ESTÁS INSCRIPTO EN AFIP. El CUIT {cuit} pertenece a {nombre} {apellido} con dirección {direccion}. Puedes continuar")
                     request.session['cuit_validado'] = cuit
+                    request.session['nombre']=nombre
+                    request.session['apellido']=apellido
+                    request.session['direccion']=direccion
                     return redirect('registrar_comercio')
                 
             except Exception as e:
@@ -61,23 +68,33 @@ def verificarCuit(request):
     
     return render(request, 'oferente/verificarCuit.html', {'form': form})
 
+
 def registrarComercio(request):
+    nombre = request.session.get('nombre', '-----')
+    apellido = request.session.get('apellido', '-----')
+    direccion = request.session.get('direccion', '-----')
+    cuit=request.session.get('cuit_validado')
     if request.method == 'POST':
         cuit = request.session.get('cuit_validado')
+        nombre = request.session.get('nombre')
+        apellido = request.session.get('apellido')
+        direccion = request.session.get('direccion')
         form = OferenteForm(request.POST)
         if form.is_valid():
             oferente = form.save(commit=False)
             oferente.cuit = cuit
-            oferente.id_usuario=request.user
+            oferente.id_usuario = request.user  # Relaciona el usuario autenticado
             oferente.save()
-            messages.success(request, "El comercio ha sido registrado exitosamente.")
-            return redirect('ubicacion_comercio',oferente.pk)
+            messages.success(request, 'El comercio ha sido registrado exitosamente.')
+            return redirect('index')
         else:
             messages.error(request, "Verifique los datos ingresados.")
     else:
         form = OferenteForm()
     
-    return render(request, 'oferente/registrarComercio.html', {'form': form})
+    return render(request, 'oferente/registrarComercio.html', {'form': form,'cuit':cuit, 'nombre':nombre,'apellido':apellido,'direccion':direccion,})
+
+
 
 
 def load_provincias(request):

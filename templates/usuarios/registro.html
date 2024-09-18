@@ -1,66 +1,120 @@
 {% extends 'base.html' %}
 
+{% block title %}
+Registro Usuario
+{% endblock title %}
 
-  {% block title %}
-    Registro Usuario
-  {% endblock title %}
-    
-  {% block content %}
-  <div class="flex min-h-full flex-col justify-center px-8 py-12 lg:px-8">
-      
-    <h2 class="mt-10 text-center text-2x1 font-bold leading-9 tracking-tight text-gray-900">Registro: 2° paso</h2>
+{% block content %}
+<div class="flex min-h-full flex-col justify-center px-8 py-12 lg:px-8">
+  <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Registro: 2° paso</h2>
 
-    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-
-      {% if messages %}
-          <div id="messages" style="display: none;">
-              {% for message in messages %}
-                 <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
-              {% endfor %}
-          </div>
-      {% endif %}
-
-
-      <form class="space-y-6" method="POST">
-        <div class="mt-2">
-          {% csrf_token %}
-          {% include "registration/forms_snipets.html" %}
-          <input type="submit" value="Registrarse" class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
-        </div>
-          
-          
-            
-      </form>
-      
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+    {% if messages %}
+    <div id="messages" style="display: none;">
+      {% for message in messages %}
+      <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+      {% endfor %}
     </div>
+    {% endif %}
+
+    <form class="space-y-6" method="POST">
+      {% csrf_token %}
+      <div class="mt-2" >
+        {{ form.username.label_tag }}
+        {{ form.username }}
+      </div>
+
+      <div class="mt-2">
+        {{ form.password1.label_tag }}
+        {{ form.password1 }}
+      </div>
+
+      <div class="mt-2">
+        {{ form.password2.label_tag }}
+        {{ form.password2 }}
+      </div>
+
+      <div class="mt-2">
+        {{ form.metodo_verificacion.label_tag }}<br>
+        {{ form.metodo_verificacion }}
+      </div>
+
+      <div id="email-input" class="mt-2">
+        {{ form.email.label_tag }}
+        {{ form.email }}
+      </div>
+
+      <div id="phone-input" class="mt-2">
+        {{ form.telefono.label_tag }}
+        {{ form.telefono }}
+      </div>
+
+      <div class="mt-2">
+        {{ form.captcha.label_tag }}
+        {{ form.captcha }}
+      </div>
+      <input type="submit"  value="Registrarse"
+        class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
+    </form>
   </div>
+</div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      var messageContainer = document.getElementById('messages');
-      if (messageContainer) {
-          var messages = messageContainer.children;
-          for (var i = 0; i < messages.length; i++) {
-                    var message = messages[i].dataset.message;
-                    var tags = messages[i].dataset.tags;
-                    
+<script>
+  function togglePhoneInput() {
+    const emailOption = document.querySelector('input[name="metodo_verificacion"][value="email"]');
+    const smsOption = document.querySelector('input[name="metodo_verificacion"][value="telefono"]');
+    const emailInput = document.getElementById('email-input');
+    const phoneInput = document.getElementById('phone-input');
 
-                    
-                    if (tags.includes('danger')) {
-                        icon = 'error'; //icono de error
-                    } else if (tags.includes('success')) {
-                        icon = 'success'; //icono de correcto
-                    } else if (tags.includes('warning')) {
-                        icon = 'question'; //icono de pregunta
-                    } else if (tags.includes('info')) {
-                        icon = 'info'; //icono de info
-                    } 
+    if (smsOption.checked) {
+      phoneInput.classList.remove('hidden');
+      emailInput.classList.add('hidden');
+    } else {
+      phoneInput.classList.add('hidden');
+      emailInput.classList.remove('hidden');
+    }
+  }
 
-                    notificacionSwal('', message, icon, 'OK');
-                }
-        }
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const emailOption = document.querySelector('input[name="metodo_verificacion"][value="email"]');
+    const smsOption = document.querySelector('input[name="metodo_verificacion"][value="telefono"]');
+    emailOption.addEventListener('change', togglePhoneInput);
+    smsOption.addEventListener('change', togglePhoneInput);
+    // Initialize the visibility of the phone input based on the selected option
+    togglePhoneInput();
+
+    const telefonoInput = document.getElementById('id_telefono');
+    telefonoInput.addEventListener('input', function() {
+      if (this.value.length > 12) { // Limitar la cantidad de caracteres a 12
+        this.value = this.value.slice(0, 12); // Recortar el valor a 12 caracteres
+      }
     });
-    </script>
-    
-    
-  {% endblock %}
+
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var messageContainer = document.getElementById('messages');
+    if (messageContainer) {
+      var messages = messageContainer.children;
+      for (var i = 0; i < messages.length; i++) {
+        var message = messages[i].dataset.message;
+        var tags = messages[i].dataset.tags;
+
+        if (tags.includes('danger')) {
+          icon = 'error'; //icono de error
+        } else if (tags.includes('success')) {
+          icon = 'success'; //icono de correcto
+        } else if (tags.includes('warning')) {
+          icon = 'question'; //icono de pregunta
+        } else if (tags.includes('info')) {
+          icon = 'info'; //icono de info
+        }
+
+        notificacionSwal('', message, icon, 'OK');
+      }
+    }
+  });
+</script>
+{% endblock %}

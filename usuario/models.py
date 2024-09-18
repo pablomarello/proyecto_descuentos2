@@ -12,11 +12,9 @@ from django.dispatch import receiver
   #  message='Introduzca un nombre de usuario valido. Este solo puede incluir letras y numeros'
 #)
 
-
 class Rol(models.Model):
-    id=models.AutoField(primary_key=True)
-    rol=models.CharField(max_length=100,unique=True)
-    permisos=models.ManyToManyField(Permission,blank=True)
+    id = models.AutoField(primary_key=True)
+    rol = models.CharField('Rol', max_length=50, unique=True)
 
     class Meta:
         verbose_name= 'Rol'
@@ -26,44 +24,44 @@ class Rol(models.Model):
         return self.rol
 
 class UsuarioManager(BaseUserManager):
-    def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
+    
+    def _create_user(self,username,email,password,is_staff,is_superuser,**extra_fields):
         if not email:
-            raise ValueError("El usuario debe tener un correo electrónico")
-
-        if is_superuser:
-            rol = Rol.objects.get(rol='Administrador')
-        else:
-            rol = Rol.objects.get(rol='Ahorrista')
-
+            raise ValueError('El usuario deber tener un correo electrónico!')
+        
         user = self.model(
-            username=username,
-            email=self.normalize_email(email),
-            is_staff=is_staff,
-            is_superuser=is_superuser,
-            rolid=rol,
+            username = username,
+            email = self.normalize_email(email),
+            is_staff= is_staff,
+            is_superuser = is_superuser,
             **extra_fields
         )
         user.set_password(password)
-        user.save(using=self._db)
+        user.save(using=self.db)
         return user
+    #crear usuario basico
+    def create_user(self, username, email,is_staff, password=None, **extra_fields):
+        return self._create_user(username, email, password,is_staff, False, **extra_fields)
+    #crear usuario administrador
+    def create_superuser(self,username,email,password = None, **extra_fields):
+        return self._create_user(username, email, password, True, True, **extra_fields)
         
-    def create_user(self, username, email, is_staff, password=None, **extra_fields):
-        return self._create_user(username, email, password, is_staff, False, **extra_fields)
-
-    def create_superuser(self, username, email, password=None, **extra_fields):
-        return self._create_user(username, email, password, True, True, **extra_fields) 
 
 
 
 #SE CAMBIÓ EL is_active a False! y la fecha de creacion del token
 class Usuario(AbstractBaseUser,PermissionsMixin):
-    username = models.CharField('Nombre de usuario',unique=True,max_length=50)#,validators=[validacion_usuario]
-    email = models.EmailField('Correo Electrónico',max_length=100,unique=True)
+    metodo_verificacion = models.CharField(max_length=80, default='email')
+    username = models.CharField('Nombre de usuario',unique=True,max_length=50)
+    email = models.EmailField('Correo Electrónico',max_length=100, null=True)
+    telefono=models.CharField('SU TELEFONO: ',max_length=40, null=True)
     # usuario_administrador = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     token= models.CharField(max_length=30,null=True,blank=True)
     fecha_creacion_token= models.DateTimeField(auto_now_add=True, null=True)
+    actividad_inicio= models.DateTimeField(null=True,blank=True)
+    actividad_fin = models.DateTimeField(null=True,blank=True)
     fecha_creacion= models.DateTimeField(auto_now_add=True,null=True,blank=True)
     usuario_creacion= models.PositiveIntegerField(null=True,blank=True)
     eliminado = models.BooleanField(default=False)
@@ -86,7 +84,9 @@ class Usuario(AbstractBaseUser,PermissionsMixin):
     class Meta:
         verbose_name = 'Usuario'
         verbose_name_plural = 'Usuarios'
-    
+        
+        
+#AUIDITORIAS
     # Señal para registrar el usuario que crea la cuenta
 @receiver(pre_save, sender=Usuario)
 def set_usuario_creacion(sender, instance, **kwargs):

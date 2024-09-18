@@ -8,7 +8,6 @@ class Oferente(models.Model):
     categoria=models.CharField(max_length=25, null=True, blank=True)
     id_usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='id_usuario',null=True)
     fecha_creacion= models.DateTimeField(auto_now_add=True,null=True,blank=True)
-    usuario_creacion= models.PositiveIntegerField(null=True,blank=True)
     habilitado = models.BooleanField(default=True)
     eliminado = models.BooleanField(default=False)
     fecha_eliminacion= models.DateTimeField(null=True,blank=True)
@@ -21,19 +20,7 @@ class Oferente(models.Model):
         managed = True
         db_table = 'oferente'
 
-# Sobrescribimos el método save para cambiar el rol del usuario a 'Oferente'
-    def save(self, *args, **kwargs):
-        if self.pk is None:
-            super().save(*args, **kwargs)
-            try:
-                rol_oferente = Rol.objects.get(rol='Oferente')
-                usuario = self.id_usuario
-                usuario.rol_id = rol_oferente
-                usuario.save()
-            except Rol.DoesNotExist:
-                raise ValueError("El rol 'Oferente' no existe. Debe crearse primero.")
-        else:
-            super().save(*args, **kwargs)
+
 
 class ubicacionesComercio(models.Model):
     comercio_id=models.OneToOneField(Oferente,blank=True,null=True,on_delete=models.CASCADE,related_name='ubicaion',db_column="identificacion")

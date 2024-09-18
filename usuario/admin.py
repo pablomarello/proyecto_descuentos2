@@ -3,11 +3,10 @@ from usuario.models import Usuario, Rol, ActividadUsuario
 
 # Register your models here.
 
+
 admin.site.register(Usuario)
-@admin.register(Rol)
-class RolaAdmin(admin.ModelAdmin):
-    list_display = ('rol',)
-    filter_horizontal = ('permisos',)
+admin.site.register(Rol)
+# Register your models here.
 
 
 class ActividadUsuarioAdmin(admin.ModelAdmin):
