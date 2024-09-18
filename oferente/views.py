@@ -86,7 +86,7 @@ def registrarComercio(request):
             oferente.id_usuario = request.user  # Relaciona el usuario autenticado
             oferente.save()
             messages.success(request, 'El comercio ha sido registrado exitosamente.')
-            return redirect('index')
+            return redirect('ubicacion_comercio',comercio_id=oferente.pk)
         else:
             messages.error(request, "Verifique los datos ingresados.")
     else:

@@ -91,11 +91,11 @@ WSGI_APPLICATION = 'proyecto_descuentos2.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'DB_NAME',
-        'USER': 'DB_USER',
-        'PASSWORD': 'DB_PASSWORD',
-        'HOST': 'DB_HOST',
-        'PORT': 'DB_PORT'
+        'NAME': 'proyecto_descuentos2',
+        'USER': 'postgres',
+        'PASSWORD': 'mm226',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }  
 
