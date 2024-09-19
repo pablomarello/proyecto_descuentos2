@@ -5,6 +5,7 @@ from django.contrib import messages
 from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.fields import ReCaptchaField
 from django.contrib.auth import authenticate
+from proyecto_descuentos2.settings import RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY
 
 
 
@@ -12,7 +13,10 @@ from django.contrib.auth import authenticate
 
 
 class UsuarioCreationForm(UserCreationForm):
-    captcha=ReCaptchaField()
+    captcha  =  ReCaptchaField ( 
+        public_key =RECAPTCHA_PUBLIC_KEY, 
+        private_key = RECAPTCHA_PRIVATE_KEY,
+    )
     ENVIO_CHOICES = [
         ('email', 'Email'),
         ('telefono', 'Teléfono'),
@@ -68,7 +72,10 @@ class LogeoForm(forms.Form):
     
     usuario= forms.CharField(max_length=50)
     contraseña= forms.CharField(widget=forms.PasswordInput)
-    captcha = ReCaptchaField()
+    captcha  =  ReCaptchaField ( 
+        public_key =RECAPTCHA_PUBLIC_KEY, 
+        private_key = RECAPTCHA_PRIVATE_KEY,
+    )
 
     class Meta():
         model = Usuario

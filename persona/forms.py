@@ -7,9 +7,15 @@ from  django_recaptcha.widgets  import  ReCaptchaV2Invisible
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
 from django_select2 import forms as s2forms
+from proyecto_descuentos2.settings import RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY
+
+
 
 class FormPersona(forms.ModelForm):
-    captcha= ReCaptchaField()
+    captcha  =  ReCaptchaField ( 
+        public_key =RECAPTCHA_PUBLIC_KEY, 
+        private_key = RECAPTCHA_PRIVATE_KEY,
+    )
     def __init__(self, *args, **kwargs):
         super(FormPersona, self).__init__(*args, **kwargs)
         for field in self.fields.values():
