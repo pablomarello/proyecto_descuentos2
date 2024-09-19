@@ -91,11 +91,11 @@ WSGI_APPLICATION = 'proyecto_descuentos2.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'proyecto_descuentos2',
-        'USER': 'postgres',
-        'PASSWORD': 'mm226',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }  
 
@@ -194,6 +194,10 @@ EMAIL_HOST_PASSWORD=config("EMAIL_HOST_PASSWORD")
 SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
 
 
-RECAPTCHA_PUBLIC_KEY = '6LdBNegpAAAAAARTf3pLUTxikRi6B3XD7delajxJ'
-RECAPTCHA_PRIVATE_KEY = '6LdBNegpAAAAAMaay4f5ZRre8okm7n3IITJT3Wnj'
+RECAPTCHA_PUBLIC_KEY = config('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = config('RECAPTCHA_PRIVATE_KEY')
 RECAPTCHA_USE_SSL = True
+
+
+#datos de los sms
+Apy_telefono=config('apykey')
