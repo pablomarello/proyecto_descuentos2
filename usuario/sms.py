@@ -2,10 +2,11 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 import requests
 from urllib.parse import urlencode
+from proyecto_descuentos2.settings import Apy_telefono
 
 @csrf_exempt
 def send_sms(numero, texto):
-    apikey = "z64gpchdcisu6ap7hbfmdwyufsx37e04vxtc6hhn292mfgwunntj5ach5ctynrjoqlrt0zt0c8yppmmgz0pudww3d1xpeyf34htc"
+    apikey = Apy_telefono
 
     # Construye la URL
     base_url = "http://servicio.smsmasivos.com.ar/enviar_sms.asp"

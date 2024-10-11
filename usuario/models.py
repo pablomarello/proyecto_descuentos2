@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
+
 # Create your models here.
 
 #validacion_usuario=RegexValidator(
@@ -44,8 +45,17 @@ class UsuarioManager(BaseUserManager):
     def create_user(self, username, email,is_staff, password=None, **extra_fields):
         return self._create_user(username, email, password,is_staff, False, False, **extra_fields)
     #crear usuario administrador
+<<<<<<< HEAD
     def create_superuser(self,username,email,password = None, **extra_fields):
         return self._create_user(username, email, password, True, True, True, **extra_fields)
+=======
+     # Crear superusuario
+    def create_superuser(self, username, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)  # Aseguramos que el superusuario esté activo
+        return self._create_user(username, email, password, **extra_fields)
+>>>>>>> 4352bc8c295bbbe1393e1d3b4c22ab23e6f1aea1
         
 
 
