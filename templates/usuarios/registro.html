@@ -5,59 +5,99 @@ Registro Usuario
 {% endblock title %}
 
 {% block content %}
-<div class="flex min-h-full flex-col justify-center px-8 py-12 lg:px-8">
-  <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Registro: 2° paso</h2>
-
-  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-    {% if messages %}
-    <div id="messages" style="display: none;">
-      {% for message in messages %}
-      <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
-      {% endfor %}
-    </div>
-    {% endif %}
-
-    <form class="space-y-6" method="POST">
-      {% csrf_token %}
-      <div class="mt-2" >
-        {{ form.username.label_tag }}
-        {{ form.username }}
-      </div>
-
-      <div class="mt-2">
-        {{ form.password1.label_tag }}
-        {{ form.password1 }}
-      </div>
-
-      <div class="mt-2">
-        {{ form.password2.label_tag }}
-        {{ form.password2 }}
-      </div>
-
-      <div class="mt-2">
-        {{ form.metodo_verificacion.label_tag }}<br>
-        {{ form.metodo_verificacion }}
-      </div>
-
-      <div id="email-input" class="mt-2">
-        {{ form.email.label_tag }}
-        {{ form.email }}
-      </div>
-
-      <div id="phone-input" class="mt-2">
-        {{ form.telefono.label_tag }}
-        {{ form.telefono }}
-      </div>
-
-      <div class="mt-2">
-        {{ form.captcha.label_tag }}
-        {{ form.captcha }}
-      </div>
-      <input type="submit"  value="Registrarse"
-        class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
-    </form>
-  </div>
+{% if messages %}
+<div id="messages" style="display: none;">
+  {% for message in messages %}
+  <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+  {% endfor %}
 </div>
+{% endif %}
+<br>
+
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+</head>
+
+
+<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+  <form class="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl space-y-4 mx-auto" method="POST">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Creá tu usuario y contraseña</h2>
+      <p class="mt-2 text-center text-sm text-gray-600">Paso <span id="currentStep">3</span> de 3</p>
+    </div>
+    <div class="relative pt-1">
+      <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
+        <div id="progressBar"
+          class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500 transition-all duration-500 ease-in-out"
+          style="width: 80%"></div>
+      </div>
+    </div>
+    {% csrf_token %}
+
+    <!-- Usuario -->
+    <div class="flex items-center">
+      <div class="flex-1">
+        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+        <input id="username" name="username" type="text" required
+          class="form-control px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+    </div>
+
+    <!-- Contraseña 1 -->
+    <div class="flex items-center">
+      <div class="flex-1">
+        <label for="password1" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+        <input id="password1" name="password1" type="password" required
+          class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+    </div>
+
+    <!-- Contraseña 2 -->
+    <div class="flex items-center">
+      <div class="flex-1">
+        <label for="password2" class="block text-sm font-medium text-gray-700 mb-1">Repite la contraseña</label>
+        <input id="password2" name="password2" type="password" required
+          class="form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      </div>
+    </div>
+
+    <!-- Mensaje de error -->
+    <div id="passwordError" class="text-red-500 mt-2 hidden">Las contraseñas no coinciden.</div>
+    <div class="mt-2">
+      {{ form.metodo_verificacion.label_tag }}<br>
+      {{ form.metodo_verificacion }}
+    </div>
+
+    <div id="email-input" class="mt-2">
+      {{ form.email.label_tag }}
+      {{ form.email }}
+    </div>
+
+    <div id="phone-input" class="mt-2">
+      {{ form.telefono.label_tag }}
+      {{ form.telefono }}
+    </div>
+
+    <div class="mt-2">
+      {{ form.captcha.label_tag }}
+      {{ form.captcha }}
+    </div>
+    <div class="flex justify-between mt-4">
+      <button type="button" id=""
+        class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none">
+        Anterior
+      </button>
+      <button type="submit" id=""
+        class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none btn btn-primary">
+        Siguiente
+      </button>
+    </div>
+  </form>
+</div>
+
+
 
 <script>
   function togglePhoneInput() {
@@ -84,7 +124,7 @@ Registro Usuario
     togglePhoneInput();
 
     const telefonoInput = document.getElementById('id_telefono');
-    telefonoInput.addEventListener('input', function() {
+    telefonoInput.addEventListener('input', function () {
       if (this.value.length > 12) { // Limitar la cantidad de caracteres a 12
         this.value = this.value.slice(0, 12); // Recortar el valor a 12 caracteres
       }
@@ -116,5 +156,28 @@ Registro Usuario
       }
     }
   });
+  /* validar contraseñas */
+  document.addEventListener("DOMContentLoaded", function () {
+    const password1 = document.getElementById('password1');
+    const password2 = document.getElementById('password2');
+    const passwordError = document.getElementById('passwordError');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function checkPasswords() {
+      if (password1.value !== password2.value || !password1.value || !password2.value) {
+        passwordError.classList.remove('hidden'); // Muestra el mensaje de error
+        submitBtn.disabled = true; // Deshabilita el botón
+      } else {
+        passwordError.classList.add('hidden'); // Oculta el mensaje de error
+        submitBtn.disabled = false; // Habilita el botón
+      }
+    }
+
+    // Escuchar cambios en los campos de contraseña
+    password1.addEventListener('input', checkPasswords);
+    password2.addEventListener('input', checkPasswords);
+  });
 </script>
+<!-- Scripts de Bootstrap -->
+
 {% endblock %}

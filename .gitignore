@@ -9,10 +9,7 @@
 
 .idea/
 .idea 
-.crt
-.pem
-.key
-.csr
+
 
 # Distribution / packaging
 .Python
