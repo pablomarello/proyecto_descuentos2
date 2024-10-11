@@ -25,6 +25,7 @@ def verificarCuit(request):
         if form.is_valid():
             cuit = form.cleaned_data['cuit']
             try:
+                print("error")
                 # Verificar si el CUIT está inscrito en el padrón de AFIP
                 res = afip.RegisterInscriptionProof.getTaxpayerDetails(cuit)
                 print(res)

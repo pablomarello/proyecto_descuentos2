@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de API</title>
+</head>
+<body>
+    <form method="POST" action="{% url 'your_view_name' %}">
+        {% csrf_token %}
+        <label for="product-list">Select a product:</label>
+        <select id="product-list" name="product">
+          <!-- Aquí se llenarán los productos con JavaScript -->
+        </select>
+        
+        <input type="submit" value="Submit">
+      </form>
+      
+      <script>
+        fetch('https://fakestoreapi.com/products')
+          .then(res => res.json())
+          .then(json => {
+            const productList = document.getElementById('product-list');
+            json.forEach(product => {
+              const option = document.createElement('option');
+              option.value = product.id;
+              option.text = product.title;
+              productList.appendChild(option);
+            });
+          })
+          .catch(error => console.error('Error fetching products:', error));
+      </script>
+      
+    
+</body>
+</html>

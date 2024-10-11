@@ -1,59 +1,110 @@
 {% extends 'base.html' %}
 
 
-  {% block title %}
-    Login
-  {% endblock title %}
-  
-  
-  
+{% block title %}
+Login
+{% endblock title %}
 
-  {% block content %}
-  <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-    <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Ingresa el código</h2>
 
-    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
 
-      {% if messages %}
-            <div id="messages" style="display: none;">
-                {% for message in messages %}
-                    <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    <form action="{% url 'token_input' %}" method="post">
+
+{% block content %}
+
+<div class="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+    {% if messages %}
+    <div id="messages" style="display: none;">
+        {% for message in messages %}
+        <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form id="tokenForm" action="{% url 'token_input' %}" class="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl space-y-4 mx-auto" method="post">
         {% csrf_token %}
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Ingresá el token que te enviamos</h2>
+            <p class="mt-2 text-center text-sm text-gray-600">Paso <span id="currentStep">4</span> de 4</p>
+        </div>
+        <div class="relative pt-1">
+            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
+                <div id="progressBar" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500 transition-all duration-500 ease-in-out" style="width: 100%"></div>
+            </div>
+        </div>
         <label for="token">Ingrese el Token de Verificación:</label><br>
-        <input type="text" id="token" name="token" required  autocomplete="off"><br><br>
-        <button class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600" type="submit">Verificar</button>
+        <div class="flex justify-between space-x-2 mt-4">
+            <input type="text" id="digit1" maxlength="1" class="w-12 h-12 text-center text-lg border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" autofocus required>
+            <input type="text" id="digit2" maxlength="1" class="w-12 h-12 text-center text-lg border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+            <input type="text" id="digit3" maxlength="1" class="w-12 h-12 text-center text-lg border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+            <input type="text" id="digit4" maxlength="1" class="w-12 h-12 text-center text-lg border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+            <input type="text" id="digit5" maxlength="1" class="w-12 h-12 text-center text-lg border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+            <input type="text" id="digit6" maxlength="1" class="w-12 h-12 text-center text-lg border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+            <input type="hidden" id="token" name="token">
+        </div>
+        <div class="flex justify-between mt-4">
+            <button type="button" class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none">Anterior</button>
+            <button type="submit" class="py-2 px-12 border border-transparent shadow-lg text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none">Finalizar</button>
+        </div>
     </form>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-          var messageContainer = document.getElementById('messages');
-          if (messageContainer) {
-              var messages = messageContainer.children;
-              for (var i = 0; i < messages.length; i++) {
-                        var message = messages[i].dataset.message;
-                        var tags = messages[i].dataset.tags;
-                        
-    
-                        
-                        if (tags.includes('danger')) {
-                            icon = 'error'; //icono de error
-                        } else if (tags.includes('success')) {
-                            icon = 'success'; //icono de correcto
-                        } else if (tags.includes('warning')) {
-                            icon = 'question'; //icono de pregunta
-                        } else if (tags.includes('info')) {
-                            icon = 'info'; //icono de info
-                        } 
-    
-                        notificacionSwal('', message, icon, 'OK');
-                    }
-            }
+<Script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('input[type="text"]');
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', () => {
+                if (input.value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();  // Mueve el foco al siguiente campo
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && input.value === '' && index > 0) {
+                    inputs[index - 1].focus();  // Retrocede al campo anterior si se presiona Backspace
+                }
+            });
         });
-        </script>
+    });
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        const tokenForm = document.getElementById('tokenForm');
+        const token1 = document.getElementById('digit1');
+        const token2 = document.getElementById('digit2');
+        const token3 = document.getElementById('digit3');
+        const token4 = document.getElementById('digit4');
+        const token5 = document.getElementById('digit5');
+        const token6 = document.getElementById('digit6');
+        const tokenHidden = document.getElementById('token');
+    
+        // Escuchar el envío del formulario
+        tokenForm.addEventListener('submit', function (e) {
+            // Concatenar los valores de los seis inputs
+            const fullToken = token1.value + token2.value + token3.value + token4.value + token5.value + token6.value;
+    
+            // Asignar el valor concatenado al input oculto
+            tokenHidden.value = fullToken;
+        });
+    });
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        var messageContainer = document.getElementById('messages');
+        if (messageContainer) {
+            var messages = messageContainer.children;
+            for (var i = 0; i < messages.length; i++) {
+                var message = messages[i].dataset.message;
+                var tags = messages[i].dataset.tags;
+    
+                if (tags.includes('danger')) {
+                    icon = 'error'; // Icono de error
+                } else if (tags.includes('success')) {
+                    icon = 'success'; // Icono de éxito
+                } else if (tags.includes('warning')) {
+                    icon = 'question'; // Icono de advertencia
+                } else if (tags.includes('info')) {
+                    icon = 'info'; // Icono de información
+                }
+    
+                notificacionSwal('', message, icon, 'OK');
+            }
+        }
+    });
+    
+    </script>
 
     {% endblock %}
-
