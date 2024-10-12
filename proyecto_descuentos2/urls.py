@@ -28,4 +28,6 @@ urlpatterns = [
     path("select2/", include("django_select2.urls")),
     path('oferente/',include('oferente.urls')),
     path('productos/',include('producto.urls')),
+    path('oferta/',include('oferta.urls')),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -6,8 +6,11 @@
 
 {% block content %}
 <div class="flex justify-start mb-6">
-  <a href="#" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600">Crear una oferta</a>
-  <a href="#" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600">Añadir otro comercio</a>
+
+  <a href="{% url 'crear_oferta' %}" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600">Crear una oferta</a>
+  <a href="{% url 'mis_ofertas' %}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600">Mis ofertas</a>
+  <a href="{% url 'verificar_cuit' %}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600">Añadir otro comercio</a>
+
 </div>
 <table class="min-w-full divide-y divide-gray-200">
   <thead class="bg-gray-50">
