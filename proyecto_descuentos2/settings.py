@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'persona',
     'oferente',
     'producto',
+    'oferta',
     'django_recaptcha',
     'django_select2',
     'django_extensions'

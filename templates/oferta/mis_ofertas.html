@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <h1 class="text-3xl font-bold mb-6">MIS OFERTAS</h1>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for oferta in ofertas %}
+        <div class="bg-white p-5 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-2">{{ oferta.titulo }}</h2>
+            <p class="text-gray-600 mb-4">{{ oferta.descripcion }}</p>
+            
+            <!-- Mostrar productos -->
+            <div class="mb-2">
+                <h3 class="font-bold text-gray-700">Productos:</h3>
+                <ul class="list-disc pl-5">
+                    {% for producto in oferta.productos.all %}
+                    <li>{{ producto.nombre }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <!-- Mostrar oferente -->
+            <div class="mb-2">
+                <p class="font-bold text-gray-700">Comercio:</p>
+                <p>{{ oferta.oferente.nombrecomercio }}</p>
+            </div>
+
+            <!-- Mostrar precios -->
+            <div class="flex justify-between items-center mb-4">
+                <p class="text-gray-600 line-through">Precio normal: ${{ oferta.precio_normal }}</p>
+                <p class="text-red-500 font-bold">Oferta: ${{ oferta.precio_oferta }}</p>
+            </div>
+
+            <!-- Mostrar fechas de la oferta -->
+            <div class="text-sm text-gray-500">
+                <p>Desde: {{ oferta.fecha_inicio|date:"d/m/Y"}}</p>
+                <p>Hasta: {{ oferta.fecha_fin|date:"d/m/Y"}}</p>
+            </div>
+
+            <!-- Botón para ver más detalles (si es necesario) -->
+           
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

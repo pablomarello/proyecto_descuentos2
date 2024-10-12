@@ -25,4 +25,11 @@ urlpatterns = [
     path('persona/',include('persona.urls')),
     path("select2/", include("django_select2.urls")),
     path('oferente/',include('oferente.urls')),
+<<<<<<< Updated upstream
 ]
+=======
+    path('productos/',include('producto.urls')),
+    path('oferta/',include('oferta.urls')),
+
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+>>>>>>> Stashed changes

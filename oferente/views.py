@@ -14,7 +14,7 @@ afip = Afip({
     "CUIT": 23395413929,
     "cert": cert,
     "key": key,
-    "access_token": "nAHMdh4PFKr4JXcyNy751LloC7UUCdlS8AGpXaUNmUGzhrWVbP37zwZAN4RnbxVt",
+    "access_token": "mBjEAlAOUDKtg2HpFFHD7wrnuBcEGlSHRQV2iEdUCjkRVdo0PVtDTo3M1DV8pLkv",
     "production": True
 })
 
@@ -24,8 +24,12 @@ def verificarCuit(request):
         form = CuitForm(request.POST)
         if form.is_valid():
             cuit = form.cleaned_data['cuit']
+            # Verificar si el CUIT ya está registrado en la base de datos
+            if Oferente.objects.filter(cuit=cuit).exists():
+                messages.error(request, f"El CUIT {cuit} ya está registrado.")
+                return render(request, 'oferente/verificarCuit.html', {'form': form})
             try:
-                print("error")
+                
                 # Verificar si el CUIT está inscrito en el padrón de AFIP
                 res = afip.RegisterInscriptionProof.getTaxpayerDetails(cuit)
                 print(res)

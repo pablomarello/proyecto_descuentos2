@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<div class="max-w-2xl mx-auto bg-white p-5 rounded-md shadow-md">
+    {% if messages %}
+    <div id="messages" style="display: none;">
+        {% for message in messages %}
+        <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <h1 class="text-2xl font-bold mb-4">Publicar nueva oferta</h1>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Campo para el título -->
+        <div class="mb-4">
+            <label for="titulo" class="block text-sm font-medium text-gray-700">Título de la oferta</label>
+            <input type="text" name="titulo" id="titulo" value="{{ form.titulo.value|default_if_none:'' }}"
+                class="mt-1 p-2 block w-full border rounded-md" placeholder="Título de la oferta">
+            {{ form.titulo.errors }}
+        </div>
+
+        <!-- Campo para la descripción -->
+        <div class="mb-4">
+            <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+            <textarea name="descripcion" id="descripcion" class="mt-1 p-2 block w-full border rounded-md"
+                placeholder="Descripción de la oferta">{{ form.descripcion.value|default_if_none:'' }}</textarea>
+            {{ form.descripcion.errors }}
+        </div>
+
+        <!-- Campo para el precio normal -->
+        <div class="mb-4">
+            <label for="precio_normal" class="block text-sm font-medium text-gray-700">Precio normal</label>
+            <input type="number" name="precio_normal" id="precio_normal"
+                value="{{ form.precio_normal.value|default_if_none:'' }}"
+                class="mt-1 p-2 block w-full border rounded-md" placeholder="Precio normal">
+            {{ form.precio_normal.errors }}
+        </div>
+
+        <!-- Campo para el precio de oferta -->
+        <div class="mb-4">
+            <label for="precio_oferta" class="block text-sm font-medium text-gray-700">Precio de oferta</label>
+            <input type="number" name="precio_oferta" id="precio_oferta"
+                value="{{ form.precio_oferta.value|default_if_none:'' }}"
+                class="mt-1 p-2 block w-full border rounded-md" placeholder="Precio de oferta">
+            {{ form.precio_oferta.errors }}
+        </div>
+
+        <!-- Selección de productos -->
+        
+        <div class="mb-4">
+            <label for="buscar_producto" class="block text-sm font-medium text-gray-700">Buscar producto</label>
+            <input type="text" id="buscar_producto" class="mt-1 p-2 block w-full border rounded-md"
+                placeholder="Escribe el nombre del producto...">
+            <div id="resultados_productos" class="mt-2 bg-white border rounded-md max-h-60 overflow-auto z-50"></div>
+        </div>
+        <!-- Contenedor para productos seleccionados -->
+        <div id="productos_seleccionados" class="mb-4 flex flex-wrap"></div>
+        <!-- Campo oculto para productos seleccionados -->
+        <input type="hidden" name="productos_seleccionados" id="productos_seleccionados_input" value="">
+
+        <!-- Selección del oferente -->
+        <div class="mb-4">
+            <label for="oferente" class="block text-sm font-medium text-gray-700">Selecciona el comercio</label>
+            {{ form.oferente }}
+            {{ form.oferente.errors }}
+        </div>
+
+        <!-- Campo para la fecha de inicio -->
+        <div class="mb-4">
+            <label for="fecha_inicio" class="block text-sm font-medium text-gray-700">Fecha de inicio</label>
+            <input type="date" name="fecha_inicio" id="fecha_inicio"
+                value="{{ form.fecha_inicio.value|default_if_none:'' }}"
+                class="mt-1 p-2 block w-full border rounded-md">
+            {{ form.fecha_inicio.errors }}
+        </div>
+
+        <!-- Campo para la fecha de fin -->
+        <div class="mb-4">
+            <label for="fecha_fin" class="block text-sm font-medium text-gray-700">Fecha de fin</label>
+            <input type="date" name="fecha_fin" id="fecha_fin" value="{{ form.fecha_fin.value|default_if_none:'' }}"
+                class="mt-1 p-2 block w-full border rounded-md">
+            {{ form.fecha_fin.errors }}
+        </div>
+
+        <!-- Botón de envío -->
+        <div class="flex justify-end">
+            <button type="submit" class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none btn btn-primary">Publicar
+                oferta</button>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Array para almacenar los productos seleccionados
+        var productosSeleccionados = [];
+
+        // Búsqueda de productos mediante AJAX
+        $('#buscar_producto').on('input', function () {
+            var query = $(this).val();
+            if (query) {
+                $.ajax({
+                    url: '/oferta/buscar-productos/',
+                    data: {
+                        'query': query
+                    },
+                    success: function (data) {
+                        $('#resultados_productos').html(''); // Limpiar resultados anteriores
+                        for (var i = 0; i < data.length; i++) {
+                            $('#resultados_productos').append('<div class="producto-item p-2 cursor-pointer hover:bg-gray-100" data-id="' + data[i].id + '">' + data[i].nombre + '</div>');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error en la solicitud AJAX:', status, error);
+                    }
+                });
+            } else {
+                $('#resultados_productos').html(''); // Limpiar si no hay texto
+            }
+        });
+
+        // Evento para seleccionar un producto
+        $(document).on('click', '.producto-item', function () {
+            var productoId = $(this).data('id');
+
+            // Verifica si el producto ya está seleccionado
+            if (!productosSeleccionados.includes(productoId)) {
+                productosSeleccionados.push(productoId); // Agrega el ID del producto al array
+                mostrarProductosSeleccionados();
+            }
+
+            $('#buscar_producto').val(''); // Limpiar el campo de búsqueda
+            $('#resultados_productos').html(''); // Limpiar resultados
+        });
+
+        // Función para mostrar productos seleccionados
+        function mostrarProductosSeleccionados() {
+            $('#productos_seleccionados').html(''); // Limpiar el contenedor antes de mostrar
+            var ids = []; // Array para almacenar los IDs de los productos seleccionados
+            for (var i = 0; i < productosSeleccionados.length; i++) {
+                var productoId = productosSeleccionados[i];
+                ids.push(productoId); // Agrega el ID al array de IDs
+                $('#productos_seleccionados').append(`
+                    <div class="bg-gray-200 p-2 rounded-md flex items-center mr-2 mb-2" data-id="${productoId}">
+                        <span>${productoId} (Nombre del producto)</span>
+                        <button class="eliminar-producto ml-2 text-red-600">x</button>
+                    </div>
+                `);
+            }
+            // Actualizar el valor del campo oculto con los IDs separados por comas
+            $('#productos_seleccionados_input').val(ids.join(','));
+        }
+
+        // Evento para eliminar un producto seleccionado
+        $(document).on('click', '.eliminar-producto', function () {
+            var productoId = $(this).parent().data('id');
+            productosSeleccionados = productosSeleccionados.filter(function (id) {
+                return id !== productoId; // Filtra el ID que se está eliminando
+            });
+            mostrarProductosSeleccionados(); // Actualiza la visualización
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        var messageContainer = document.getElementById('messages');
+        if (messageContainer) {
+            var messages = messageContainer.children;
+            for (var i = 0; i < messages.length; i++) {
+                var message = messages[i].dataset.message;
+                var tags = messages[i].dataset.tags;
+                var icon = 'info'; // Default icon
+
+                if (tags.includes('danger') || tags.includes('error')) {
+                    icon = 'error'; // Error icon
+                } else if (tags.includes('success')) {
+                    icon = 'success'; // Success icon
+                } else if (tags.includes('warning')) {
+                    icon = 'warning'; // Warning icon
+                } else if (tags.includes('info')) {
+                    icon = 'info'; // Info icon
+                }
+
+                Swal.fire({
+                    text: message,
+                    icon: icon,
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+    });
+</script>
+
+{% endblock %}
