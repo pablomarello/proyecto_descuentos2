@@ -152,3 +152,17 @@ def ubicacion_comercio(request,comercio_id):
     else:
         form = UbiComercio()
     return render(request, 'oferente/ubicaciones_comercio.html', {'form': form})
+
+def lista_comercio(request):
+    if request.user.is_authenticated:
+        # Filtrar los comercios asociados al usuario logueado
+        comercios = Oferente.objects.filter(id_usuario=request.user)
+        return render(request, 'oferente/lista_comercios.html', {'comercios': comercios})
+    else:
+        return redirect('login')
+    
+def perfil_comercio(request, comercio_id):
+        comercio = get_object_or_404(Oferente, id=comercio_id)
+
+        return render(request, 'oferente/perfil_comercio.html', {'comercio': comercio})
+

@@ -3,10 +3,11 @@ from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, Ta
 from usuario.models import Usuario, Rol
 
 class Oferente(models.Model):
+
     nombrecomercio = models.CharField(db_column='nombreComercio', max_length=30)  # Field name made lowercase.
     cuit=models.BigIntegerField(null=False,unique=True,max_length=11)
     categoria=models.CharField(max_length=25, null=True, blank=True)
-    id_usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='id_usuario',null=True)
+    id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='comercios', db_column='id_usuario',null=True)
     fecha_creacion= models.DateTimeField(auto_now_add=True,null=True,blank=True)
     habilitado = models.BooleanField(default=True)
     eliminado = models.BooleanField(default=False)

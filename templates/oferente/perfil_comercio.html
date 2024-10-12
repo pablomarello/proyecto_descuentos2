@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Perfil comercio
+{% endblock title %}
+
+{% block content %}
+<h1>Perfil del Comercio</h1>
+<div class="bg-white shadow overflow-hidden sm:rounded-lg">
+  <div class="px-4 py-5 sm:px-6">
+    <h3 class="text-lg leading-6 font-medium text-gray-900">{{ comercio.nombrecomercio }}</h3>
+    <p class="mt-1 max-w-2xl text-sm text-gray-500">Información detallada del comercio.</p>
+  </div>
+  <div class="border-t border-gray-200">
+    <dl>
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">CUIT</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ comercio.cuit }}</dd>
+      </div>
+      <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Fecha de creación</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ comercio.fecha_creacion }}</dd>
+      </div>
+      <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+        <dt class="text-sm font-medium text-gray-500">Categoria</dt>
+        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ comercio.categoria }}</dd>
+      </div>
+      <!-- Agregar más campos según lo necesites -->
+    </dl>
+  </div>
+</div>
+
+{% endblock content %}
