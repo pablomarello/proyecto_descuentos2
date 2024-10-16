@@ -51,3 +51,9 @@ def mis_ofertas(request):
     
     return render(request, 'oferta/mis_ofertas.html', {'ofertas': ofertas})
 
+def ofertas(request):
+    ofertas = Oferta.objects.filter(activo=True)
+    
+    return render(request, 'index.html', {'ofertas':ofertas })
+        
+

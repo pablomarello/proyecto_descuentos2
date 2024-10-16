@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 import folium.map
 from requests import request
 
+from oferta.models import Oferta
 from usuario.sms import send_sms
 from .forms import LogeoForm
 from django.contrib.auth import authenticate,login, logout
@@ -23,8 +24,13 @@ import folium
 
 
 
+def index(request):
+    ofertas = Oferta.objects.filter(activo=True)
+    
+    return render(request, 'usuarios/index.html', {'ofertas':ofertas })
 
 class Index(TemplateView):
+    
    template_name='usuarios/index.html'
 
 

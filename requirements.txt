@@ -24,7 +24,7 @@ django-select2==8.2.1
 experta==1.9.4
 filelock==3.13.4
 folium==0.17.0
-frozendict==2.4.4
+frozendict
 html5lib==1.1
 idna==3.4
 Jinja2==3.1.4

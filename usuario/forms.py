@@ -8,21 +8,21 @@ from django.contrib.auth import authenticate
 from proyecto_descuentos2.settings import RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY
 
 
-
+"""    captcha  =  ReCaptchaField ( 
+        public_key =RECAPTCHA_PUBLIC_KEY, 
+        private_key = RECAPTCHA_PRIVATE_KEY,
+    )
+    """
     
 
 
 class UsuarioCreationForm(UserCreationForm):
-    captcha  =  ReCaptchaField ( 
-        public_key =RECAPTCHA_PUBLIC_KEY, 
-        private_key = RECAPTCHA_PRIVATE_KEY,
-    )
     ENVIO_CHOICES = [
         ('email', 'Email'),
         ('telefono', 'Teléfono'),
     ]
     
-    metodo_verificacion = forms.ChoiceField(choices=ENVIO_CHOICES, widget=forms.RadioSelect, label="Prefiero recibir el token por", initial='email')
+    metodo_verificacion = forms.ChoiceField( choices=ENVIO_CHOICES,widget=forms.RadioSelect, label="Prefiero recibir el token por", initial='email')#
     telefono = forms.IntegerField(required=False, label="Número de Teléfono", widget=forms.TextInput(attrs={
         'class': "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6",
         'autocomplete': 'off',
