@@ -190,7 +190,7 @@ EMAIL_HOST_USER=config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD=config("EMAIL_HOST_PASSWORD")
 
 #ReCaptcha
-#API_KEY = 'AIzaSyD8I6b-GtswsS4OvckuRcXwcPt60SnV2Wk'
+API_KEY = 'AIzaSyD8I6b-GtswsS4OvckuRcXwcPt60SnV2Wk'
 
 SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
 
