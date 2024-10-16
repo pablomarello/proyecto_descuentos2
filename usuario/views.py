@@ -164,7 +164,7 @@ def iniciar_sesion(request):
 def cerrar_sesion(request):
     logout(request)
     messages.success(request, 'Sesión cerrada')
-    return render(request,'base.html')
+    return redirect('login') 
 
 #cambiar contraseña
 
