@@ -1,54 +1,708 @@
 {% extends 'base.html' %}
+{% load static %}
 
-  {% block title %}
-    Index
-  {% endblock title %}
+{% block title %}
+Index
+{% endblock title %}
 
-  {% block js %}
-  
-  {% endblock %}
-    
-  {% block content %}
-    <!-- Lista de productos con descuentos -->
-  <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-    <!-- Producto 1 -->
-    {%for oferta in ofertas %}
-    <div class="-mt-4 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:flex-shrink-0">
-        <div class="mx-10 max-w-xs px-max">
-          <div class="bg-white p-6 rounded-lg shadow-md">
-            <div class="mb-2">
-              <h2 class="text-xl font-semibold mb-2">{{ oferta.titulo }}</h2>
-              <p class="text-gray-600 mb-4">{{ oferta.descripcion }}</p>
-                <h3 class="font-bold text-gray-700">Productos:</h3>
-                <ul class="list-disc pl-5">
-                    {% for producto in oferta.productos.all %}
-                    <li>{{ producto.nombre }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            
-            <!-- Mostrar oferente -->
-            <div class="mb-2">
-                <p class="font-bold text-gray-700">Comercio:</p>
-                <p>{{ oferta.oferente.nombrecomercio }}</p>
-            </div>
+{% block js %}
+<script src="{% static 'js/utils/createpromo.js' %}"></script>
+<script src="{% static 'js/utils/slider.js' %}"></script>
+<script src="{% static 'js/utils/slidercategorias.js' %}"></script>
 
-            <!-- Mostrar precios -->
-            <div class="flex justify-between items-center mb-4">
-                <p class="text-gray-600 line-through">Precio normal: ${{ oferta.precio_normal }}</p>
-                <p class="text-red-500 font-bold">Oferta: ${{ oferta.precio_oferta }}</p>
-            </div>
+{% endblock js%}
 
-            <!-- Mostrar fechas de la oferta -->
-            <div class="flex justify-between items-center mb-4">
-                <p>Desde: {{ oferta.fecha_inicio|date:"d/m/Y"}}</p>
-                <p>Hasta: {{ oferta.fecha_fin|date:"d/m/Y"}}</p>
+{% block content %}
+
+<section class="w-full ">
+    <div class="relative">
+        <div id="slider" class="overflow-hidden">
+            <div class="flex transition-transform duration-500" id="slider-inner">
+                <div class="flex-shrink-0 w-full">
+                    <img src="{% static 'images/png/slider/1.png' %}" alt="Oferta 1"
+                        class="w-full h-64 object-cover rounded-lg">
+                </div>
+                <div class="flex-shrink-0 w-full">
+                    <img src="{% static 'images/png/slider/2.png' %}" alt="Oferta 2"
+                        class="w-full h-64 object-cover rounded-lg">
+                </div>
+                <div class="flex-shrink-0 w-full">
+                    <img src="{% static 'images/png/slider/3.png' %}" alt="Oferta 3"
+                        class="w-full h-64 object-cover rounded-lg">
+                </div>
             </div>
-            <button type="submit" class="bg-red-600 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600   rounded-r px-1 py-1">Ver más</button>
-          </div>
+        </div>
+        <button id="button-prev" class="absolute left-4 top-1/2 transform -translate-y-1/2">
+            <img src="{% static 'images/svg/white/header/sidebars/atras.svg' %}" alt="" class="h-8 w-8">
+        </button>
+        <button id="button-next" class="absolute right-4 top-1/2 transform -translate-y-1/2">
+            <img src="{% static 'images/svg/white/header/sidebars/derecha2.svg' %}" alt="" class="h-8 w-8">
+        </button>
+    </div>
+</section>
+<br>
+<a href="{% url "mapa2" %}" class="items-center">Prueba</a>
+<br>
+<div class="flex justify-center items-center p-5">
+    <div class="flex flex-col sm:flex-row sm:space-x-4 overflow-x-auto w-full sm:justify-center">
+        <div id="contenedor-publicaciones" class="w-full sm:w-auto mb-2"></div>
+        <div id="contenedor-publicaciones2" class="w-full sm:w-auto mb-2"></div>
+        <div id="contenedor-publicaciones3" class="w-full sm:w-auto mb-2"></div>
+    </div>
+</div>
+<br>
+<div class="flex flex-col md:flex-row w-full max-w-6xl mx-auto space-y-4 md:space-y-0 md:space-x-4">
+    <!-- Primera Sección -->
+    <div class="bg-white md:w-1/2 flex">
+        <div class="md:w-1/2 p-4 flex flex-col justify-center">
+            <h2 class="text-lg font-semibold text-gray-700 uppercase">Muebles</h2>
+            <h3 class="text-2xl font-bold text-gray-900">HASTA 35% OFF</h3>
+            <p class="text-lg text-gray-700">Y 6X SIN INTERÉS</p>
+            <button class="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">VER OFERTAS</button>
+        </div>
+
+        <div class="w-full h-64 md:w-1/2">
+            <img src="{% static 'images/png/promocion/3a.png' %}" alt="Imagen promocional"
+                class="w-full h-full object-cover">
         </div>
     </div>
-    {% endfor %}   
+    <!-- Segunda Sección -->
+    <div class="bg-white md:w-1/2 flex">
+        <div class="md:w-1/2 p-4 flex flex-col justify-center">
+            <h2 class="text-lg font-semibold text-gray-700 uppercase">Frutas y Verduras</h2>
+            <h3 class="text-2xl font-bold text-gray-900">HASTA 35% OFF</h3>
+            <p class="text-lg text-gray-700"></p>
+            <button class="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">VER OFERTAS</button>
+        </div>
+        <div class="w-full h-64 md:w-1/2">
+            <img src="{% static 'images/png/promocion/4a.png' %}" alt="Imagen promocional"
+                class="w-full h-full object-cover">
+        </div>
+    </div>
+</div>
+<br>
+<div class="flex flex-col md:flex-row w-full max-w-6xl mx-auto space-y-4 md:space-y-0 md:space-x-4">
+    <!-- Primera Sección -->
+    <div class="bg-white md:w-1/2 flex">
+        <div class="md:w-1/2 p-4 flex flex-col justify-center">
+            <h2 class="text-lg font-semibold text-gray-700 uppercase">Zapatillas</h2>
+            <h3 class="text-2xl font-bold text-gray-900">HASTA 35% OFF</h3>
+            <p class="text-lg text-gray-700">Y 6X SIN INTERÉS</p>
+            <button class="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">VER OFERTAS</button>
+        </div>
+        <div class="w-full h-64 md:w-1/2">
+            <img src="{% static 'images/png/promocion/1a.png' %}" alt="Imagen promocional"
+                class="w-full h-full object-cover">
+        </div>
+    </div>
 
-{% endblock %}
- 
+    <!-- Segunda Sección -->
+    <div class="bg-white md:w-1/2 flex">
+        <div class="md:w-1/2 p-4 flex flex-col justify-center">
+            <h2 class="text-lg font-semibold text-gray-700 uppercase">Teléfonos</h2>
+            <h3 class="text-2xl font-bold text-gray-900">HASTA 35% OFF</h3>
+            <p class="text-lg text-gray-700">Y 6X SIN INTERÉS</p>
+            <button class="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">VER OFERTAS</button>
+        </div>
+        <div class="w-full h-64 md:w-1/2">
+            <img src="{% static 'images/png/promocion/2a.png' %}" alt="Imagen promocional"
+                class="w-full h-full object-cover">
+        </div>
+    </div>
+</div>
+<br>
+<div class="flex justify-center items-center p-5">
+    <div class="flex flex-col sm:flex-row sm:space-x-4 overflow-x-auto w-full sm:justify-center">
+        <div id="contenedor-publicaciones4" class="w-full sm:w-auto mb-2"></div>
+        <div id="contenedor-publicaciones5" class="w-full sm:w-auto mb-2"></div>
+        <div id="contenedor-publicaciones6" class="w-full sm:w-auto mb-2"></div>
+    </div>
+</div>
+<br>
+<section class="bg-white border mx-auto max-w-6xl p-4">
+    <a href="#" class="px-1 text-2xl font-bold mb-4 block">Categorías</a>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/1.png' %}" alt="Tecnología y Electrónica"
+                    class="h-8 w-8 mr-2">
+                <p>Tecnología y Electrónica</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/2.png' %}" alt="Hogar y Muebles" class="h-8 w-8 mr-2">
+                <p>Hogar y Muebles</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/3.png' %}" alt="Alimentos y Bebidas" class="h-8 w-8 mr-2">
+                <p>Alimentos y Bebidas</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/4.png' %}" alt="Moda y Accesorios" class="h-8 w-8 mr-2">
+                <p>Moda y Accesorios</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/5.png' %}" alt="Salud y Belleza" class="h-8 w-8 mr-2">
+                <p>Salud y Belleza</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/6.png' %}" alt="Automotriz" class="h-8 w-8 mr-2">
+                <p>Automotriz</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/7.png' %}" alt="Deportes y Fitness" class="h-8 w-8 mr-2">
+                <p>Deportes y Fitness</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/8.png' %}" alt="Bebés y Niños" class="h-8 w-8 mr-2">
+                <p>Bebés y Niños</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/9.png' %}" alt="Mascotas" class="h-8 w-8 mr-2">
+                <p>Mascotas</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/10.png' %}" alt="Viajes y Turismo" class="h-8 w-8 mr-2">
+                <p>Viajes y Turismo</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/11.png' %}" alt="Herramientas y Construcción"
+                    class="h-8 w-8 mr-2">
+                <p>Herramientas y Construcción</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/12.png' %}" alt="Libros y Música" class="h-8 w-8 mr-2">
+                <p>Libros y Música</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/13.png' %}" alt="Servicios" class="h-8 w-8 mr-2">
+                <p>Servicios</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/14.png' %}" alt="Joyería y Relojes" class="h-8 w-8 mr-2">
+                <p>Joyería y Relojes</p>
+            </a>
+        </div>
+        <div class="flex items-center mb-1">
+            <a href="#"
+                class="py-2 rounded-lg shadow-md flex items-center w-full hover:bg-gray-100 transition duration-300">
+                <img src="{% static 'images/png/categorias/15.png' %}" alt="Papelería y Oficina" class="h-8 w-8 mr-2">
+                <p>Papelería y Oficina</p>
+            </a>
+        </div>
+    </div>
+</section>
+<br>
+<section class="w-full flex justify-center">
+    <div class="bg-white pb-8 w-full max-w-4xl">
+        <div class="flex items-center mb-6 m-4">
+            <h2 class="text-2xl font-bold text-gray-800 mr-4">Solo por Hoy</h2>
+        </div>
+        <div class="relative">
+            <div class="overflow-hidden py-2">
+                <div id="product-slider" class="flex transition-transform duration-300 ease-in-out">
+                    <!-- Ejemplo de productos -->
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="#" class="w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group">
+                        <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+                        <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+                        <div class="p-2">
+                            <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                            <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                            <div class="mt-2 flex items-baseline space-x-2">
+                                <span class="text-sm font-bold">3000$</span>
+                                <span class="text-xs line-through text-gray-500">1200$</span>
+                                <span class="text-xs font-semibold text-green-600">20% Off</span>
+                            </div>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: 20/10/2024</p>
+                                <p>Hasta: 20/10/2024</p>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- Repite los productos según sea necesario -->
+                </div>
+            </div>
+            <button id="prevProduct"
+                class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300 z-10"
+                aria-label="Productos anteriores">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <button id="nextProduct"
+                class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                aria-label="Productos siguientes">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</section>
+
+<script>
+    const productslider = document.getElementById('product-slider');
+    const product = productslider.children;
+    let currentIndex = 0;
+
+    document.getElementById('nextProduct').addEventListener('click', () => {
+        currentIndex = (currentIndex + 1) % product.length;
+        updateSlider();
+    });
+
+    document.getElementById('prevProduct').addEventListener('click', () => {
+        currentIndex = (currentIndex - 1 + product.length) % product.length;
+        updateSlider();
+    });
+
+    function updateSlider() {
+        const offset = -currentIndex * 100; // Cambia a la posición correcta
+        productslider.style.transform = `translateX(${offset}%)`;
+    }
+</script>
+<br>
+<section class="bg-white border mx-auto max-w-6xl p-4">
+<div class="overflow-hidden py-2">
+    <h2 class="text-2xl text-center font-bold text-gray-800 mr-4">Solo por Hoy</h2>
+    <br>
+    <div class="flex flex-wrap justify-center">
+        <a href="#" class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-gray-300 rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group mb-4">
+            <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" alt="Producto 1" class="w-full h-32 object-contain">
+            <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+            <div class="p-2">
+                <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto 1</span>
+                <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                <div class="mt-2 flex items-baseline space-x-2">
+                    <span class="text-sm font-bold">2500$</span>
+                    <span class="text-xs line-through text-gray-500">4000$</span>
+                    <span class="text-xs font-semibold text-green-600">20%</span>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <p>Desde: 20/10/2024</p>
+                    <p>Hasta: 20/10/2024</p>
+                </div>
+            </div>
+        </a>
+        <a href="#" class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group mb-4">
+            <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+            <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+            <div class="p-2">
+                <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto1</span>
+                <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                <div class="mt-2 flex items-baseline space-x-2">
+                    <span class="text-sm font-bold">3000$</span>
+                    <span class="text-xs line-through text-gray-500">1200$</span>
+                    <span class="text-xs font-semibold text-green-600">20% Off</span>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <p>Desde: 20/10/2024</p>
+                    <p>Hasta: 20/10/2024</p>
+                </div>
+            </div>
+        </a>
+        <a href="#" class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group mb-4">
+            <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+            <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+            <div class="p-2">
+                <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto1</span>
+                <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                <div class="mt-2 flex items-baseline space-x-2">
+                    <span class="text-sm font-bold">3000$</span>
+                    <span class="text-xs line-through text-gray-500">1200$</span>
+                    <span class="text-xs font-semibold text-green-600">20% Off</span>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <p>Desde: 20/10/2024</p>
+                    <p>Hasta: 20/10/2024</p>
+                </div>
+            </div>
+        </a>
+        <a href="#" class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group mb-4">
+            <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+            <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+            <div class="p-2">
+                <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto1</span>
+                <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                <div class="mt-2 flex items-baseline space-x-2">
+                    <span class="text-sm font-bold">3000$</span>
+                    <span class="text-xs line-through text-gray-500">1200$</span>
+                    <span class="text-xs font-semibold text-green-600">20% Off</span>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <p>Desde: 20/10/2024</p>
+                    <p>Hasta: 20/10/2024</p>
+                </div>
+            </div>
+        </a>
+        <a href="#" class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group mb-4">
+            <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+            <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+            <div class="p-2">
+                <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto1</span>
+                <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                <div class="mt-2 flex items-baseline space-x-2">
+                    <span class="text-sm font-bold">3000$</span>
+                    <span class="text-xs line-through text-gray-500">1200$</span>
+                    <span class="text-xs font-semibold text-green-600">20% Off</span>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <p>Desde: 20/10/2024</p>
+                    <p>Hasta: 20/10/2024</p>
+                </div>
+            </div>
+        </a>
+        <a href="#" class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group mb-4">
+            <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+            <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+            <div class="p-2">
+                <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto1</span>
+                <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                <div class="mt-2 flex items-baseline space-x-2">
+                    <span class="text-sm font-bold">3000$</span>
+                    <span class="text-xs line-through text-gray-500">1200$</span>
+                    <span class="text-xs font-semibold text-green-600">20% Off</span>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <p>Desde: 20/10/2024</p>
+                    <p>Hasta: 20/10/2024</p>
+                </div>
+            </div>
+        </a>
+        <a href="#" class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group mb-4">
+            <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+            <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+            <div class="p-2">
+                <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto1</span>
+                <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                <div class="mt-2 flex items-baseline space-x-2">
+                    <span class="text-sm font-bold">3000$</span>
+                    <span class="text-xs line-through text-gray-500">1200$</span>
+                    <span class="text-xs font-semibold text-green-600">20% Off</span>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <p>Desde: 20/10/2024</p>
+                    <p>Hasta: 20/10/2024</p>
+                </div>
+            </div>
+        </a>
+        <a href="#" class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group mb-4">
+            <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+            <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+            <div class="p-2">
+                <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto1</span>
+                <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                <div class="mt-2 flex items-baseline space-x-2">
+                    <span class="text-sm font-bold">3000$</span>
+                    <span class="text-xs line-through text-gray-500">1200$</span>
+                    <span class="text-xs font-semibold text-green-600">20% Off</span>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <p>Desde: 20/10/2024</p>
+                    <p>Hasta: 20/10/2024</p>
+                </div>
+            </div>
+        </a>
+        <a href="#" class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group mb-4">
+            <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+            <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+            <div class="p-2">
+                <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto1</span>
+                <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                <div class="mt-2 flex items-baseline space-x-2">
+                    <span class="text-sm font-bold">3000$</span>
+                    <span class="text-xs line-through text-gray-500">1200$</span>
+                    <span class="text-xs font-semibold text-green-600">20% Off</span>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <p>Desde: 20/10/2024</p>
+                    <p>Hasta: 20/10/2024</p>
+                </div>
+            </div>
+        </a>
+        <a href="#" class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group mb-4">
+            <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+            <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+            <div class="p-2">
+                <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto1</span>
+                <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                <div class="mt-2 flex items-baseline space-x-2">
+                    <span class="text-sm font-bold">3000$</span>
+                    <span class="text-xs line-through text-gray-500">1200$</span>
+                    <span class="text-xs font-semibold text-green-600">20% Off</span>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <p>Desde: 20/10/2024</p>
+                    <p>Hasta: 20/10/2024</p>
+                </div>
+            </div>
+        </a>
+        <a href="#" class="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 mx-2 max-w-[200px] bg-white border border-animation rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 group mb-4">
+            <img src="{% static 'images/png/productos/1.png' %}?height=200&width=300" class="w-full h-32 object-contain">
+            <span class="absolute top-0 right-0 w-20 h-8 bg-red-600 rounded-lg text-xs font-bold text-white flex items-center justify-center">20% OFF</span>
+            <div class="p-2">
+                <span class="text-sm font-semibold truncate text-gray-900 group-hover:text-red-700">Producto1</span>
+                <p class="text-xs text-gray-600 mt-1 h-8 overflow-hidden">El mejor producto</p>
+                <div class="mt-2 flex items-baseline space-x-2">
+                    <span class="text-sm font-bold">3000$</span>
+                    <span class="text-xs line-through text-gray-500">1200$</span>
+                    <span class="text-xs font-semibold text-green-600">20% Off</span>
+                </div>
+                <div class="flex justify-between mt-2 text-xs text-gray-500">
+                    <p>Desde: 20/10/2024</p>
+                    <p>Hasta: 20/10/2024</p>
+                </div>
+            </div>
+        </a>
+        <!-- Repite el bloque de <a> aquí para los otros productos -->
+    </div>
+</div>
+</section>
+
+<br>
+
+{% endblock content%}
