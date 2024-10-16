@@ -70,8 +70,9 @@ class UsuarioCreationForm(UserCreationForm):
 
 class LogeoForm(forms.Form):
     
-    usuario= forms.CharField(max_length=50)
-    contraseña= forms.CharField(widget=forms.PasswordInput)
+    usuario= forms.CharField(max_length=50, widget=forms.TextInput(attrs={'autocomplete': 'off'})
+    )
+    contraseña= forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete': 'off'}))
     captcha  =  ReCaptchaField ( 
         public_key =RECAPTCHA_PUBLIC_KEY, 
         private_key = RECAPTCHA_PRIVATE_KEY,
