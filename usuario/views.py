@@ -3,7 +3,6 @@ from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 import folium.map
 from requests import request
-
 from oferta.models import Oferta
 from usuario.sms import send_sms
 from .forms import LogeoForm
