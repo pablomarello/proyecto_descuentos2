@@ -97,6 +97,19 @@ DATABASES = {
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': config('DB_HOST'),
         'PORT': config('DB_PORT', cast=int),  # Conviértelo a entero
+    },
+    'supabase': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': config('SUPABASE_DB_NAME'),
+        'USER': config('SUPABASE_DB_USER'),
+        'PASSWORD': config('SUPABASE_DB_PASSWORD'),
+        'HOST': config('SUPABASE_DB_HOST'),
+        'PORT': config('SUPABASE_DB_PORT', cast=int),
+        'OPTIONS': {
+          'sslmode': 'verify-full',
+          'sslrootcert': config('SSL_ROOT_CERT')
+
+        }
     }
 }  
 
