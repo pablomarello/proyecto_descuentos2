@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+{% endblock title %}
+
+{% block content %}
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<br>
+<div id="map" style="height: 400px; width: 800px;" class="flex left-10"></div>
+<br>
+<script>
+
+    const map = L.map('map').setView([0, 0], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Función para obtener la ubicación del usuario
+    function onLocationFound(e) {
+        var userLatLng = e.latlng;
+
+        // Crea la ruta utilizando la geolocalización como punto de inicio
+        L.Routing.control({
+            waypoints: [
+                L.latLng(userLatLng.lat, userLatLng.lng),  // Inicio: ubicación del usuario
+                L.latLng(-34.6118, -58.4173)  // Fin: ubicacion del comercio
+            ],
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim()
+        }).addTo(map);
+
+        // Añadir un marcador en la ubicación del usuario
+        L.marker(userLatLng).addTo(map)
+            .bindPopup('¡Estás aquí!')
+            .openPopup();
+    }
+
+    // Manejar el error si no se puede obtener la ubicación del usuario
+    function onLocationError(e) {
+        alert(e.message);
+    }
+
+    // Solicitar la geolocalización del usuario
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+
+    // Iniciar la localización del usuario
+    map.locate({setView: true, maxZoom: 16});
+</script>
+{% endblock content %}

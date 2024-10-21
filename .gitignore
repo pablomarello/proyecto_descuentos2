@@ -4,6 +4,11 @@
 *.py[cod]
 *$py.class
 
+# Ignorar archivos .pyc y __pycache__
+*.pyc
+__pycache__/
+
+
 # C extensions
 *.so
 

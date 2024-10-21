@@ -1,0 +1,28 @@
+@keyframes borderAnimation {
+    0% {
+        border-color: red;
+    }
+    25% {
+        border-color: blue;
+    }
+    50% {
+        border-color: green;
+    }
+    75% {
+        border-color: yellow;
+    }
+    100% {
+        border-color: red;
+    }
+}
+
+.border-animation {
+    animation: borderAnimation 3s infinite;
+    border-width: 2px;
+    border-style: solid;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.card-container:hover .border-animation {
+    animation: borderAnimation 1s infinite;
+}
