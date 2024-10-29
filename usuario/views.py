@@ -41,6 +41,18 @@ def index(request):
         'vencen_hoy':vencen_hoy })
 
 
+def ofertas_por_categoria(request, categoria_id):
+    # Obtén la categoría seleccionada
+    categoria = get_object_or_404(Categoria, id=categoria_id)
+    # Filtra las ofertas relacionadas a la categoría
+    ofertas = Oferta.objects.filter(productos__categoria__categoria=categoria).distinct()
+
+    # Renderiza el template con las ofertas filtradas
+    return render(request, 'usuarios/ind.html', {
+        'categoria': categoria,
+        'ofertas': ofertas,
+    })
+
 def buscar(request):
     query = request.GET.get('q', '')  # Valor por defecto como cadena vacía
     ofertas = []

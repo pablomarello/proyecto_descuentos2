@@ -47,7 +47,7 @@
                         <ul class="py-1">
                             {% for categoria in categorias %}
                                 <li>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <a href="{%url "ofertas_por_categoria" categoria.id%}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         {{ categoria.nombre }}
                                     </a>
                                 </li>
