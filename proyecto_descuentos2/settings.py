@@ -69,7 +69,7 @@ ROOT_URLCONF = 'proyecto_descuentos2.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [ BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,6 +77,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'usuario.context_processors.base_categorias',
             ],
         },
     },
@@ -97,6 +98,19 @@ DATABASES = {
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': config('DB_HOST'),
         'PORT': config('DB_PORT', cast=int),  # Conviértelo a entero
+    },
+    'supabase': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': config('SUPABASE_DB_NAME'),
+        'USER': config('SUPABASE_DB_USER'),
+        'PASSWORD': config('SUPABASE_DB_PASSWORD'),
+        'HOST': config('SUPABASE_DB_HOST'),
+        'PORT': config('SUPABASE_DB_PORT', cast=int),
+        'OPTIONS': {
+          'sslmode': 'verify-full',
+          'sslrootcert': config('SSL_ROOT_CERT')
+
+        }
     }
 }  
 

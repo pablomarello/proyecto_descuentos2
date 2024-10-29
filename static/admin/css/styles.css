@@ -1,0 +1,71 @@
+/* Contenedor de imágenes */
+.scroll-container {
+    display: flex;
+    overflow-x: scroll; /* Activa el scroll horizontal */
+    scroll-behavior: smooth; /* Desplazamiento suave */
+    width: 100vw; /* Ocupa todo el ancho de la pantalla */
+    height: 40vh; /* Ocupa todo el alto de la pantalla */
+    padding: 0;
+    margin: 0;
+}
+
+/* Estilos para las imágenes */
+.scroll-container img {
+    width: 100vw; /* Ocupa todo el ancho de la pantalla */
+    height: 40vh; /* Ocupa todo el alto de la pantalla */
+    object-fit: cover; /* Ajusta la imagen para cubrir el contenedor sin distorsión */
+    flex-shrink: 0; /* Evita que las imágenes se encojan dentro del contenedor flexible */
+}
+
+/* Oculta la barra de scroll en navegadores WebKit (opcional) */
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+ /* Contenedor principal para las tarjetas */
+ .scroll-container-tarj {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding-bottom: 1rem;
+}
+
+
+/* Estilos para ocultar la barra de scroll */
+.scroll-container-tarj::-webkit-scrollbar {
+    height: 8px;
+}
+
+.scroll-container-tarj::-webkit-scrollbar-thumb {
+    background-color: darkgrey;
+    border-radius: 10px;
+}
+
+/* Tarjetas individuales */
+.card {
+    background-color: #f9f9f9;
+    width: 300px; /* Ancho fijo de cada tarjeta */
+    min-height: 200px; /* Altura mínima de la tarjeta */
+    border-radius: 15px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
+    padding: 20px; /* Espacio dentro de la tarjeta */
+    box-sizing: border-box;
+    flex-shrink: 0; /* Evita que las tarjetas se encojan */
+}
+
+.card button {
+    width: 100%; /* Para que el botón no exceda el ancho */
+    box-sizing: border-box; /* Asegura que el padding no exceda el contenedor */
+}
+
+/* Títulos de las tarjetas */
+.card h2 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+/* Texto de la tarjeta */
+.card p {
+    font-size: 1em;
+    color: #666;
+}

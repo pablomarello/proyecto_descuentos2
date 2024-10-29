@@ -1,9 +1,11 @@
+import datetime
 from importlib import simple
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 import folium.map
 from requests import request
 from oferta.models import Oferta
+from producto.models import Categoria, Producto, Subcategoria
 from usuario.sms import send_sms
 from .forms import LogeoForm
 from django.contrib.auth import authenticate,login, logout
@@ -20,13 +22,55 @@ from .email import *
 from .models import *
 import random
 import folium
-
+from django.db.models import Q
 
 
 def index(request):
     ofertas = Oferta.objects.filter(activo=True)
+    baratos= Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
+    hoy = datetime.date.today()
+    categorias = Categoria.objects.all()
+
+    # Filtrar las ofertas activas que vencen hoy
+    vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
     
-    return render(request, 'usuarios/index.html', {'ofertas':ofertas })
+    return render(request, 'usuarios/ind.html', {
+        'categorias':categorias,
+        'ofertas':ofertas, 
+        'baratos':baratos,
+        'vencen_hoy':vencen_hoy })
+
+
+def ofertas_por_categoria(request, categoria_id):
+    # Obtén la categoría seleccionada
+    categoria = get_object_or_404(Categoria, id=categoria_id)
+    # Filtra las ofertas relacionadas a la categoría
+    ofertas = Oferta.objects.filter(productos__categoria__categoria=categoria).distinct()
+
+    # Renderiza el template con las ofertas filtradas
+    return render(request, 'usuarios/ind.html', {
+        'categoria': categoria,
+        'ofertas': ofertas,
+    })
+
+def buscar(request):
+    query = request.GET.get('q', '')  # Valor por defecto como cadena vacía
+    ofertas = []
+
+    if query.strip():  # Verificar que la consulta no esté vacía
+        # Filtrar ofertas relacionadas con productos que pertenecen a categorías o subcategorías coincidentes
+        ofertas = Oferta.objects.filter(
+            Q(titulo__icontains=query) |
+            Q(descripcion__icontains=query) |
+            Q(productos__nombre__icontains=query) |  # Acceso directo a los nombres de productos
+            Q(productos__categoria__nombre__icontains=query) |  # Acceso a subcategoría de producto
+            Q(productos__categoria__categoria__nombre__icontains=query)  # Acceso a categoría a través de subcategoría
+        ).distinct()
+
+    return render(request, 'usuarios/ind.html', {
+        'query': query,
+        'ofertas': ofertas,
+    })
 
 class Index(TemplateView):
     

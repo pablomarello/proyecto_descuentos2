@@ -14,9 +14,10 @@ afip = Afip({
     "CUIT": 23395413929,
     "cert": cert,
     "key": key,
-    "access_token": "mBjEAlAOUDKtg2HpFFHD7wrnuBcEGlSHRQV2iEdUCjkRVdo0PVtDTo3M1DV8pLkv",
+    "access_token": "MR8rd6rny4pMm1aSahFiVqFYbyGaR3OjFvOhwPuGNaTAoHPOU4A24EbFErqzOAot",
     "production": True
 })
+
 
 def verificarCuit(request):
     nombre = apellido = direccion = '-----'  # Inicializa las variables
