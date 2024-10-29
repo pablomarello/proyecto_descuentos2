@@ -56,7 +56,6 @@ def buscar(request):
         ofertas = Oferta.objects.filter(
             Q(titulo__icontains=query) |
             Q(descripcion__icontains=query) |
-            Q(marca__icontains=query) |
             Q(productos__nombre__icontains=query) |  # Acceso directo a los nombres de productos
             Q(productos__categoria__nombre__icontains=query) |  # Acceso a subcategoría de producto
             Q(productos__categoria__categoria__nombre__icontains=query)  # Acceso a categoría a través de subcategoría
