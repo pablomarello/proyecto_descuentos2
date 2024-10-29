@@ -36,14 +36,25 @@
 
             <!-- Navbar (centro en desktop, oculto en móvil) -->
             <nav class="hidden lg:flex justify-center max-w space-x-8 lg:w-1/2">
-                <a href="#" class="text-black hover:text-red-700">
-                    <select class="  border border-gray-300 rounded-md px-2 py-1 text-sm font-medium">
-                        <option value="">Categorías</option>
-                        {% for categoria in categorias  %}
-                        <option value="ofertas">{{categoria.nombre}}</option>
-                        {% endfor %}
-                      </select>
-                </a>
+                <div class="relative">
+                    <!-- Botón del dropdown -->
+                    <button class="text-white border border-gray-300 rounded-md px-4 py-2 text-sm font-medium hover:bg-gray-100 hover:text-black" id="dropdownButton">
+                        Categorías
+                    </button>
+            
+                    <!-- Contenido del dropdown -->
+                    <div class="absolute hidden mt-2 w-48 bg-white rounded-md shadow-lg z-10" id="dropdownMenu">
+                        <ul class="py-1">
+                            {% for categoria in categorias %}
+                                <li>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        {{ categoria.nombre }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
                 <a href="#" class="text-white hover:text-red-700">AYUDA</a>
                 <a href="#" class="text-white hover:text-red-700">SOPORTE</a>
             </nav>
@@ -423,6 +434,22 @@
         const subcategoriaDiv = document.getElementById(`subcategorias-${id}`);
         subcategoriaDiv.classList.toggle('hidden');
     }
+</script>
+<script>
+    // Script para mostrar/ocultar el menú dropdown
+    const dropdownButton = document.getElementById('dropdownButton');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    dropdownButton.addEventListener('click', () => {
+        dropdownMenu.classList.toggle('hidden');
+    });
+
+    // Ocultar el menú al hacer clic fuera del mismo
+    window.addEventListener('click', (event) => {
+        if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+            dropdownMenu.classList.add('hidden');
+        }
+    });
 </script>
 <script>
     // Mostrar/ocultar barra de búsqueda en móvil

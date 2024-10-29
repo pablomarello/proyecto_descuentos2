@@ -25,16 +25,6 @@ import folium
 from django.db.models import Q
 
 
-def base(request):
-    categorias = Categoria.objects.all()
-    categorias_con_subcategorias = {}
-    for categoria in categorias:
-        subcategorias= Subcategoria.objects.filter(categoria=categoria)
-        # Añade al diccionario la categoría junto con sus subcategorías
-        categorias_con_subcategorias[categoria] = subcategorias
-    
-    return render(request, 'usuarios/ind.html', {'categorias':categorias,'categorias_con_subcategorias':categorias_con_subcategorias})
-
 def index(request):
     ofertas = Oferta.objects.filter(activo=True)
     baratos= Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
@@ -44,7 +34,11 @@ def index(request):
     # Filtrar las ofertas activas que vencen hoy
     vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
     
-    return render(request, 'usuarios/ind.html', {'categorias':categorias,'ofertas':ofertas, 'baratos':baratos,'vencen_hoy':vencen_hoy })
+    return render(request, 'usuarios/ind.html', {
+        'categorias':categorias,
+        'ofertas':ofertas, 
+        'baratos':baratos,
+        'vencen_hoy':vencen_hoy })
 
 
 def buscar(request):
