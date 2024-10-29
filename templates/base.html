@@ -163,9 +163,15 @@
                 
                 {% else %}
                   <!-- Usuario -->
-                  <button id="userButton" class="flex items-center">
-                    <img src="{% static "images/svg/white/header/mi cuenta.svg" %}" alt="" class="h-8 w-8">
-                  </button>
+                    <button id="userButton" class="flex items-center">
+                        <img src="{% static 'images/svg/white/header/mi cuenta.svg' %}" alt="Mi Cuenta" class="h-8 w-8">
+                    </button>
+                    
+                    <!-- Menú desplegable para usuarios no autenticados -->
+                    <div id="guestMenuDropdown" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
+                        <a href="{% url 'login' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem">Iniciar Sesión</a>
+                        <a href="{% url 'registrar_persona' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem">Registrarse</a>
+                    </div>
                 {% endif %}
             </div>
         </div>
@@ -449,6 +455,21 @@
         if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
             dropdownMenu.classList.add('hidden');
         }
+    });
+</script>
+
+<script>
+    document.getElementById('userButton').addEventListener('click', function(event) {
+        event.stopPropagation(); // Evita que el evento se propague
+        const menu = document.getElementById('guestMenuDropdown');
+        menu.classList.toggle('hidden'); // Alterna la clase 'hidden' para mostrar u ocultar
+
+        // Cierra el menú si se hace clic en cualquier lugar fuera de él
+        document.addEventListener('click', function(e) {
+            if (!menu.contains(e.target) && e.target !== document.getElementById('userButton')) {
+                menu.classList.add('hidden');
+            }
+        });
     });
 </script>
 <script>
