@@ -41,3 +41,4 @@ class ubicacionesComercio(models.Model):
         verbose_name='Ubicacion comercio'
         verbose_name_plural= 'Ubicaciones comercio'
         db_table= 'ubicacionComercio'
+        
