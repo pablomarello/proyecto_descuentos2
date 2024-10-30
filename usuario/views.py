@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 import folium.map
 from requests import request
-from oferta.models import Oferta
+from oferta.models import Oferta, Puntuacion
 from producto.models import Categoria, Producto, Subcategoria
 from usuario.sms import send_sms
 from .forms import LogeoForm
@@ -23,55 +23,98 @@ from .models import *
 import random
 import folium
 from django.db.models import Q
+from django.db.models import Avg
 
+from django.db.models import Avg
+import datetime
+
+from django.db.models import Q, Avg
+from django.shortcuts import render, redirect, get_object_or_404
+import datetime
 
 def index(request):
     ofertas = Oferta.objects.filter(activo=True)
-    baratos= Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
+    baratos = Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
     hoy = datetime.date.today()
     categorias = Categoria.objects.all()
-
-    # Filtrar las ofertas activas que vencen hoy
     vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
-    
-    return render(request, 'usuarios/ind.html', {
-        'categorias':categorias,
-        'ofertas':ofertas, 
-        'baratos':baratos,
-        'vencen_hoy':vencen_hoy })
 
+    # Crear lista de ofertas con sus calificaciones
+    ofertas_con_calificaciones = []
+    for oferta in ofertas:
+        calificaciones = Puntuacion.objects.filter(oferta=oferta)
+        cantidad_calificaciones = calificaciones.count()
+        calificacion_promedio = calificaciones.aggregate(Avg('calificacion'))['calificacion__avg'] or 0
+
+        ofertas_con_calificaciones.append({
+            'oferta': oferta,
+            'calificacion_promedio': calificacion_promedio,
+            'cantidad_calificaciones': cantidad_calificaciones,
+        })
+
+    return render(request, 'usuarios/ind.html', {
+        'categorias': categorias,
+        'ofertas_con_calificaciones': ofertas_con_calificaciones,
+        'baratos': baratos,
+        'vencen_hoy': vencen_hoy
+    })
 
 def ofertas_por_categoria(request, categoria_id):
-    # Obtén la categoría seleccionada
     categoria = get_object_or_404(Categoria, id=categoria_id)
-    # Filtra las ofertas relacionadas a la categoría
     ofertas = Oferta.objects.filter(productos__categoria__categoria=categoria).distinct()
 
-    # Renderiza el template con las ofertas filtradas
+    # Crear lista de ofertas con sus calificaciones
+    ofertas_con_calificaciones = []
+    for oferta in ofertas:
+        calificaciones = Puntuacion.objects.filter(oferta=oferta)
+        cantidad_calificaciones = calificaciones.count()
+        calificacion_promedio = calificaciones.aggregate(Avg('calificacion'))['calificacion__avg'] or 0
+
+        ofertas_con_calificaciones.append({
+            'oferta': oferta,
+            'calificacion_promedio': calificacion_promedio,
+            'cantidad_calificaciones': cantidad_calificaciones,
+        })
+
     return render(request, 'usuarios/ind.html', {
         'categoria': categoria,
-        'ofertas': ofertas,
+        'ofertas_con_calificaciones': ofertas_con_calificaciones,
     })
 
 def buscar(request):
-    query = request.GET.get('q', '')  # Valor por defecto como cadena vacía
+    query = request.GET.get('q', '').strip()
     ofertas = []
 
-    if query.strip():  # Verificar que la consulta no esté vacía
-        # Filtrar ofertas relacionadas con productos que pertenecen a categorías o subcategorías coincidentes
+    if query:  # Verificar que la consulta no esté vacía
         ofertas = Oferta.objects.filter(
             Q(titulo__icontains=query) |
             Q(descripcion__icontains=query) |
-            Q(productos__nombre__icontains=query) |  # Acceso directo a los nombres de productos
-            Q(productos__categoria__nombre__icontains=query) |  # Acceso a subcategoría de producto
-            Q(productos__categoria__categoria__nombre__icontains=query)  # Acceso a categoría a través de subcategoría
+            Q(productos__nombre__icontains=query) |
+            Q(productos__categoria__nombre__icontains=query) |
+            Q(productos__categoria__categoria__nombre__icontains=query)
         ).distinct()
+
+    # Crear lista de ofertas con sus calificaciones
+    ofertas_con_calificaciones = []
+    for oferta in ofertas:
+        calificaciones = Puntuacion.objects.filter(oferta=oferta)
+        cantidad_calificaciones = calificaciones.count()
+        calificacion_promedio = calificaciones.aggregate(Avg('calificacion'))['calificacion__avg'] or 0
+
+        ofertas_con_calificaciones.append({
+            'oferta': oferta,
+            'calificacion_promedio': calificacion_promedio,
+            'cantidad_calificaciones': cantidad_calificaciones,
+        })
 
     return render(request, 'usuarios/ind.html', {
         'query': query,
-        'ofertas': ofertas,
+        'ofertas_con_calificaciones': ofertas_con_calificaciones,
     })
 
+    
+    
+    
 class Index(TemplateView):
     
    template_name='usuarios/index.html'

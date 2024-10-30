@@ -24,7 +24,7 @@ class Oferente(models.Model):
 
 
 class ubicacionesComercio(models.Model):
-    comercio_id=models.OneToOneField(Oferente,blank=True,null=True,on_delete=models.CASCADE,related_name='ubicaion',db_column="identificacion")
+    comercio_id=models.OneToOneField(Oferente,blank=True,null=True,on_delete=models.CASCADE,db_column="oferente_id")
     pais=models.ForeignKey(TablaPais,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_pais")
     provincia=models.ForeignKey(TablaProvincia,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_pcia")
     departamento=models.ForeignKey(TablaDepartamento,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_depto")
@@ -38,6 +38,6 @@ class ubicacionesComercio(models.Model):
     #lat
     #long
     class Meta:
-        verbose_name='Ubicacion comercio'
-        verbose_name_plural= 'Ubicaciones comercio'
-        db_table= 'ubicacionComercio'
+        verbose_name='ubicacion_comercio'
+        db_table= 'ubicacion_comercio'
+        managed=True
