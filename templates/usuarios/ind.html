@@ -27,58 +27,70 @@ Index
             <h2 class="text-2xl font-bold text-gray-800 mr-4">Descuentos Destacados</h2>
         </div>
         <div class="scroll-container-tarj flex overflow-x-auto gap-4">
-            {% for oferta in ofertas %}
-            <div class="card flex-shrink-0">
-                <div class="w-60 min-h-[22rem] bg-gray-50 p-3 flex flex-col justify-between gap-1 rounded-2xl overflow-hidden">
-                    <!-- Imagen o área superior -->
-                    <div class="h-48 bg-gray-700 rounded-xl overflow-hidden flex items-center justify-center">
-                        <img src="{% static 'images/png/productos/5.png' %}" alt="{{ oferta.titulo }}" class="object-cover w-full h-full">
+            {% for item in ofertas_con_calificaciones %}
+    <div class="card flex-shrink-0">
+        <div class="w-60 min-h-[22rem] bg-gray-50 p-3 flex flex-col justify-between gap-1 rounded-2xl overflow-hidden">
+            <!-- Imagen o área superior -->
+            <div class="h-48 bg-gray-700 rounded-xl overflow-hidden flex items-center justify-center">
+                <img src="{% static 'images/png/productos/5.png' %}" alt="{{ item.oferta.titulo }}" class="object-cover w-full h-full">
+            </div>
+
+            <!-- Contenido de la tarjeta -->
+            <div class="flex flex-col gap-4 w-full flex-grow">
+                <div class="flex flex-col w-full">
+                    <!-- Título y descripción -->
+                    <span class="text-xl flex-wrap font-bold w-full">{{ item.oferta.titulo }}</span>
+                    <p class="text-xs flex-wrap text-gray-700 w-full">{{ item.oferta.descripcion }}</p>
+
+                    <!-- Productos en una sola línea -->
+                    <h3 class="font-bold text-gray-700">Productos:</h3>
+                    <ul class="flex flex-row gap-2 flex-wrap list-none w-full">
+                        {% for producto in item.oferta.productos.all %}
+                            <li class="whitespace-nowrap">{{ producto.nombre }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <!-- Información del comercio -->
+                    <div class="mb-2 w-full">
+                        <p class="font-bold text-gray-700">Comercio:</p>
+                        <p>{{ item.oferta.oferente.nombrecomercio }}</p>
                     </div>
-        
-                    <!-- Contenido de la tarjeta -->
-                    <div class="flex flex-col gap-4 w-full flex-grow">
-                        <div class="flex flex-col w-full">
-                            <!-- Título y descripción -->
-                            <span class="text-xl flex-wrap font-bold w-full">{{ oferta.titulo }}</span>
-                            <p class="text-xs flex-wrap text-gray-700 w-full">{{ oferta.descripcion }}</p>
-        
-                            <!-- Productos en una sola línea -->
-                            <h3 class="font-bold text-gray-700">Productos:</h3>
-                            <ul class="flex flex-row gap-2 flex-wrap list-none w-full">
-                                {% for producto in oferta.productos.all %}
-                                <li class="whitespace-nowrap">{{ producto.nombre }}</li>
-                                {% endfor %}
-                            </ul>
-        
-                            <!-- Información del comercio -->
-                            <div class="mb-2 w-full">
-                                <p class="font-bold text-gray-700">Comercio:</p>
-                                <p>{{ oferta.oferente.nombrecomercio }}</p>
-                            </div>
-        
-                            <!-- Fechas -->
-                            <div class="flex justify-between mt-2 text-xs text-gray-500">
-                                <p>Desde: {{ oferta.fecha_inicio }}</p>
-                                <p>Hasta: {{ oferta.fecha_fin }}</p>
-                            </div>
-                        </div>
-        
-                        <!-- Precios y botón Ver más -->
-                        <div class="flex justify-between items-center mt-4">
-                            <!-- Precios -->
-                            <div>
-                                <p class="text-gray-600 line-through">${{ oferta.precio_normal }}</p>
-                                <span class="font-bold text-red-600">${{ oferta.precio_oferta }}</span>
-                            </div>
-                            <!-- Botón Ver más al lado del precio -->
-                            <button type="submit" class="bg-red-600 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 rounded px-3 py-2">
-                                Ver más
-                            </button>
-                        </div>
+
+                    <!-- Calificación promedio y estrellas -->
+                    <div class="flex items-center">
+                        <p class="text-2xl font-bold">{{ item.calificacion_promedio|floatformat:1 }}</p>
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= item.calificacion_promedio %}
+                                <label class="text-2xl" style="color: orange;">★</label> <!-- Estrella llena -->
+                            {% else %}
+                                <label class="text-2xl" style="color: grey;">★</label> <!-- Estrella vacía -->
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <p>({{ item.cantidad_calificaciones }}) Calificaciones</p>
+
+                    <!-- Fechas -->
+                    <div class="flex justify-between mt-2 text-xs text-gray-500">
+                        <p>Desde: {{ item.oferta.fecha_inicio }}</p>
+                        <p>Hasta: {{ item.oferta.fecha_fin }}</p>
                     </div>
                 </div>
+
+                <!-- Precios y botón Ver más -->
+                <div class="flex justify-between items-center mt-4">
+                    <!-- Precios -->
+                    <div>
+                        <p class="text-gray-600 line-through">${{ item.oferta.precio_normal }}</p>
+                        <span class="font-bold text-red-600">${{ item.oferta.precio_oferta }}</span>
+                    </div><br>
+                    <!-- Botón Ver más al lado del precio -->
+                    <a href="{% url 'detalle_oferta' item.oferta.id %}" class="bg-red-600 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 rounded-r px-1 py-1">Ver más</a>
+
+                </div>
             </div>
-            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
         </div>                 
     </div>
 </section>
@@ -141,11 +153,8 @@ Index
                                     <div>
                                         <p class="text-gray-600 line-through">${{ oferta.precio_normal }}</p>
                                         <span class="font-bold text-red-600">${{ oferta.precio_oferta }}</span>
-                                    </div>
+                                    </div><br>
                                     <!-- Botón Ver más al lado del precio -->
-                                    <button type="submit" class="bg-red-600 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 rounded px-3 py-2">
-                                        Ver más
-                                    </button>
                                 </div>
                             </div>
                         </div>

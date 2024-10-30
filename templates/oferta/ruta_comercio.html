@@ -1,0 +1,85 @@
+{% extends "base1.html" %}
+
+{% block title %}Ruta al Comercio{% endblock title %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<div id="map" style="height: 600px; width:100%; position: relative; z-index: 1;"></div>
+
+<script>
+    // Ubicaciones desde el contexto de Django
+    const ubicacionUsuarioDB = {{ ubicacion_usuario|safe }};
+    const ubicacionComercio = {{ ubicacion_comercio|safe }};
+
+    // Crear el mapa (la ubicación se ajustará más adelante)
+    const map = L.map('map').setView([0, 0], 5);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    function trazarRuta(origen, destino) {
+        L.Routing.control({
+            waypoints: [
+                L.latLng(origen.lat, origen.lng),
+                L.latLng(destino.lat, destino.lng)
+            ],
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim(),
+            language: 'es',
+            createMarker: function(i, waypoint, n) {
+                const markerText = i === 0 ? 'Inicio' : i === n - 1 ? 'Destino' : `Parada ${i}`;
+                return L.marker(waypoint.latLng).bindPopup(markerText);
+            }
+        }).addTo(map);
+    }
+
+    // Intentar obtener la ubicación en tiempo real
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+    function(position) {
+        const userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        };
+        map.setView([userLocation.lat, userLocation.lng], 13);
+        L.marker([userLocation.lat, userLocation.lng]).addTo(map)
+            .bindPopup('¡Estás aquí!').openPopup();
+
+        trazarRuta(userLocation, { lat: ubicacionComercio.latitud, lng: ubicacionComercio.longitud });
+    },
+    function(error) {
+        console.warn(`Error ${error.code}: ${error.message}`);
+        const fallbackLocation = {
+            lat: ubicacionUsuarioDB.latitud,
+            lng: ubicacionUsuarioDB.longitud
+        };
+        map.setView([fallbackLocation.lat, fallbackLocation.lng], 13);
+        L.marker([fallbackLocation.lat, fallbackLocation.lng]).addTo(map)
+            .bindPopup('Ubicación predeterminada').openPopup();
+
+        trazarRuta(fallbackLocation, { lat: ubicacionComercio.latitud, lng: ubicacionComercio.longitud });
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+);
+    } else {
+        // Si el navegador no soporta geolocalización, usar la ubicación de la base de datos
+        const fallbackLocation = {
+            lat: ubicacionUsuarioDB.latitud,
+            lng: ubicacionUsuarioDB.longitud
+        };
+        map.setView([fallbackLocation.lat, fallbackLocation.lng], 13);
+        L.marker([fallbackLocation.lat, fallbackLocation.lng]).addTo(map)
+            .bindPopup('Ubicación predeterminada').openPopup();
+
+        trazarRuta(fallbackLocation, { lat: ubicacionComercio.latitud, lng: ubicacionComercio.longitud });
+    }
+</script>
+{% endblock content %}
