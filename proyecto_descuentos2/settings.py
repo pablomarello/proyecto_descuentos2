@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'oferta',
     'django_recaptcha',
     'django_select2',
-    'django_extensions'
+    'django_extensions',
+    'chatbot'
 ]
 
 #crispy tailwind css settings
