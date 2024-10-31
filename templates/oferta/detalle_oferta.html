@@ -1,118 +1,159 @@
-{% extends 'base1.html' %}
+{% extends 'base.html' %}
 
-  {% block title %}
-    Detalle de oferta
-  {% endblock title %}
+{% block title %}
+  Detalle de oferta
+{% endblock title %}
 
-  {% block js %}
-  
-  {% endblock %}
-    
-  {% block content %}
-    <!-- Lista de productos con descuentos -->
-     
-  <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-    <!-- Producto 1 -->
+{% block js %}
+{% endblock %}
+
+{% block content %}
+<h1 class="font-bold text-xl mb-4 ">DETALLES DE LA OFERTA</h1>
+<div class="flex space-x-0 items-start">
+  <!-- Tarjeta de la oferta -->
+   <div class="w-1/2 border border-gray-300 rounded-lg shadow-lg mb-4 mt-4 bg-white p-6 rounded-lg mx-[10px] my-[10px]">
     <h1>Detalles de oferta</h1>
-    
-    <div class="-mt-4 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:flex-shrink-0">
-        <div class="mx-10 max-w-xs px-max">
-          <div class="bg-white p-6 rounded-lg shadow-md">
-            <div class="mb-2">
-              <h2 class="text-xl font-semibold mb-2">{{ oferta.titulo }}</h2>
-              <p class="text-gray-600 mb-4">{{ oferta.descripcion }}</p>
-                <h3 class="font-bold text-gray-700">Productos:</h3>
-                <ul class="list-disc pl-5">
-                    {% for producto in oferta.productos.all %}
-                    <li>{{ producto.nombre }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            
-            <!-- Mostrar oferente -->
-            <div class="mb-2">
-                <p class="font-bold text-gray-700">Comercio:</p>
-                <p>{{ oferta.oferente.nombrecomercio }}</p>
-            </div>
+    <h2 class="text-xl font-semibold mb-2">{{ oferta.titulo }}</h2>
+    <p class="text-gray-600 mb-4">{{ oferta.descripcion }}</p>
 
-            <!-- Mostrar precios -->
-            <div class="flex justify-between items-center mb-4">
-                <p class="text-gray-600 line-through">Precio normal: ${{ oferta.precio_normal }}</p>
-                <p class="text-red-500 font-bold">Oferta: ${{ oferta.precio_oferta }}</p>
-            </div>
+    <h3 class="font-bold text-gray-700">Productos:</h3>
+    <ul class="list-disc pl-5">
+      {% for producto in oferta.productos.all %}
+        <li>{{ producto.nombre }}</li>
+      {% endfor %}
+    </ul>
 
-           
-            <div id="form">
-              <form id="ratingForm" action="{% url 'recibir_puntuacion' oferta.id %}" method="POST">
-                {% csrf_token %}
-                <p class="clasificacion">
-                    {% if user_ha_votado %}
-                    <p>Puntuación: {{ calificacion_promedio }}</p>
-                        <!-- Si el usuario ya votó, deshabilitamos las estrellas Y PINTAMOS EL PROMEDIO DE -->
-                        {% for i in "12345" %}
-                            {% if forloop.counter <= calificacion_promedio %}
-                            <label class="text-3xl" style="color: orange;">★ </label> <!-- Estrella llena -->
-                            {% else %}
-                            <label class="text-3xl" style="color: grey;">★</label> <!-- Estrella vacía -->
-                            {% endif %}
-                        {% endfor %}
-                        <p>Calificaciones: {{ cantidad_calificaciones }}</p>
-                    {% else %}
-                    <style>
-                      .estrellas {
-                          font-size: 2rem;
-                          color: grey;
-                          cursor: pointer;
-                          direction: rtl; /* Invertimos la dirección */
-                      }
-                  
-                      /* Colorear estrellas al pasar el cursor */
-                      .estrellas:hover,
-                      .estrellas:hover ~ .estrellas {
-                          color: orange;
-                      }
-                  
-                      /* Colorear estrellas seleccionadas */
-                      input[type="radio"]:checked + label,
-                      input[type="radio"]:checked + label ~ label {
-                          color: orange;
-                      }
-                  </style>
-                  
-                  <p class="clasificacion" style="display: flex; flex-direction: row-reverse; margin-right: 70px;">
-                      <input id="radio5" type="radio" name="estrellas" value="5" onchange="this.form.submit();" style="display: none;">
-                      <label for="radio5" class="estrellas">★</label>
-                  
-                      <input id="radio4" type="radio" name="estrellas" value="4" onchange="this.form.submit();" style="display: none;">
-                      <label for="radio4" class="estrellas">★</label>
-                  
-                      <input id="radio3" type="radio" name="estrellas" value="3" onchange="this.form.submit();" style="display: none;">
-                      <label for="radio3" class="estrellas">★</label>
-                  
-                      <input id="radio2" type="radio" name="estrellas" value="2" onchange="this.form.submit();" style="display: none;">
-                      <label for="radio2" class="estrellas">★</label>
-                  
-                      <input id="radio1" type="radio" name="estrellas" value="1" onchange="this.form.submit();" style="display: none;">
-                      <label for="radio1" class="estrellas">★</label>
-                  
-    
-                    {% endif %}
-                </p>
-            </form>
-            
-            </div>
-            
-            
-            <!-- Mostrar fechas de la oferta -->
-            <div class="flex justify-between items-center mb-4">
-                <p>Desde: {{ oferta.fecha_inicio|date:"d/m/Y"}}</p>
-                <p>Hasta: {{ oferta.fecha_fin|date:"d/m/Y"}}</p>
-            </div>
-            <a href="{% url 'trazar_ruta' oferta.id %}" class="bg-red-600 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600   rounded-r px-1 py-1">Ir al comercio</a>
-          </div>
-        </div>
+    <p class="font-bold text-gray-700 mt-4">Comercio:</p>
+    <p>{{ oferta.oferente.nombrecomercio }}</p>
+
+    <div class="flex justify-between items-center mt-4 mb-4">
+      <p class="text-gray-600 line-through">Precio normal: ${{ oferta.precio_normal }}</p>
+      <p class="text-red-500 font-bold">Oferta: ${{ oferta.precio_oferta }}</p>
     </div>
-      
+
+    <!-- Rating form -->
+    <div id="form">
+      <form id="ratingForm" action="{% url 'recibir_puntuacion' oferta.id %}" method="POST">
+        {% csrf_token %}
+        <p class="clasificacion">
+          {% if user_ha_votado %}
+            <p>Puntuación: {{ calificacion_promedio }}</p>
+            {% for i in "12345" %}
+              {% if forloop.counter <= calificacion_promedio %}
+                <label class="text-3xl" style="color: orange;">★ </label>
+              {% else %}
+                <label class="text-3xl" style="color: grey;">★</label>
+              {% endif %}
+            {% endfor %}
+            <p>Calificaciones: {{ cantidad_calificaciones }}</p>
+          {% else %}
+            <style>
+              .estrellas {
+                font-size: 2rem;
+                color: grey;
+                cursor: pointer;
+                direction: rtl;
+              }
+              .estrellas:hover,
+              .estrellas:hover ~ .estrellas {
+                color: orange;
+              }
+              input[type="radio"]:checked + label,
+              input[type="radio"]:checked + label ~ label {
+                color: orange;
+              }
+            </style>
+            <p class="clasificacion" style="display: flex; flex-direction: row-reverse; margin-right: 70px;">
+              <input id="radio5" type="radio" name="estrellas" value="5" onchange="this.form.submit();" style="display: none;">
+              <label for="radio5" class="estrellas">★</label>
+              <input id="radio4" type="radio" name="estrellas" value="4" onchange="this.form.submit();" style="display: none;">
+              <label for="radio4" class="estrellas">★</label>
+              <input id="radio3" type="radio" name="estrellas" value="3" onchange="this.form.submit();" style="display: none;">
+              <label for="radio3" class="estrellas">★</label>
+              <input id="radio2" type="radio" name="estrellas" value="2" onchange="this.form.submit();" style="display: none;">
+              <label for="radio2" class="estrellas">★</label>
+              <input id="radio1" type="radio" name="estrellas" value="1" onchange="this.form.submit();" style="display: none;">
+              <label for="radio1" class="estrellas">★</label>
+            </p>
+          {% endif %}
+        </p>
+      </form>
+    </div>
+
+    <div class="flex justify-between items-center mb-4">
+      <p>Desde: {{ oferta.fecha_inicio|date:"d/m/Y" }}</p>
+      <p>Hasta: {{ oferta.fecha_fin|date:"d/m/Y" }}</p>
+    </div>
+
+    <a href="{% url 'detalle_oferta' oferta.id %}" class="bg-red-600 text-white rounded-r px-1 py-1 hover:bg-red-500">
+      Siguiente oferta
+    </a>
+  </div>
+
+  <!-- Mapa -->
+  <div id="map" style="height: 500px; width:100%; position: relative; z-index: 1;"></div>
+    
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script>
+  // Ubicaciones desde el contexto de Django
+  const ubicacionUsuarioDB = {{ ubicacion_usuario|safe }};
+  const ubicacionComercio = {{ ubicacion_comercio|safe }};
+  
+  const map = L.map('map').setView([0, 0], 5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  function trazarRuta(origen, destino) {
+    L.Routing.control({
+      waypoints: [L.latLng(origen.lat, origen.lng), L.latLng(destino.lat, destino.lng)],
+      routeWhileDragging: true,
+      geocoder: L.Control.Geocoder.nominatim(),
+      language: 'es'
+    }).addTo(map);
+  }
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        const userLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        map.setView([userLocation.lat, userLocation.lng], 10);
+        L.marker([userLocation.lat, userLocation.lng]).addTo(map).bindPopup('¡Estás aquí!').openPopup();
+        trazarRuta(userLocation, { lat: ubicacionComercio.latitud, lng: ubicacionComercio.longitud });
+      },
+      function(error) {
+        const fallbackLocation = {
+          lat: ubicacionUsuarioDB.latitud,
+          lng: ubicacionUsuarioDB.longitud
+        };
+        map.setView([fallbackLocation.lat, fallbackLocation.lng], 10);
+        L.marker([fallbackLocation.lat, fallbackLocation.lng]).addTo(map).bindPopup('Ubicación predeterminada').openPopup();
+        trazarRuta(fallbackLocation, { lat: ubicacionComercio.latitud, lng: ubicacionComercio.longitud });
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  } else {
+    const fallbackLocation = {
+      lat: ubicacionUsuarioDB.latitud,
+      lng: ubicacionUsuarioDB.longitud
+    };
+    map.setView([fallbackLocation.lat, fallbackLocation.lng], 10);
+    L.marker([fallbackLocation.lat, fallbackLocation.lng]).addTo(map).bindPopup('Ubicación predeterminada').openPopup();
+    trazarRuta(fallbackLocation, { lat: ubicacionComercio.latitud, lng: ubicacionComercio.longitud });
+  }
+</script>
 
 {% endblock %}
- 
