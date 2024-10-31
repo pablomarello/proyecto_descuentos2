@@ -16,7 +16,7 @@
     {% endif %}
     <h1 class="text-2xl font-bold mb-4">Publicar nueva oferta</h1>
 
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
         <!-- Campo para el título -->
@@ -33,6 +33,14 @@
             <textarea name="descripcion" id="descripcion" class="mt-1 p-2 block w-full border rounded-md"
                 placeholder="Descripción de la oferta">{{ form.descripcion.value|default_if_none:'' }}</textarea>
             {{ form.descripcion.errors }}
+        </div>
+
+        <!-- Campo para la imagen de la oferta -->
+        <div class="mb-4">
+            <label for="imagen" class="block text-sm font-medium text-gray-700">Imagen de la oferta</label>
+            <input type="file" name="imagen" id="imagen"
+                class="mt-1 block w-full text-sm text-gray-900 border rounded-md cursor-pointer focus:outline-none">
+            {{ form.imagen_oferta.errors }}
         </div>
 
         <!-- Campo para el precio normal -->

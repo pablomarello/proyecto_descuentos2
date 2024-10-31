@@ -14,6 +14,7 @@ class Oferta(models.Model):
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     activo = models.BooleanField(default=True)
+    imagen = models.ImageField(upload_to='ofertas/',default='default_image.png',null=True,blank=True)
 
     def __str__(self):
         return self.titulo

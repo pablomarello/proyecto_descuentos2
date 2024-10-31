@@ -33,7 +33,11 @@ Index
         <div class="w-60 min-h-[22rem] bg-gray-50 p-3 flex flex-col justify-between gap-1 rounded-2xl overflow-hidden">
             <!-- Imagen o área superior -->
             <div class="h-48 bg-gray-700 rounded-xl overflow-hidden flex items-center justify-center">
-                <img src="{% static 'images/png/productos/5.png' %}" alt="{{ item.oferta.titulo }}" class="object-cover w-full h-full">
+                {% if item.oferta.imagen %}
+                    <img src="{{ item.oferta.imagen.url }}" alt="{{ item.oferta.titulo }}" class="w-full h-32 object-cover mb-4 rounded-lg">
+                {% else %}
+                    <img src="{{ MEDIA_URL }}default_image.png" alt="Imagen por defecto" class="w-full h-32 object-cover mb-4 rounded-lg">
+                {% endif %}
             </div>
 
             <!-- Contenido de la tarjeta -->
@@ -117,7 +121,11 @@ Index
                         <div class="w-60 min-h-[22rem] bg-gray-50 p-3 flex flex-col justify-between gap-1 rounded-2xl overflow-hidden">
                             <!-- Imagen o área superior -->
                             <div class="h-48 bg-gray-700 rounded-xl overflow-hidden flex items-center justify-center">
-                                <img src="{% static 'images/png/productos/5.png' %}" alt="{{ oferta.titulo }}" class="object-cover w-full h-full">
+                                {% if oferta.imagen %}
+                                    <img src="{{ oferta.imagen.url }}" alt="{{ oferta.titulo }}" class="w-full h-32 object-cover mb-4 rounded-lg">
+                                {% else %}
+                                <img src="{{ MEDIA_URL }}default_image.png" alt="Imagen por defecto" class="w-full h-32 object-cover mb-4 rounded-lg">
+                                {% endif %}
                             </div>
                 
                             <!-- Contenido de la tarjeta -->

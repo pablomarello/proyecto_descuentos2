@@ -9,7 +9,7 @@ cryptography==43.0.1
 Django==5.0.4
 django-appconf==1.0.6
 django-ckeditor==6.7.0
-django-crispy-forms=2.3
+django-crispy-forms==2.3
 django-extensions==3.2.3
 django-recaptcha==4.0.0
 django-select2==8.2.1

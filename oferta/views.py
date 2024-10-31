@@ -177,7 +177,8 @@ def detalle_oferta(request, oferta_id):
 
 def crear_oferta(request):
     if request.method == 'POST':
-        form = OfertaForm(request.POST, user=request.user)
+        print(request.FILES)  # Añade esta línea para revisar si el archivo se está enviando correctamente
+        form = OfertaForm(request.POST, request.FILES, user=request.user)
         
         # Obtener los IDs de productos seleccionados y eliminar cualquier valor vacío
         productos_ids = request.POST.get('productos_seleccionados', '').split(',')
@@ -203,13 +204,13 @@ def crear_oferta(request):
 
 
 
-""" def buscar_productos(request):
+def buscar_productos(request):
     query = request.GET.get('query', '')
     productos = Producto.objects.filter(nombre__icontains=query)[:10] 
     resultados = [{'id': producto.id, 'nombre': producto.nombre} for producto in productos]
-    return JsonResponse(resultados, safe=False) """
+    return JsonResponse(resultados, safe=False)
 
-def buscar_productos(request):
+""" def buscar_productos(request):
     query = request.GET.get('query', '')
 
     # URL base de la API de Supabase
@@ -238,7 +239,7 @@ def buscar_productos(request):
         resultados = []
     
     return JsonResponse(resultados, safe=False)
-
+ """
 
 def mis_ofertas(request):
     # Obtén el usuario actual
