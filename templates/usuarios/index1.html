@@ -9,13 +9,18 @@
   {% endblock %}
     
   {% block content %}
-    <!-- Lista de productos con descuentos -->
+    <!-- Lista de ofertas con descuentos -->
   <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-    <!-- Producto 1 -->
+    <!-- Oferta 1 -->
     {%for oferta in ofertas %}
     <div class="-mt-4 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:flex-shrink-0">
         <div class="mx-10 max-w-xs px-max">
           <div class="bg-white p-6 rounded-lg shadow-md">
+            {% if oferta.imagen %}
+            <img src="{{ oferta.imagen.url }}" alt="{{ oferta.titulo }}" class="w-full h-32 object-cover mb-4 rounded-lg">
+            {% else %}
+            <img src="{{ MEDIA_URL }}default_image.png" alt="Imagen por defecto" class="w-full h-32 object-cover mb-4 rounded-lg">
+            {% endif %}
             <div class="mb-2">
               <h2 class="text-xl font-semibold mb-2">{{ oferta.titulo }}</h2>
               <p class="text-gray-600 mb-4">{{ oferta.descripcion }}</p>
