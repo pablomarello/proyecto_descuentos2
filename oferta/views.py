@@ -22,6 +22,43 @@ from django.db.models import Avg
 from django.http import HttpResponse,JsonResponse
 from persona.models import ubicaciones
 from oferente.models import ubicacionesComercio
+from geopy.distance import distance
+
+def comercios_cercanos(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Usuario no autenticado"}, status=401)
+
+    persona = request.user.persona_id
+    ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
+
+    lat_usuario = float(ubicacion_usuario.latitud)
+    lon_usuario = float(ubicacion_usuario.longitud)
+    
+    #LIMITA LA DISTACIA EN KILOMETROS
+    radio_km = 100
+
+    ubicaciones_comercio = ubicacionesComercio.objects.all()
+
+    comercios_en_radio = []
+    
+    for comercio in ubicaciones_comercio:
+        if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
+            distancia_km = distance((lat_usuario, lon_usuario), 
+                                    (float(comercio.latitud), float(comercio.longitud))).km
+            if distancia_km <= radio_km:
+                comercios_en_radio.append({
+                    "nombre": comercio.comercio_id.nombrecomercio,
+                    "latitud": float(comercio.latitud),
+                    "longitud": float(comercio.longitud),
+                })
+
+    context = {
+        'ubicacion_usuario': {'latitud': lat_usuario, 'longitud': lon_usuario},
+        'comercios_en_radio': comercios_en_radio
+    }
+
+    return render(request, 'oferta/comercios_cercanos.html', context)
+
 
 def trazar_ruta(request, oferta_id):
     # Verifica si el usuario está autenticado
@@ -87,6 +124,27 @@ def recibir_puntuacion(request, oferta_id):
 def detalle_oferta(request, oferta_id):
     oferta = get_object_or_404(Oferta, id=oferta_id)
     
+    # Obtener ubicación del usuario
+    persona = request.user.persona_id
+    ubicacion_persona = get_object_or_404(ubicaciones, persona_id=persona)
+
+    # Obtener ubicación del comercio
+    oferente = oferta.oferente
+    try:
+        ubicacion_comercio = ubicacionesComercio.objects.get(comercio_id=oferente.id)
+    except ubicacionesComercio.DoesNotExist:
+        return HttpResponse("No se encontró la ubicación del comercio para la oferta proporcionada.", status=404)
+
+    # Convertir ubicaciones a formato JSON
+    ubicacion_usuario = {
+        'latitud': float(ubicacion_persona.latitud),
+        'longitud': float(ubicacion_persona.longitud)
+    }
+    ubicacion_comercio_data = {
+        'latitud': float(ubicacion_comercio.latitud),
+        'longitud': float(ubicacion_comercio.longitud)
+    }
+    
     # Verificar si el usuario ha votado
     user_ha_votado = False
     if request.user.is_authenticated:
@@ -106,7 +164,9 @@ def detalle_oferta(request, oferta_id):
         'oferta': oferta,
         'user_ha_votado': user_ha_votado,
         'calificacion_promedio': calificacion_promedio,
-        'cantidad_calificaciones':cantidad_calificaciones
+        'cantidad_calificaciones':cantidad_calificaciones,
+        'ubicacion_usuario': json.dumps(ubicacion_usuario),
+        'ubicacion_comercio': json.dumps(ubicacion_comercio_data)
     }
     
     

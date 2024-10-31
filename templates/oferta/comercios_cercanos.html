@@ -1,0 +1,106 @@
+{% extends "base1.html" %}
+{% load static %}
+
+{% block title %}Ruta al Comercio{% endblock title %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.animatedmarker/src/AnimatedMarker.js"></script>
+<link rel="stylesheet" href="{% static 'css/L.Icon.Pulse.css' %}">
+<script src="{% static 'js/L.Icon.Pulse.js' %}"></script>
+
+
+
+
+<div id="map" style="height: 600px; width:100%; position: relative; z-index: 1;"></div>
+
+<script>
+    // Verifica los datos pasados desde el backend a la plantilla
+    const ubicacionUsuarioDB = {{ ubicacion_usuario|safe }};
+    const comerciosEnRadio = {{ comercios_en_radio|safe }};
+    console.log("Ubicación del usuario:", ubicacionUsuarioDB);
+    console.log("Comercios en radio:", comerciosEnRadio);
+
+    const map = L.map('map').setView([ubicacionUsuarioDB.latitud, ubicacionUsuarioDB.longitud], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Crear el ícono pulsante para la ubicación del usuario
+    const pulsingIcon = L.icon.pulse({ iconSize: [20, 20], color: 'red' });
+
+    // Reemplazar el marcador del usuario con el ícono pulsante
+    const usuarioMarker = L.marker([ubicacionUsuarioDB.latitud, ubicacionUsuarioDB.longitud], { icon: pulsingIcon })
+        .addTo(map)
+        .bindPopup('¡Estás aquí!').openPopup();
+
+     // Variable para almacenar la ruta actual
+     let currentRoute = null;
+
+     function trazarRuta(origen, destino) {
+        // Si hay una ruta actual, elimínala del mapa
+        if (currentRoute) {
+            map.removeControl(currentRoute);
+        }
+
+        // Crear nueva ruta y almacenarla en currentRoute
+        currentRoute = L.Routing.control({
+            waypoints: [
+                L.latLng(origen.lat, origen.lng),
+                L.latLng(destino.lat, destino.lng)
+            ],
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim(),
+            language: 'es',
+            createMarker: function(i, waypoint, n) {
+                // Crear un marcador solo para el destino y los puntos intermedios
+                if (i === n - 1) {
+                    return L.marker(waypoint.latLng).bindPopup('Destino');
+                } else if (i > 0) {
+                    return L.marker(waypoint.latLng).bindPopup(`Parada ${i}`);
+                }
+                // No crear un marcador para el inicio (usuario)
+                return null;
+            }
+        }).addTo(map);
+    }
+
+    comerciosEnRadio.forEach(comercio => {
+        const comercioMarker = L.marker([comercio.latitud, comercio.longitud])
+            .addTo(map)
+            .bindPopup(comercio.nombre);
+
+        comercioMarker.on('click', function() {
+            trazarRuta(
+                { lat: ubicacionUsuarioDB.latitud, lng: ubicacionUsuarioDB.longitud },
+                { lat: comercio.latitud, lng: comercio.longitud }
+            );
+        });
+    });
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                map.setView([userLocation.lat, userLocation.lng], 13);
+                usuarioMarker.setLatLng([userLocation.lat, userLocation.lng])
+                    .bindPopup('Ubicación actual').openPopup();
+            },
+            function(error) {
+                console.warn(`Error ${error.code}: ${error.message}`);
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    }
+</script>
+{% endblock content %}

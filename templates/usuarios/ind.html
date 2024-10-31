@@ -26,6 +26,7 @@ Index
         <div class="flex items-center mb-6 m-4">
             <h2 class="text-2xl font-bold text-gray-800 mr-4">Descuentos Destacados</h2>
         </div>
+        <a href="{% url 'comercios_cercanos' %}">MOSTRAR COMERCIOS CERCANOS</a>
         <div class="scroll-container-tarj flex overflow-x-auto gap-4">
             {% for item in ofertas_con_calificaciones %}
     <div class="card flex-shrink-0">
