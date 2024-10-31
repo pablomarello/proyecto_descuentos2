@@ -29,3 +29,4 @@ tzdata==2024.1
 urllib3==2.2.3
 Werkzeug==3.0.4
 xyzservices==2024.9.0
+geopy==2.4.1
