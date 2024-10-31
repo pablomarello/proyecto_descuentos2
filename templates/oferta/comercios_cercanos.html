@@ -41,16 +41,37 @@
         .addTo(map)
         .bindPopup('¡Estás aquí!').openPopup();
 
-     // Variable para almacenar la ruta actual
-     let currentRoute = null;
+        let userLocation = {
+        lat: ubicacionUsuarioDB.latitud,
+        lng: ubicacionUsuarioDB.longitud
+    };
 
-     function trazarRuta(origen, destino) {
-        // Si hay una ruta actual, elimínala del mapa
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                map.setView([userLocation.lat, userLocation.lng], 13);
+                usuarioMarker.setLatLng([userLocation.lat, userLocation.lng])
+                    .bindPopup('Ubicación actual').openPopup();
+            },
+            function(error) {
+                console.warn(`No se pudo obtener la ubicación actual. Usando ubicación predeterminada.`);
+                usuarioMarker.bindPopup('Ubicación predeterminada').openPopup();
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    }
+
+    let currentRoute = null;
+
+    function trazarRuta(origen, destino) {
         if (currentRoute) {
             map.removeControl(currentRoute);
         }
 
-        // Crear nueva ruta y almacenarla en currentRoute
         currentRoute = L.Routing.control({
             waypoints: [
                 L.latLng(origen.lat, origen.lng),
@@ -59,14 +80,15 @@
             routeWhileDragging: true,
             geocoder: L.Control.Geocoder.nominatim(),
             language: 'es',
+            lineOptions: {
+            styles: [{ color: 'red', opacity: 0.7, weight: 10 }] // Cambia 'color' y 'weight' según tus preferencias
+        },
             createMarker: function(i, waypoint, n) {
-                // Crear un marcador solo para el destino y los puntos intermedios
                 if (i === n - 1) {
                     return L.marker(waypoint.latLng).bindPopup('Destino');
                 } else if (i > 0) {
                     return L.marker(waypoint.latLng).bindPopup(`Parada ${i}`);
                 }
-                // No crear un marcador para el inicio (usuario)
                 return null;
             }
         }).addTo(map);
@@ -78,29 +100,8 @@
             .bindPopup(comercio.nombre);
 
         comercioMarker.on('click', function() {
-            trazarRuta(
-                { lat: ubicacionUsuarioDB.latitud, lng: ubicacionUsuarioDB.longitud },
-                { lat: comercio.latitud, lng: comercio.longitud }
-            );
+            trazarRuta(userLocation, { lat: comercio.latitud, lng: comercio.longitud });
         });
     });
-
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                const userLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                map.setView([userLocation.lat, userLocation.lng], 13);
-                usuarioMarker.setLatLng([userLocation.lat, userLocation.lng])
-                    .bindPopup('Ubicación actual').openPopup();
-            },
-            function(error) {
-                console.warn(`Error ${error.code}: ${error.message}`);
-            },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-        );
-    }
 </script>
 {% endblock content %}

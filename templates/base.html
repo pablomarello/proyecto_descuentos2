@@ -338,21 +338,21 @@
     </div>
 
 <!-- Botón del icono del chatbot -->
-<div id="chatbot-icon" class="fixed bg-white bottom-4 right-4 text-white rounded-full p-2 shadow-xl cursor-pointer z-10">
-    <img src="{% static "images/png/chatbot.png" %}" alt="" class="" width="80">
+<div id="chatbot-icon" class="fixed bg-white bottom-2 right-2 text-white rounded-full p-2 shadow-xl cursor-pointer z-10">
+    <img src="{% static "images/png/chatbot.png" %}" alt="" class="" width="50">
 </div>
 
 <!-- Modal del chatbot -->
-<div id="chatbot-modal" class="fixed bottom-20 right-4 bg-white rounded-lg shadow-lg max-w-lg max-h-400 z-20 hidden">
-    <div id="chatbot" class="chat-container">
-        <div class="chat-header">ChatBot 
-            <button id="close-modal" class="absolute font-bold top-3 right-4 text-white-500">&times;</button>
+<div id="chatbot-modal" class="fixed bottom-20 p-0 pb-1  right-4 bg-white rounded-lg shadow-lg max-w-lg w-80 max-h-400 z-20 hidden">
+    <div id="chatbot" class="chat- p-0 rounded-lg ">
+        <div class="chat-header p-1 pr-2 bg-red-600 rounded-lg ">ChatBot 
+            <button id="close-modal" class="absolute font-bold top-1 right-4 text-white-500">&times;</button>
         </div>
-        <div id="chatMessages" class="chat-messages"></div>
-        <form id="chatForm" class="chat-input">
+        <div id="chatMessages" class="chat-messages p-0"></div>
+        <form id="chatForm" class="chat-input p-0">
             <input type="text" id="userInput" placeholder="Escribe tu mensaje..." required autocomplete="off">
-            <button type="submit">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <button type="submit" class="bg-red-700 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 rounded p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
                     <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                 </svg>

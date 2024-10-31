@@ -32,13 +32,46 @@ from django.db.models import Q, Avg
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
 from geopy.distance import geodesic
+from geopy.distance import distance
 
 def index(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Primero debes iniciar sesión')
+        return redirect('login')
     ofertas = Oferta.objects.filter(activo=True)
     baratos = Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
     hoy = datetime.date.today()
     categorias = Categoria.objects.all()
     vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
+    
+    
+    #COMERCIOS CERCANOS-MAPA
+    persona = request.user.persona_id
+    ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
+
+    lat_usuario = float(ubicacion_usuario.latitud)
+    lon_usuario = float(ubicacion_usuario.longitud)
+    
+    #LIMITA LA DISTACIA EN KILOMETROS
+    radio_km = 100
+
+    ubicaciones_comercio = ubicacionesComercio.objects.all()
+
+    comercios_en_radio = []
+    
+    for comercio in ubicaciones_comercio:
+        if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
+            distancia_km = distance((lat_usuario, lon_usuario), 
+                                    (float(comercio.latitud), float(comercio.longitud))).km
+            if distancia_km <= radio_km:
+                comercios_en_radio.append({
+                    "nombre": comercio.comercio_id.nombrecomercio,
+                    "latitud": float(comercio.latitud),
+                    "longitud": float(comercio.longitud),
+                })
+
+    
+    
 
     # Crear lista de ofertas con sus calificaciones
     ofertas_con_calificaciones = []
@@ -53,11 +86,13 @@ def index(request):
             'cantidad_calificaciones': cantidad_calificaciones,
         })
 
-    return render(request, 'usuarios/ind.html', {
+    return render(request, 'usuarios/ind.html',{
         'categorias': categorias,
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
         'baratos': baratos,
-        'vencen_hoy': vencen_hoy
+        'vencen_hoy': vencen_hoy,
+        'ubicacion_usuario': {'latitud': lat_usuario, 'longitud': lon_usuario},
+        'comercios_en_radio': comercios_en_radio
     })
 
 def descuentos_destacados(request):
