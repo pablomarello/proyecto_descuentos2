@@ -16,6 +16,8 @@
   <!-- Your code -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="stylesheet" href="{% static 'admin/css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/styles_chat.css' %}">
+  
   <!--ReCaptcha-->
 </head>
 <body class="bg-white">
@@ -335,6 +337,138 @@
         </div>
     </div>
 
+<!-- Botón del icono del chatbot -->
+<div id="chatbot-icon" class="fixed bg-white bottom-4 right-4 text-white rounded-full p-2 shadow-xl cursor-pointer z-10">
+    <img src="{% static "images/png/chatbot.png" %}" alt="" class="" width="80">
+</div>
+
+<!-- Modal del chatbot -->
+<div id="chatbot-modal" class="fixed bottom-20 right-4 bg-white rounded-lg shadow-lg max-w-lg max-h-400 z-20 hidden">
+    <div id="chatbot" class="chat-container">
+        <div class="chat-header">ChatBot 
+            <button id="close-modal" class="absolute font-bold top-3 right-4 text-white-500">&times;</button>
+        </div>
+        <div id="chatMessages" class="chat-messages"></div>
+        <form id="chatForm" class="chat-input">
+            <input type="text" id="userInput" placeholder="Escribe tu mensaje..." required autocomplete="off">
+            <button type="submit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                <span class="sr-only">Enviar mensaje</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const chatMessages = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    const userInput = document.getElementById('userInput');
+    const chatbotModal = document.getElementById('chatbot-modal');
+    const closeModal = document.getElementById('close-modal');
+    const chatIcon = document.getElementById('chatbot-icon');
+
+    // Mostrar el modal al hacer clic en el icono
+    chatIcon.addEventListener('click', () => {
+        chatbotModal.classList.remove('hidden');
+        loadMessages(); // Cargar los mensajes guardados en sessionStorage
+    });
+
+    // Ocultar el modal al hacer clic en el botón de cerrar
+    closeModal.addEventListener('click', () => {
+        chatbotModal.classList.add('hidden');
+    });
+
+    // Función para añadir un mensaje al chat y guardarlo en sessionStorage
+    function addMessage(content, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', sender);
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        if (sender === 'bot') {
+            messageDiv.innerHTML = `
+                <div class="user-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="message-content">${content}</div>
+            `;
+        } else {
+            messageDiv.innerHTML = `
+                <div class="message-content">${content}</div>
+                <div class="user-circle">Yo</div>
+            `;
+        }
+
+        // Guardar mensaje en sessionStorage
+        const messages = JSON.parse(sessionStorage.getItem('chatMessages') || '[]');
+        messages.push({ content, sender });
+        sessionStorage.setItem('chatMessages', JSON.stringify(messages));
+    }
+
+    // Función para cargar los mensajes desde sessionStorage
+    function loadMessages() {
+        chatMessages.innerHTML = ''; // Limpiar mensajes anteriores
+        const messages = JSON.parse(sessionStorage.getItem('chatMessages') || '[]');
+        messages.forEach(({ content, sender }) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender);
+            chatMessages.appendChild(messageDiv);
+
+            if (sender === 'bot') {
+                messageDiv.innerHTML = `
+                    <div class="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="message-content">${content}</div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="message-content">${content}</div>
+                    <div class="user-circle">Yo</div>
+                `;
+            }
+        });
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const userMessage = userInput.value.trim();
+        if (userMessage) {
+            addMessage(userMessage, 'user');
+            userInput.value = '';
+
+            fetch('{% url "chat_view" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: 'message=' + encodeURIComponent(userMessage)
+            })
+            .then(response => response.json())
+            .then(data => {
+                addMessage(data.response, 'bot');
+            });
+        }
+    });
+
+    // Mensaje inicial del bot, solo si no hay mensajes guardados
+    if (!sessionStorage.getItem('chatMessages')) {
+        addMessage('¡Hola! Soy el asistente de Descuentos Catamarca. ¿En qué puedo ayudarte hoy?', 'bot');
+    }
+</script>
+
+
 
     <main>
         {% block content %}
@@ -433,6 +567,7 @@
   <script src="{% static 'js/utils/sidebars.js' %}"></script>
   <script src="{% static 'js/utils/notificacionSwal.js' %}"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
 
   <script>
