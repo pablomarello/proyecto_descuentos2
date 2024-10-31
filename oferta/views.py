@@ -26,7 +26,8 @@ from geopy.distance import distance
 
 def comercios_cercanos(request):
     if not request.user.is_authenticated:
-        return JsonResponse({"error": "Usuario no autenticado"}, status=401)
+        messages.error(request, 'Primero debes iniciar sesión')
+        return redirect('login')
 
     persona = request.user.persona_id
     ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
@@ -35,7 +36,7 @@ def comercios_cercanos(request):
     lon_usuario = float(ubicacion_usuario.longitud)
     
     #LIMITA LA DISTACIA EN KILOMETROS
-    radio_km = 10
+    radio_km = 100
 
     ubicaciones_comercio = ubicacionesComercio.objects.all()
 
@@ -63,7 +64,9 @@ def comercios_cercanos(request):
 def trazar_ruta(request, oferta_id):
     # Verifica si el usuario está autenticado
     if not request.user.is_authenticated:
-        return HttpResponse("Usuario no autenticado.")
+        messages.error(request, 'Primero debes iniciar sesión')
+        return redirect('login')
+
 
     # Obtén la ubicación del usuario
     persona = request.user.persona_id
@@ -113,7 +116,7 @@ def recibir_puntuacion(request, oferta_id):
             )
         
         # Redirige a la página de detalles de la oferta después de votar
-        return redirect('index')
+        return redirect('detalle_oferta', oferta_id=oferta_id)
 
     # Si no es POST, redirige a la página de detalles de la oferta
     return redirect('detalle_oferta', oferta_id=oferta_id)
@@ -122,6 +125,10 @@ def recibir_puntuacion(request, oferta_id):
 
 
 def detalle_oferta(request, oferta_id):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Primero debes iniciar sesión')
+        return redirect('login')
+
     oferta = get_object_or_404(Oferta, id=oferta_id)
     
     # Obtener ubicación del usuario
@@ -172,6 +179,20 @@ def detalle_oferta(request, oferta_id):
     
     return render(request, 'oferta/detalle_oferta.html', context)
 
+def siguiente_oferta(request, oferta_id):
+    # Obtener la oferta actual
+    oferta_actual = get_object_or_404(Oferta, id=oferta_id)
+    
+    # Obtener la siguiente oferta en orden de id o alguna otra lógica
+    siguiente = Oferta.objects.filter(id__gt=oferta_actual.id).order_by('id').first()
+    
+    # Si existe una siguiente oferta, redirigir a su detalle
+    if siguiente:
+        return redirect('detalle_oferta', oferta_id=siguiente.id)
+    else:
+        # Si no hay siguiente, redirigir a la primera oferta como bucle
+        primera_oferta = Oferta.objects.order_by('id').first()
+        return redirect('detalle_oferta', oferta_id=primera_oferta.id)
 
 
 

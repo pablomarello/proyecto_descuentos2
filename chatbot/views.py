@@ -7,10 +7,10 @@ from nltk.chat.util import Chat, reflections
 # Definimos algunos patrones y respuestas
 pairs = [
     (r'(?i)(hola|hol+a+|buenos dias|buenas|saludos)', ['¡Hola! Bienvenido a Descuentos Catamarca. ¿Cómo puedo ayudarte?']),
-    (r'(?i)(ofertas|promociones|descuentos)', ['Tenemos varias ofertas. Puedes filtrarlas por categoría, precio y producto en nuestro sitio.']),
-    (r'(?i)(hasta cuando estan las ofertas|duracion ofertas|vigencia de las ofertas)', ['Las ofertas están disponibles hasta la fecha indicado en cada oferta.']),
-    (r'(?i)(como puedo registrarme|registrarme|crear cuenta)', ['Para registrarte, haz clic en <a href="/persona/registrar" style="color: blue;">Registrarse</a> y sigue los pasos.']),
-    (r'(?i)(como cargar comercio|subir comercio|registrar comercio)', ['Para registrar tu comercio hacé clic <a href="/oferente/verificar_cuit" style="color: blue;">AQUÍ']),
+    (r'(?i)(ofertas|promociones|descuentos|donde veo las ofertas|como veo las ofertas|muestrame las ofertas)', ['Tenemos varias ofertas. Puedes filtrarlas por categoría, precio y producto en nuestro sitio.']),
+    (r'(?i)(hasta cuando estan las ofertas|duracion de las ofertas|vigencia de las ofertas)', ['Las ofertas están disponibles hasta la fecha indicado en cada oferta.']),
+    (r'(?i)(como puedo registrarme|registrarme|quiero registrarme|como me registro|crear cuenta)', ['Para registrarte, haz clic en <a href="/persona/registrar" style="color: blue;">Registrarse</a> y sigue los pasos.']),
+    (r'(?i)(como cargar comercio|subir comercio|registrar comercio|quiero registrar mi comercio)', ['Para registrar tu comercio hacé clic <a href="/oferente/verificar_cuit" style="color: blue;">AQUÍ']),
     (r'(?i)(puedo cargar mas de un comercio|varios comercios)', ['Sí, puedes cargar más de un comercio por usuario.']),
     (r'(?i)(como cargar productos|cargar producto|subir producto)', ['Si no encuentras un producto para cargarlo en la oferta en nuestro sitio, puedes agregarlo tú mismo.']),
     (r'(?i)(ubicacion del comercio|donde esta el comercio)', ['Puedes ver la ubicación del comercio en el detalle de la oferta, e incluso trazar una ruta desde tu ubicación.']),
