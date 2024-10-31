@@ -35,7 +35,7 @@ def comercios_cercanos(request):
     lon_usuario = float(ubicacion_usuario.longitud)
     
     #LIMITA LA DISTACIA EN KILOMETROS
-    radio_km = 100
+    radio_km = 10
 
     ubicaciones_comercio = ubicacionesComercio.objects.all()
 

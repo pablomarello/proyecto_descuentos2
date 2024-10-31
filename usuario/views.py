@@ -1,9 +1,11 @@
 import datetime
 from importlib import simple
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 import folium.map
 from requests import request
+from oferente.models import ubicacionesComercio
 from oferta.models import Oferta, Puntuacion
 from producto.models import Categoria, Producto, Subcategoria
 from usuario.sms import send_sms
@@ -15,7 +17,7 @@ from django.contrib.auth import get_user_model
 from django.contrib import messages
 from .forms import UsuarioCreationForm
 from django.conf import settings
-from persona.models import Persona
+from persona.models import Persona, ubicaciones
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from .email import *
@@ -24,13 +26,12 @@ import random
 import folium
 from django.db.models import Q
 from django.db.models import Avg
-
 from django.db.models import Avg
 import datetime
-
 from django.db.models import Q, Avg
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
+from geopy.distance import geodesic
 
 def index(request):
     ofertas = Oferta.objects.filter(activo=True)
@@ -58,6 +59,159 @@ def index(request):
         'baratos': baratos,
         'vencen_hoy': vencen_hoy
     })
+
+def descuentos_destacados(request):
+    # Filtro de Categorías
+    categoria_nombres = request.GET.getlist('category[]')
+    if categoria_nombres:
+        categoria_ids = Categoria.objects.filter(nombre__in=categoria_nombres).values_list('id', flat=True)
+        ofertas = Oferta.objects.filter(productos__categoria__categoria__id__in=categoria_ids, activo=True)
+    else:
+        ofertas = Oferta.objects.filter(activo=True)
+
+
+    selected_price = request.GET.get('price')  # Obtener el rango de precio seleccionado
+    print(f"Rango de precio seleccionado: {selected_price}")
+
+    precio_min = None
+    precio_max = None
+
+    if selected_price:
+        # Procesar el rango de precio seleccionado
+        if selected_price == '5000+':
+            precio_min = 5000
+            precio_max = None  # Sin límite superior
+        else:
+            try:
+                min_max = selected_price.split('-')
+                precio_min = float(min_max[0])
+                if len(min_max) > 1:
+                    precio_max = float(min_max[1])
+                else:
+                    precio_max = None  # Sin límite superior si no se proporciona
+            except ValueError:
+                print("Error: Rango de precio no válido.")
+                precio_min = None
+                precio_max = None
+
+    # Aplicar filtro de precio si se proporcionan valores válidos
+    if precio_min is not None:
+        print(f"Filtrando ofertas con precio mínimo {precio_min}")
+        ofertas = ofertas.filter(precio_oferta__gte=precio_min)
+
+    if precio_max is not None:
+        print(f"Filtrando ofertas con precio máximo {precio_max}")
+        ofertas = ofertas.filter(precio_oferta__lte=precio_max)
+
+
+    # Filtro de Ubicación (por distancia máxima desde el usuario)
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Usuario no autenticado"}, status=401)
+
+    persona = request.user.persona_id
+    ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
+    
+    user_lat = float(ubicacion_usuario.latitud)
+    user_lon = float(ubicacion_usuario.longitud)
+    
+    max_distance = request.GET.get('distance_max')
+    
+    # Inicializar las distancias a None
+    distance_min = None
+    distance_max = None
+    
+    # Obtener las distancias mínimas y máximas desde la solicitud
+    distance_min_str = request.GET.get('distance_min')
+    distance_max_str = request.GET.get('distance_max')
+
+    # Convertir distances a float, manejar errores
+    try:
+        if distance_min_str:
+            distance_min = float(distance_min_str)
+        else:
+            distance_min = 0.0  # Asignar un valor predeterminado si no se proporciona
+
+        if distance_max_str:
+            distance_max = float(distance_max_str)
+        else:
+            distance_max = float('inf')  # Asignar infinito si no se proporciona
+    except (ValueError, TypeError):
+        return JsonResponse({"error": "Distancias no válidas"}, status=400)
+
+    # Filtrar ofertas según la distancia calculada desde el usuario
+    if user_lat and user_lon:
+        user_coords = (user_lat, user_lon)
+
+        # Filtrar solo las ofertas dentro del rango de distancia
+        ofertas_filtradas = []
+        for oferta in ofertas:
+            # Obtener la ubicación del comercio relacionado con la oferta
+            ubicacion_comercio = ubicacionesComercio.objects.filter(comercio_id=oferta.oferente).first()
+            if ubicacion_comercio and ubicacion_comercio.latitud and ubicacion_comercio.longitud:
+                comercio_coords = (float(ubicacion_comercio.latitud), float(ubicacion_comercio.longitud))
+                distance = geodesic(user_coords, comercio_coords).km
+                # Verificar que la distancia esté dentro del rango especificado
+                if distance_min <= distance <= distance_max:
+                    ofertas_filtradas.append(oferta)
+
+        # Actualizar la lista de ofert
+        ofertas = ofertas_filtradas
+
+    # Obtener las ofertas con su calificación promedio
+    ofertas_con_calificaciones = []
+    for oferta in ofertas:
+        calificaciones = Puntuacion.objects.filter(oferta=oferta)
+        cantidad_calificaciones = calificaciones.count()
+        calificacion_promedio = calificaciones.aggregate(Avg('calificacion')).get('calificacion__avg', 0) or 0
+
+        ofertas_con_calificaciones.append({
+            'oferta': oferta,
+            'calificacion_promedio': calificacion_promedio,
+            'cantidad_calificaciones': cantidad_calificaciones,
+        })
+
+    # Ordenar las ofertas por calificación promedio y limitar a las 3 mejores
+    ofertas_con_calificaciones = sorted(ofertas_con_calificaciones, key=lambda x: x['calificacion_promedio'], reverse=True)[:3]
+
+    # Renderizar la plantilla con las ofertas filtradas
+    return render(request, 'usuarios/descuentos.html', {
+        'ofertas_con_calificaciones': ofertas_con_calificaciones,
+    })
+
+""" def descuentos_destacados(request):
+    categoria_nombres = request.GET.getlist('category[]')
+    print("Nombres de categorías recibidos:", categoria_nombres)  # Verificación
+    
+    # Obtener los IDs de las categorías a partir de los nombres
+    if categoria_nombres:
+        categoria_ids = Categoria.objects.filter(nombre__in=categoria_nombres).values_list('id', flat=True)
+        print("IDs de categorías obtenidos:", list(categoria_ids))  # Verificación
+    else:
+        categoria_ids = []
+    if categoria_ids:
+        ofertas = Oferta.objects.filter(productos__categoria__categoria__id__in=categoria_ids, activo=True)
+    else:
+        ofertas = Oferta.objects.filter(activo=True)
+
+    # Obtener las ofertas con su calificación promedio
+    ofertas_con_calificaciones = []
+    for oferta in ofertas:
+        calificaciones = Puntuacion.objects.filter(oferta=oferta)
+        cantidad_calificaciones = calificaciones.count()
+        calificacion_promedio = calificaciones.aggregate(Avg('calificacion')).get('calificacion__avg', 0) or 0
+
+        ofertas_con_calificaciones.append({
+            'oferta': oferta,
+            'calificacion_promedio': calificacion_promedio,
+            'cantidad_calificaciones': cantidad_calificaciones,
+        })
+    
+    # Ordenar las ofertas por calificación promedio
+    ofertas_con_calificaciones=sorted(ofertas_con_calificaciones, key=lambda x: x['calificacion_promedio'], reverse=True)[:3]
+    
+    return render(request, 'usuarios/descuentos.html', {
+        'ofertas_con_calificaciones': ofertas_con_calificaciones,
+    }) """
 
 def ofertas_por_categoria(request, categoria_id):
     categoria = get_object_or_404(Categoria, id=categoria_id)

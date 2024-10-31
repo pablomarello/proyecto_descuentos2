@@ -25,11 +25,11 @@ class Oferente(models.Model):
 
 class ubicacionesComercio(models.Model):
     comercio_id=models.OneToOneField(Oferente,blank=True,null=True,on_delete=models.CASCADE,db_column="oferente_id")
-    pais=models.ForeignKey(TablaPais,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_pais")
-    provincia=models.ForeignKey(TablaProvincia,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_pcia")
-    departamento=models.ForeignKey(TablaDepartamento,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_depto")
-    municipio=models.ForeignKey(TablaMunicipio,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_agl")
-    localidad=models.ForeignKey(TablaLocalidad,blank=False,null=False,on_delete=models.CASCADE,db_column="cod_ase")
+    pais=models.ForeignKey(TablaPais,blank=False,null=True,on_delete=models.CASCADE,db_column="cod_pais")
+    provincia=models.ForeignKey(TablaProvincia,blank=False,null=True,on_delete=models.CASCADE,db_column="cod_pcia")
+    departamento=models.ForeignKey(TablaDepartamento,blank=False,null=True,on_delete=models.CASCADE,db_column="cod_depto")
+    municipio=models.ForeignKey(TablaMunicipio,blank=False,null=True,on_delete=models.CASCADE,db_column="cod_agl")
+    localidad=models.ForeignKey(TablaLocalidad,blank=False,null=True,on_delete=models.CASCADE,db_column="cod_ase")
     barrio=models.CharField(max_length=100,blank=False,null=False)
     calle=models.CharField(max_length=50,blank=True,null=True)
     altura=models.CharField(max_length=20,blank=True,null=True)

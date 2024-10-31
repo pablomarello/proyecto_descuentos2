@@ -13,16 +13,16 @@ class Oferta(models.Model):
     oferente = models.ForeignKey(Oferente, on_delete=models.CASCADE, related_name='ofertas')
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-    activo = models.BooleanField(default=True)
+    activo = models.BooleanField(default=True)    
     imagen = models.ImageField(upload_to='ofertas/',default='default_image.png',null=True,blank=True)
-
+    
     def __str__(self):
         return self.titulo
 # Create your models here.
 
 
 class Puntuacion(models.Model):
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True)
     oferta = models.ForeignKey(Oferta, on_delete=models.CASCADE)
     calificacion = models.IntegerField()
     fecha_votacion = models.DateTimeField(auto_now_add=True)
