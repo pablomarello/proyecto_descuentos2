@@ -2,8 +2,8 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.shortcuts import render, redirect
-from .forms import OfertaForm
-from oferta.models import Oferta
+from .forms import ComentarioForm, OfertaForm
+from oferta.models import Comentario, Oferta
 from producto.models import Producto
 from django.contrib import messages
 from django.shortcuts import redirect, render
@@ -122,6 +122,30 @@ def recibir_puntuacion(request, oferta_id):
     return redirect('detalle_oferta', oferta_id=oferta_id)
 
 
+def recibir_comentario(request, oferta_id):
+    # Verifica si el método es POST
+    if request.method == 'POST':
+        oferta = get_object_or_404(Oferta, id=oferta_id)
+        comentario = request.POST.get('comentario')
+
+        # Verifica si ya ha puntuado esta oferta
+        comentario_existente = Comentario.objects.filter(oferta=oferta, usuario=request.user).exists()
+
+        if not comentario_existente:
+            # Crea una nueva puntuación utilizando los campos correctos
+            Comentario.objects.create(
+                oferta=oferta,
+                usuario=request.user,  # Campo 'usuario' en lugar de 'user'
+                comentario=comentario  # Campo 'estrellas' en lugar de 'puntuacion'
+            )
+        
+        # Redirige a la página de detalles de la oferta después de votar
+        return redirect('detalle_oferta', oferta_id=oferta_id)
+
+    # Si no es POST, redirige a la página de detalles de la oferta
+    return redirect('detalle_oferta', oferta_id=oferta_id)
+
+
 
 
 def detalle_oferta(request, oferta_id):
@@ -158,22 +182,31 @@ def detalle_oferta(request, oferta_id):
         user_ha_votado = Puntuacion.objects.filter(oferta=oferta, usuario=request.user).exists()
     
     # Obtener calificación promedio
+    comentarios=Comentario.objects.filter(oferta=oferta)
+    
     calificaciones = Puntuacion.objects.filter(oferta=oferta)
     cantidad_calificaciones=calificaciones.count()
     calificacion_promedio = calificaciones.aggregate(Avg('calificacion'))['calificacion__avg'] or 0
-    
+    # Verificar si el usuario ya hizo un comentario en esta oferta
+    puede_comentar = not Comentario.objects.filter(oferta=oferta, usuario=request.user).exists()
+    # Inicializar el formulario de comentarios
+    comentario_form = ComentarioForm()  # Crear una instancia del formulario
     
     print("Esta es la califiiicacion ",calificacion_promedio)
     print("Esta es la cantidad ",cantidad_calificaciones)
+    print(comentarios)
     
     
     context = {
         'oferta': oferta,
         'user_ha_votado': user_ha_votado,
+        'comentarios':comentarios,
         'calificacion_promedio': calificacion_promedio,
         'cantidad_calificaciones':cantidad_calificaciones,
         'ubicacion_usuario': json.dumps(ubicacion_usuario),
-        'ubicacion_comercio': json.dumps(ubicacion_comercio_data)
+        'ubicacion_comercio': json.dumps(ubicacion_comercio_data),
+        'puede_comentar': puede_comentar,
+        'comentario_form': comentario_form
     }
     
     

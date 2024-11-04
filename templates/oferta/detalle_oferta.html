@@ -84,6 +84,25 @@
       <p>Desde: {{ oferta.fecha_inicio|date:"d/m/Y" }}</p>
       <p>Hasta: {{ oferta.fecha_fin|date:"d/m/Y" }}</p>
     </div>
+    
+    <h3>Comentarios:</h3>
+{% for comentario in comentarios %}
+    <p><strong>{{ comentario.usuario.username }}:</strong> {{ comentario.comentario }}</p> <!-- Cambia "texto" por el campo real de comentario -->
+{% empty %}
+    <p>No hay comentarios para esta oferta.</p>
+{% endfor %}
+
+{% if puede_comentar %}
+    <h4 class="font-bold">Agregar un comentario:</h4>
+    <form method="POST" action="{% url 'recibir_comentario' oferta.id %}">
+      {% csrf_token %}
+      {{ comentario_form.comentario }} <!-- Renderizar el formulario -->
+      <button type="submit" class="btn btn-primary bg-gray-200 p-3 mb-4 mt-4">Enviar comentario</button>
+  </form>
+{% else %}
+    <p>Ya has comentado esta oferta.</p>
+{% endif %}
+
 
     <a href="{% url 'siguiente_oferta' oferta.id %}" class="bg-red-600 text-white rounded-r px-1 py-1 hover:bg-red-500">
       Siguiente oferta

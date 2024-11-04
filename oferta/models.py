@@ -29,3 +29,13 @@ class Puntuacion(models.Model):
 
     class Meta:
         unique_together = ('usuario', 'oferta')  # Evita que un usuario vote más de una vez por la misma oferta
+
+
+class Comentario(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True)
+    oferta = models.ForeignKey(Oferta, on_delete=models.CASCADE)
+    comentario = models.CharField(max_length=100,null=True)
+    fecha_comentario = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('usuario', 'oferta')  # Evita que un usuario comente más de una vez por la misma oferta

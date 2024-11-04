@@ -1,5 +1,5 @@
 from django import forms
-from .models import Oferta
+from .models import Comentario, Oferta
 from oferente.models import Oferente
 from producto.models import Producto
 
@@ -27,3 +27,10 @@ class OfertaForm(forms.ModelForm):
         # Filtrar los comercios asociados al usuario
         if user is not None:
             self.fields['oferente'].queryset = Oferente.objects.filter(id_usuario=user)
+
+class ComentarioForm(forms.ModelForm):
+    class Meta:
+        model=Comentario
+        fields=['comentario']
+        widgets = {'comentario':forms.Textarea(attrs={'class':'form-control','placeholder':'Escribe tu comentario aquí'}),}
+        
