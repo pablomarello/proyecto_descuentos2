@@ -1,37 +1,70 @@
+import os
 from django.shortcuts import render
 from django.http import JsonResponse
 import random
+import json
+import pickle
+import numpy as np
 import nltk
-from nltk.chat.util import Chat, reflections
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
-# Definimos algunos patrones y respuestas
-pairs = [
-    (r'(?i)(hola|hol+a+|buenos dias|buenas|saludos)', ['¡Hola! Bienvenido a Descuentos Catamarca. ¿Cómo puedo ayudarte?']),
-    (r'(?i)(ofertas|promociones|descuentos|donde veo las ofertas|como veo las ofertas|muestrame las ofertas)', ['Tenemos varias ofertas. Puedes filtrarlas por categoría, precio y producto en nuestro sitio.']),
-    (r'(?i)(hasta cuando estan las ofertas|duracion de las ofertas|vigencia de las ofertas)', ['Las ofertas están disponibles hasta la fecha indicado en cada oferta.']),
-    (r'(?i)(como puedo registrarme|registrarme|quiero registrarme|como me registro|crear cuenta)', ['Para registrarte, haz clic en <a href="/persona/registrar" style="color: blue;">Registrarse</a> y sigue los pasos.']),
-    (r'(?i)(como cargar comercio|subir comercio|registrar comercio|quiero registrar mi comercio)', ['Para registrar tu comercio hacé clic <a href="/oferente/verificar_cuit" style="color: blue;">AQUÍ']),
-    (r'(?i)(puedo cargar mas de un comercio|varios comercios)', ['Sí, puedes cargar más de un comercio por usuario.']),
-    (r'(?i)(como cargar productos|cargar producto|subir producto)', ['Si no encuentras un producto para cargarlo en la oferta en nuestro sitio, puedes agregarlo tú mismo.']),
-    (r'(?i)(ubicacion del comercio|donde esta el comercio)', ['Puedes ver la ubicación del comercio en el detalle de la oferta, e incluso trazar una ruta desde tu ubicación.']),
-    (r'(?i)(puedo comentar o valorar las ofertas|comentar o valorar ofertas|como comento y valoro las ofertas|valorar y comentar ofertas)', ['Sí, puedes comentar y valorar ofertas si estás registrado.']),
-    (r'(?i)(puedo valorar las ofertas)', ['Si,puedes valorar las ofertas pero solamente si estás registrado.']),
-    (r'(?i)(como valoro las ofertas|como valorar ofertas|valorar ofertas)', ['Para valorar las ofertas debes entrar en el detalle de la oferta y te aparecera unas estrellas que te permiten darle la calificacion a la oferta solamente tienes que hacer click para calificar esto solamente funciona si estas registrado.']),
-    (r'(?i)(puedo comentar las ofertas)', ['Si,puedes comentar las ofertas pero solamente si estás registrado.']),
-    (r'(?i)(como comento las ofertas|como comentar ofertas|comentar ofertas)', ['Para comentar las ofertas debes entrar en el detalle de la oferta y en el apartado de compentarios se te permitira comentar si estas registrado.']),
-    (r'(?i)(que te permite hacer la lista de compras|que permite la lista de compras)', ['La lista de compras te permite guardar ofertas y trazar una ruta entre los comercios desde tu ubicación.']),
-    (r'(?i)(como usar lista de compras|como se usa la lista de compras|como utilizo la lista de compras|como utilizar la lista de compras|utilizar lista compras)', ['Para utilizar la lista de compras primero debes estar registrado, una vez, registrado cuando estres al detalle de una oferta te aparecera el boton agregar a la lista de compras ahi se guardaran las ofertas que seleccionaste y te permitira trazar la ruta adonde se encuentra los comercios con las ofertas deseadas.']),
-    (r'(?i)(como funciona el chatbot|ayuda)', ['Estoy aquí para responder tus preguntas sobre Descuentos Catamarca. Pregúntame sobre ofertas, registro, comercios y más.']),
-    (r'(.*)', ['Lo siento, no entendí tu pregunta. Puedes preguntarme sobre las ofertas, registro de comercios, o cómo usar la lista de compras en Descuentos Catamarca.'])
-]
+from nltk.stem import WordNetLemmatizer
+from keras.models import load_model
 
-# Inicializamos el chatbot
-chatbot = Chat(pairs, reflections)
 
+
+# Obtener la ruta del directorio actual del script
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Cargar los recursos del chatbot usando rutas absolutas
+lemmatizer = WordNetLemmatizer()
+intents_path = os.path.join(current_dir, 'datos_chatbot/intents.json')
+words_path = os.path.join(current_dir, 'datos_chatbot/words.pkl')
+classes_path = os.path.join(current_dir, 'datos_chatbot/classes.pkl')
+model_path = os.path.join(current_dir, 'datos_chatbot/chatbot_model.h5')
+
+# Cargar los archivos
+intents = json.loads(open(intents_path, encoding='utf-8').read())
+words = pickle.load(open(words_path, 'rb'))
+classes = pickle.load(open(classes_path, 'rb'))
+model = load_model(model_path)
+
+
+# Funciones del chatbot para preprocesamiento, predicción y respuesta
+def clean_up_sentence(sentence):
+    sentence_words = nltk.word_tokenize(sentence)
+    sentence_words = [lemmatizer.lemmatize(word) for word in sentence_words]
+    return sentence_words
+
+def bag_of_words(sentence):
+    sentence_words = clean_up_sentence(sentence)
+    bag = [0] * len(words)
+    for w in sentence_words:
+        for i, word in enumerate(words):
+            if word == w:
+                bag[i] = 1
+    return np.array(bag)
+
+def predict_class(sentence):
+    bow = bag_of_words(sentence)
+    res = model.predict(np.array([bow]))[0]
+    max_index = np.argmax(res)
+    category = classes[max_index]
+    return category
+
+def get_response(tag, intents_json):
+    list_of_intents = intents_json['intents']
+    for i in list_of_intents:
+        if i["tag"] == tag:
+            return random.choice(i['responses'])
+    return "Lo siento, no entendí tu pregunta."
+
+# Vista para procesar los mensajes de los usuarios
 def chat_view(request):
     if request.method == 'POST':
         user_input = request.POST.get('message')
-        bot_response = chatbot.respond(user_input)
+        tag = predict_class(user_input)
+        bot_response = get_response(tag, intents)
         return JsonResponse({'response': bot_response})
-
-    return render(request, 'chatbot/chatbot.html')    
+    
+    return render(request, 'chatbot/chatbot.html')

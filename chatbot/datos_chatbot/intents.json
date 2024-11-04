@@ -1,0 +1,201 @@
+{
+    "intents": [
+        {
+            "tag": "saludo",
+            "patterns": [
+                "hola",
+                "holaa",
+                "buenos dias",
+                "buenas",
+                "saludos"
+            ],
+            "responses": [
+                "¡Hola! Bienvenido a Descuentos Catamarca. ¿Cómo puedo ayudarte?"
+            ]
+        },
+        {
+            "tag": "gracias",
+            "patterns": [
+                "muchas gracias","gracias","mil gracias"
+            ],
+            "responses": [
+                "De nada! escribeme si tienes mas dudas :)"
+            ]
+        },
+        {
+            "tag": "ofertas",
+            "patterns": [
+                "ofertas",
+                "promociones",
+                "descuentos",
+                "donde veo las ofertas",
+                "como veo las ofertas",
+                "muestrame las ofertas"
+            ],
+            "responses": [
+                "Tenemos varias ofertas. Puedes filtrarlas por categoría, precio y producto en nuestro sitio."
+            ]
+        },
+        {
+            "tag": "duracion_ofertas",
+            "patterns": [
+                "hasta cuando estan las ofertas",
+                "duracion de las ofertas",
+                "vigencia de las ofertas"
+            ],
+            "responses": [
+                "Las ofertas están disponibles hasta la fecha indicada en cada oferta."
+            ]
+        },
+        {
+            "tag": "registro_usuario",
+            "patterns": [
+                "como puedo registrarme",
+                "registrarme",
+                "quiero registrarme",
+                "como me registro",
+                "crear cuenta"
+            ],
+            "responses": [
+                "Para registrarte, haz clic en <a href=\"/persona/registrar\" style=\"color: blue;\">Registrarse</a> y sigue los pasos."
+            ]
+        },
+        {
+            "tag": "registro_comercio",
+            "patterns": [
+                "como cargar comercio",
+                "subir comercio",
+                "registrar comercio",
+                "quiero registrar mi comercio"
+            ],
+            "responses": [
+                "Para registrar tu comercio hacé clic <a href=\"/oferente/verificar_cuit\" style=\"color: blue;\">AQUÍ</a>."
+            ]
+        },
+        {
+            "tag": "multiples_comercios",
+            "patterns": [
+                "puedo cargar mas de un comercio",
+                "varios comercios"
+            ],
+            "responses": [
+                "Sí, puedes cargar más de un comercio por usuario."
+            ]
+        },
+        {
+            "tag": "registro_producto",
+            "patterns": [
+                "como cargar productos",
+                "cargar producto",
+                "subir producto"
+            ],
+            "responses": [
+                "Si no encuentras un producto para cargarlo en la oferta en nuestro sitio, puedes agregarlo tú mismo."
+            ]
+        },
+        {
+            "tag": "ubicacion_comercio",
+            "patterns": [
+                "ubicacion del comercio",
+                "donde esta el comercio"
+            ],
+            "responses": [
+                "Puedes ver la ubicación del comercio en el detalle de la oferta, e incluso trazar una ruta desde tu ubicación."
+            ]
+        },
+        {
+            "tag": "valorar_comentar",
+            "patterns": [
+                "puedo comentar o valorar las ofertas",
+                "comentar o valorar ofertas",
+                "como comento y valoro las ofertas",
+                "valorar y comentar ofertas"
+            ],
+            "responses": [
+                "Sí, puedes comentar y valorar ofertas si estás registrado."
+            ]
+        },
+        {
+            "tag": "solo_valorar",
+            "patterns": [
+                "puedo valorar las ofertas"
+            ],
+            "responses": [
+                "Sí, puedes valorar las ofertas pero solamente si estás registrado."
+            ]
+        },
+        {
+            "tag": "como_valorar",
+            "patterns": [
+                "como valoro las ofertas",
+                "como valorar ofertas",
+                "valorar ofertas"
+            ],
+            "responses": [
+                "Para valorar las ofertas, entra en el detalle de la oferta y verás unas estrellas para calificar. Haz clic para calificar, pero esto solo funciona si estás registrado."
+            ]
+        },
+        {
+            "tag": "solo_comentar",
+            "patterns": [
+                "puedo comentar las ofertas"
+            ],
+            "responses": [
+                "Sí, puedes comentar las ofertas, pero solamente si estás registrado."
+            ]
+        },
+        {
+            "tag": "como_comentar",
+            "patterns": [
+                "como comento las ofertas",
+                "como comentar ofertas",
+                "comentar ofertas"
+            ],
+            "responses": [
+                "Para comentar las ofertas, entra en el detalle de la oferta y, en el apartado de comentarios, se te permitirá comentar si estás registrado."
+            ]
+        },
+        {
+            "tag": "lista_compras",
+            "patterns": [
+                "que te permite hacer la lista de compras",
+                "que permite la lista de compras"
+            ],
+            "responses": [
+                "La lista de compras te permite guardar ofertas y trazar una ruta entre los comercios desde tu ubicación."
+            ]
+        },
+        {
+            "tag": "como_usar_lista_compras",
+            "patterns": [
+                "como usar lista de compras",
+                "como se usa la lista de compras",
+                "como utilizo la lista de compras",
+                "como utilizar la lista de compras",
+                "utilizar lista compras"
+            ],
+            "responses": [
+                "Para utilizar la lista de compras primero debes estar registrado. Una vez registrado, cuando entres al detalle de una oferta verás el botón 'Agregar a la lista de compras'. Ahí se guardarán las ofertas que seleccionaste, y podrás trazar la ruta a los comercios con las ofertas deseadas."
+            ]
+        },
+        {
+            "tag": "ayuda",
+            "patterns": [
+                "como funciona el chatbot",
+                "ayuda"
+            ],
+            "responses": [
+                "Estoy aquí para responder tus preguntas sobre Descuentos Catamarca. Pregúntame sobre ofertas, registro, comercios y más."
+            ]
+        },
+        {
+            "tag": "desconocido",
+            "patterns": [
+                ".*"
+            ],
+            "responses": [
+                "Lo siento, no entendí tu pregunta. Puedes preguntarme sobre las ofertas, registro de comercios, o cómo usar la lista de compras en Descuentos Catamarca."
+            ]
+        }
+    ]
+}
