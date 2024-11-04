@@ -31,3 +31,5 @@ Werkzeug==3.0.4
 xyzservices==2024.9.0
 geopy==2.4.1
 nltk==3.9.1
+numpy==1.25.2
+keras==3.6.0
