@@ -36,11 +36,17 @@ from geopy.distance import distance
 
 def index(request):
     if not request.user.is_authenticated:
-        messages.error(request, 'Primero debes iniciar sesión')
+        messages.error (request, 'Primero debes iniciar sesión')
         return redirect('login')
-    ofertas = Oferta.objects.filter(activo=True)
-    baratos = Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
+    ofertas_vencidas = Oferta.objects.filter(activo=True)
     hoy = datetime.date.today()
+    for oferta in ofertas_vencidas:
+        # Si la oferta está vencida, desactívala
+        if oferta.fecha_fin < hoy:
+            oferta.activo = False
+            oferta.save()
+    baratos = Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
+    ofertas = Oferta.objects.filter(activo=True)
     categorias = Categoria.objects.all()
     vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
     
@@ -69,10 +75,7 @@ def index(request):
                     "latitud": float(comercio.latitud),
                     "longitud": float(comercio.longitud),
                 })
-
-    
-    
-
+                
     # Crear lista de ofertas con sus calificaciones
     ofertas_con_calificaciones = []
     for oferta in ofertas:
@@ -113,8 +116,8 @@ def descuentos_destacados(request):
 
     if selected_price:
         # Procesar el rango de precio seleccionado
-        if selected_price == '5000+':
-            precio_min = 5000
+        if selected_price == '10000+':
+            precio_min = 10000
             precio_max = None  # Sin límite superior
         else:
             try:
@@ -199,20 +202,29 @@ def descuentos_destacados(request):
         cantidad_calificaciones = calificaciones.count()
         calificacion_promedio = calificaciones.aggregate(Avg('calificacion')).get('calificacion__avg', 0) or 0
 
+        # Obtener la ubicación del comercio
+        ubicacion_comercio = ubicacionesComercio.objects.filter(comercio_id=oferta.oferente).first()
+        
+        # Agregar al contexto la latitud y longitud del comercio si está disponible
+        latitud = float(ubicacion_comercio.latitud) if ubicacion_comercio and ubicacion_comercio.latitud else None
+        longitud = float(ubicacion_comercio.longitud) if ubicacion_comercio and ubicacion_comercio.longitud else None
+
         ofertas_con_calificaciones.append({
             'oferta': oferta,
             'calificacion_promedio': calificacion_promedio,
             'cantidad_calificaciones': cantidad_calificaciones,
+            'latitud': latitud,
+            'longitud': longitud,
         })
 
     # Ordenar las ofertas por calificación promedio y limitar a las 3 mejores
     ofertas_con_calificaciones = sorted(ofertas_con_calificaciones, key=lambda x: x['calificacion_promedio'], reverse=True)[:3]
 
-    # Renderizar la plantilla con las ofertas filtradas
-    return render(request, 'usuarios/descuentos.html', {
+    # Renderizar la plantilla con las ofertas filtradas y sus ubicaciones
+    return render(request, 'usuarios/descuento.html', {
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
     })
-
+    
 """ def descuentos_destacados(request):
     categoria_nombres = request.GET.getlist('category[]')
     print("Nombres de categorías recibidos:", categoria_nombres)  # Verificación
@@ -273,6 +285,7 @@ def ofertas_por_categoria(request, categoria_id):
 def buscar(request):
     query = request.GET.get('q', '').strip()
     ofertas = []
+    
 
     if query:  # Verificar que la consulta no esté vacía
         ofertas = Oferta.objects.filter(

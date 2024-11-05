@@ -27,7 +27,7 @@ Index
       <div class="relative mx-auto max-w-7xl px-4 sm:static sm:px-6 lg:px-8">
         <div class="sm:max-w-lg">
           <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Descuentos Destacados</h1>
-          <p class="mt-4 text-xl text-gray-500">Descubrí los descuentos que a los usuarios le encataron</p>
+          <p class="mt-4 text-xl text-gray-500">Descubrí los descuentos que a los usuarios les encataron</p>
         </div>
         <div>
           <div class="mt-10">
@@ -37,29 +37,29 @@ Index
                 <div class="flex items-center space-x-6 lg:space-x-8">
                   <div class="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                     <div class="h-64 w-44 overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-01.jpg" alt="" class="h-full w-full object-cover object-center">
+                      <img src="{% static 'images/media/ofertas/girasol_aceite.jpg' %}" alt="" class="h-full w-full object-cover object-center">
                     </div>
                     <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-02.jpg" alt="" class="h-full w-full object-cover object-center">
-                    </div>
-                  </div>
-                  <div class="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
-                    <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-03.jpg" alt="" class="h-full w-full object-cover object-center">
-                    </div>
-                    <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-04.jpg" alt="" class="h-full w-full object-cover object-center">
-                    </div>
-                    <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-05.jpg" alt="" class="h-full w-full object-cover object-center">
+                      <img src="{% static "images/media/ofertas/cerveza.jpg" %}" alt="" class="h-full w-full object-cover object-center">
                     </div>
                   </div>
                   <div class="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                     <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-06.jpg" alt="" class="h-full w-full object-cover object-center">
+                      <img src="{% static "images/media/ofertas/cerveza_juEGLES.jpg" %}" alt="" class="h-full w-full object-cover object-center">
                     </div>
                     <div class="h-64 w-44 overflow-hidden rounded-lg">
-                      <img src="https://tailwindui.com/plus/img/ecommerce-images/home-page-03-hero-image-tile-07.jpg" alt="" class="h-full w-full object-cover object-center">
+                      <img src="{% static "images/media/ofertas/tele.jpg" %}" alt="" class="h-full w-full object-cover object-center">
+                    </div>
+                    <div class="h-64 w-44 overflow-hidden rounded-lg">
+                      <img src="{% static "images/media/ofertas/cerealmix.jpg" %}" alt="" class="h-full w-full object-cover object-center">
+                    </div>
+                  </div>
+                  <div class="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
+                    <div class="h-64 w-44 overflow-hidden rounded-lg">
+                      <img src="{% static "images/media/ofertas/girasol_aceite.jpg" %}" alt="" class="h-full w-full object-cover object-center">
+                    </div>
+                    <div class="h-64 w-44 overflow-hidden rounded-lg">
+                      <img src="{% static "images/media/ofertas/patagonia.jpg" %}" alt="" class="h-full w-full object-cover object-center">
                     </div>
                   </div>
                 </div>
@@ -242,53 +242,53 @@ Index
     </div>
 </div>
 
-
 <div class="bg-white">
     <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-      <h2 class="text-2xl font-bold tracking-tight text-gray-900">Solo por hoy</h2>
-      {% for oferta in vencen_hoy %}
-      <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-        <div class="group relative">
-          <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-            <img src="https://tailwindui.com/plus/img/ecommerce-images/product-page-01-related-product-01.jpg" alt="Front of men&#039;s Basic Tee in black." class="h-full w-full object-cover object-center lg:h-full lg:w-full">
-          </div>
-          <div class="mt-4 flex justify-between">
-            <div>
-              <h3 class="font-bold w-full text-gray-700">
-                <a href="#">
-                  <span aria-hidden="true" class="absolute inset-0"></span>
-                  {{ oferta.titulo }}
-                </a>
-              </h3>
-              <p class="mt-1 text-sm text-gray-500">{{ oferta.descripcion }}</p>
-              <h3 class="text-sm font-medium text-gray-700">Productos:</h3>
-                <ul class="flex flex-row gap-2 flex-wrap list-none w-full">
-                    {% for producto in oferta.productos.all %}
-                        <li class="whitespace-nowrap text-sm  text-gray-700">{{ producto.nombre }}</li>
-                    {% endfor %}
-                </ul>
-
-                <div class="mb-2 w-full">
-                    <p class="text-sm font-medium text-gray-700">Comercio:</p>
-                    <p class="text-sm  text-gray-700">{{ oferta.oferente.nombrecomercio }}</p>
+        <h2 class="text-2xl font-bold tracking-tight text-gray-900">Solo por hoy</h2>
+        <div class="mt-6 flex flex-wrap gap-6"> <!-- Cambié grid por flex y añadí gap -->
+            {% for oferta in vencen_hoy %}
+            <div class="group relative w-full sm:w-1/2 lg:w-1/4"> <!-- Añadido el tamaño a las columnas -->
+                <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
+                    {% if oferta.imagen %}
+                        <img src="{{ oferta.imagen.url }}" alt="Front of men's Basic Tee in black." class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+                    {%else%}
+                        <img src="{{ MEDIA_URL }}default_image.png" alt="Front of men's Basic Tee in black." class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+                    {% endif %}
+                    
                 </div>
-                <div class="flex justify-between mt-2 text-xs text-gray-500">
-                    <p>Desde: {{ oferta.fecha_inicio }}</p>
-                    <p>Hasta: {{ oferta.fecha_fin }}</p>
+                <div class="mt-4 flex justify-between">
+                    <div>
+                        <h3 class="font-bold w-full text-gray-700">
+                            <a href="{% url 'detalle_oferta' oferta.id %}">
+                                <span aria-hidden="true" class="absolute inset-0"></span>
+                                {{ oferta.titulo }}
+                            </a>
+                        </h3>
+                        <p class="mt-1 text-sm text-gray-500">{{ oferta.descripcion }}</p>
+                        <h3 class="text-sm font-medium text-gray-700">Productos:</h3>
+                        <ul class="flex flex-row gap-2 flex-wrap list-none w-full">
+                            {% for producto in oferta.productos.all %}
+                            <li class="whitespace-nowrap text-sm text-gray-700">{{ producto.nombre }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <div class="mb-2 w-full">
+                            <p class="text-sm font-medium text-gray-700">Comercio:</p>
+                            <p class="text-sm text-gray-700">{{ oferta.oferente.nombrecomercio }}</p>
+                        </div>
+                        <div class="flex justify-between mt-2 text-xs text-gray-500">
+                            <p>Desde: {{ oferta.fecha_inicio }}</p>
+                            <p>Hasta: {{ oferta.fecha_fin }}</p>
+                        </div>
+                    </div>
+                    <p class="text-sm font-medium text-gray-900 line-through">${{ oferta.precio_normal }}</p>
+                    <p class="text-sm font-bold text-red-600">${{ oferta.precio_oferta }}</p>
                 </div>
             </div>
-            <p class="text-sm font-medium text-gray-900 line-through">${{ oferta.precio_normal }}</p>
-            <p class="text-sm font-bold text-red-600">${{ oferta.precio_oferta }}</p>
-            
-
-          </div>
+            {% endfor %}
         </div>
-  
-        <!-- More products... -->
-      </div>
     </div>
-  </div>
-{%endfor%}  
+</div>  
 
 {% endblock content %}
 

@@ -22,96 +22,65 @@
         {% endfor %}
     </div>
     {% endif %}
-    <h1 class="text-2xl font-bold mb-4">Publicar nueva oferta</h1>
-
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-
-        <!-- Campo para el título -->
-        <div class="mb-4">
-            <label for="titulo" class="block text-sm font-medium text-gray-700">Título de la oferta</label>
-            <input type="text" name="titulo" id="titulo" value="{{ form.titulo.value|default_if_none:'' }}"
-                class="mt-1 p-2 block w-full border rounded-md" placeholder="Título de la oferta">
-            {{ form.titulo.errors }}
-        </div>
-
-        <!-- Campo para la descripción -->
-        <div class="mb-4">
-            <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
-            <textarea name="descripcion" id="descripcion" class="mt-1 p-2 block w-full border rounded-md"
-                placeholder="Descripción de la oferta">{{ form.descripcion.value|default_if_none:'' }}</textarea>
-            {{ form.descripcion.errors }}
-        </div>
-
-        <!-- Campo para la imagen de la oferta -->
-        <div class="mb-4">
-            <label for="imagen" class="block text-sm font-medium text-gray-700">Imagen de la oferta</label>
-            <input type="file" name="imagen" id="imagen"
-                class="mt-1 block w-full text-sm text-gray-900 border rounded-md cursor-pointer focus:outline-none">
-            {{ form.imagen_oferta.errors }}
-        </div>
-
-        <!-- Campo para el precio normal -->
-        <div class="mb-4">
-            <label for="precio_normal" class="block text-sm font-medium text-gray-700">Precio normal</label>
-            <input type="number" name="precio_normal" id="precio_normal"
-                value="{{ form.precio_normal.value|default_if_none:'' }}"
-                class="mt-1 p-2 block w-full border rounded-md" placeholder="Precio normal">
-            {{ form.precio_normal.errors }}
-        </div>
-
-        <!-- Campo para el precio de oferta -->
-        <div class="mb-4">
-            <label for="precio_oferta" class="block text-sm font-medium text-gray-700">Precio de oferta</label>
-            <input type="number" name="precio_oferta" id="precio_oferta"
-                value="{{ form.precio_oferta.value|default_if_none:'' }}"
-                class="mt-1 p-2 block w-full border rounded-md" placeholder="Precio de oferta">
-            {{ form.precio_oferta.errors }}
-        </div>
-
-        <!-- Selección de productos -->
+    <div class="max-w-4xl mx-auto px-4 py-6 bg-white shadow-md rounded-lg">
+        <h1 class="text-2xl font-bold mb-4">Editar Oferta</h1>
         
-        <div class="mb-4">
-            <label for="buscar_producto" class="block text-sm font-medium text-gray-700">Buscar producto</label>
-            <input type="text" id="buscar_producto" class="mt-1 p-2 block w-full border rounded-md"
-                placeholder="Escribe el nombre del producto...">
-            <div id="resultados_productos" class="mt-2 bg-white border rounded-md max-h-60 overflow-auto z-50"></div>
-        </div>
-        <!-- Contenedor para productos seleccionados -->
-        <div id="productos_seleccionados" class="mb-4 flex flex-wrap"></div>
-        <!-- Campo oculto para productos seleccionados -->
-        <input type="hidden" name="productos_seleccionados" id="productos_seleccionados_input" value="">
-
-        <!-- Selección del oferente -->
-        <div class="mb-4">
-            <label for="oferente" class="block text-sm font-medium text-gray-700">Selecciona el comercio</label>
-            {{ form.oferente }}
-            {{ form.oferente.errors }}
-        </div>
-
-        <!-- Campo para la fecha de inicio -->
-        <div class="mb-4">
-            <label for="fecha_inicio" class="block text-sm font-medium text-gray-700">Fecha de inicio</label>
-            <input type="date" name="fecha_inicio" id="fecha_inicio"
-                value="{{ form.fecha_inicio.value|default_if_none:'' }}"
-                class="mt-1 p-2 block w-full border rounded-md">
-            {{ form.fecha_inicio.errors }}
-        </div>
-
-        <!-- Campo para la fecha de fin -->
-        <div class="mb-4">
-            <label for="fecha_fin" class="block text-sm font-medium text-gray-700">Fecha de fin</label>
-            <input type="date" name="fecha_fin" id="fecha_fin" value="{{ form.fecha_fin.value|default_if_none:'' }}"
-                class="mt-1 p-2 block w-full border rounded-md">
-            {{ form.fecha_fin.errors }}
-        </div>
-
-        <!-- Botón de envío -->
-        <div class="flex justify-end">
-            <button type="submit" class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none btn btn-primary">Publicar
-                oferta</button>
-        </div>
-    </form>
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Campo para el título de la oferta -->
+            <div class="mb-4">
+                <label for="titulo" class="block text-gray-700 font-bold mb-2">Título de la Oferta:</label>
+                <input type="text" name="titulo" id="titulo" value="{{ oferta.titulo }}" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <!-- Campo para la descripción -->
+            <div class="mb-4">
+                <label for="descripcion" class="block text-gray-700 font-bold mb-2">Descripción:</label>
+                <textarea name="descripcion" id="descripcion" rows="4" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">{{ oferta.descripcion }}</textarea>
+            </div>
+            
+            <!-- Campo para la imagen -->
+            <div class="mb-4">
+                <label for="imagen" class="block text-gray-700 font-bold mb-2">Imagen:</label>
+                <input type="file" name="imagen" id="imagen" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                {% if oferta.imagen %}
+                <img src="{{ oferta.imagen.url }}" alt="{{ oferta.titulo }}" class="w-32 h-32 object-cover mt-4">
+                {% endif %}
+            </div>
+            
+            <!-- Campo para el precio normal -->
+            <div class="mb-4">
+                <label for="precio_normal" class="block text-gray-700 font-bold mb-2">Precio Normal:</label>
+                <input type="number" name="precio_normal" id="precio_normal" value="{{ oferta.precio_normal }}" step="0.01" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <!-- Campo para el precio en oferta -->
+            <div class="mb-4">
+                <label for="precio_oferta" class="block text-gray-700 font-bold mb-2">Precio en Oferta:</label>
+                <input type="number" name="precio_oferta" id="precio_oferta" value="{{ oferta.precio_oferta }}" step="0.01" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <!-- Campo para la fecha de inicio -->
+            <div class="mb-4">
+                <label for="fecha_inicio" class="block text-gray-700 font-bold mb-2">Fecha de Inicio:</label>
+                <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ oferta.fecha_inicio|date:'Y-m-d' }}" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <!-- Campo para la fecha de fin -->
+            <div class="mb-4">
+                <label for="fecha_fin" class="block text-gray-700 font-bold mb-2">Fecha de Fin:</label>
+                <input type="date" name="fecha_fin" id="fecha_fin" value="{{ oferta.fecha_fin|date:'Y-m-d' }}" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <!-- Botones para guardar o cancelar -->
+            <div class="flex justify-end gap-4">
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600">Guardar Cambios</button>
+                <a href="{% url 'mis_ofertas' %}" class="px-4 py-2 bg-gray-300 text-gray-700 font-bold rounded-md hover:bg-gray-400">Cancelar</a>
+            </div>
+        </form>
+    </div>
+    
 </div>
 
 <script type="text/javascript">

@@ -38,8 +38,8 @@ def verificarCuit(request):
                 error_constancia = res.get('errorConstancia', {})
                 
                 if datos_generales:             
-                    nombre = datos_generales.get('nombre', '-----')
-                    apellido = datos_generales.get('apellido', '-----')
+                    nombre = datos_generales.get('razonSocial', '---')
+                    apellido = datos_generales.get('apellido', '--')
                     
                     domicilio_fiscal = datos_generales.get('domicilioFiscal', {})
                     direccion = domicilio_fiscal.get('direccion', '----')

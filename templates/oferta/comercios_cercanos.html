@@ -4,7 +4,68 @@
 {% block title %}Ruta al Comercio{% endblock title %}
 
 {% block content %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+
+
+<section class="w-full flex justify-center">
+    <div class="bg-white pb-6 w-full max-w-2xl"> 
+        <div class="flex items-center mb-6 m-4">
+            <h1 class="text-2xl font-bold text-gray-800 mr-4">Más cercanos a tu ubicación</h1>
+        </div>
+        
+        <div class="scroll-container-tarj flex overflow-x-auto gap-4">
+            {% for item in ofertas_con_calificaciones %}
+            <div class="card flex-shrink-0" style="width: 45%; max-width: 250px;"> <!-- Reducir el ancho -->
+                <div class="bg-gray-50 p-3 flex flex-col justify-between gap-1 rounded-2xl overflow-hidden">
+                    <div class="h-40 bg-gray-700 rounded-xl overflow-hidden flex items-center justify-center"> <!-- Ajustar la altura -->
+                        {% if item.oferta.imagen %}
+                            <img src="{{ item.oferta.imagen.url }}" alt="{{ item.oferta.titulo }}" class="w-full h-32 object-cover mb-4 rounded-lg">
+                        {% else %}
+                            <img src="{{ MEDIA_URL }}default_image.png" alt="Imagen por defecto" class="w-full h-32 object-cover mb-4 rounded-lg">
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-col gap-2 w-full flex-grow">
+                        <span class="text-lg font-bold w-full">{{ item.oferta.titulo }}</span> <!-- Reducir el tamaño de fuente -->
+                        <p class="text-xs text-gray-700 w-full">{{ item.oferta.descripcion }}</p>
+                        <h3 class="font-bold text-gray-700">Productos:</h3>
+                        <ul class="flex flex-row gap-1 flex-wrap list-none w-full">
+                            {% for producto in item.oferta.productos.all %}
+                                <li class="whitespace-nowrap">{{ producto.nombre }}</li>
+                            {% endfor %}
+                        </ul>
+                        <div class="mb-2 w-full">
+                            <p class="font-bold text-gray-700">Comercio:</p>
+                            <p>{{ item.oferta.oferente.nombrecomercio }}</p>
+                        </div>
+                        <div class="flex items-center">
+                            <p class="text-xl font-bold">{{ item.calificacion_promedio|floatformat:1 }}</p>
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= item.calificacion_promedio %}
+                                    <label class="text-xl" style="color: orange;">★</label> <!-- Estrella llena -->
+                                {% else %}
+                                    <label class="text-xl" style="color: grey;">★</label> <!-- Estrella vacía -->
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <p>({{ item.cantidad_calificaciones }}) Calificaciones</p>
+                        <div class="flex justify-between mt-2 text-xs text-gray-500">
+                            <p>Desde: {{ item.oferta.fecha_inicio }}</p>
+                            <p>Hasta: {{ item.oferta.fecha_fin }}</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mt-4">
+                        <div>
+                            <p class="text-gray-600 line-through">${{ item.oferta.precio_normal }}</p>
+                            <span class="font-bold text-red-600">${{ item.oferta.precio_oferta }}</span>
+                        </div>
+                        <a href="{% url 'detalle_oferta' item.oferta.id %}" class="bg-red-600 text-white shadow-sm hover:bg-red-500 rounded px-1 py-1">Ver más</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>                 
+    </div>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 
@@ -18,7 +79,93 @@
 
 
 
-<div id="map" style="height: 600px; width:100%; position: relative; z-index: 1;"></div>
+<div id="map" style="height: 700px; width:100%; position: relative; z-index: 1; margin-left: 15px; margin-top: 75px;"></div>
+
+<script>
+    // Verifica los datos pasados desde el backend a la plantilla
+    const ubicacionUsuarioDB = {{ ubicacion_usuario|safe }};
+    const comerciosEnRadio = {{ comercios_en_radio|safe }};
+    console.log("Ubicación del usuario:", ubicacionUsuarioDB);
+    console.log("Comercios en radio:", comerciosEnRadio);
+
+    const map = L.map('map').setView([ubicacionUsuarioDB.latitud, ubicacionUsuarioDB.longitud], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Crear el ícono pulsante para la ubicación del usuario
+    const pulsingIcon = L.icon.pulse({ iconSize: [20, 20], color: 'red' });
+
+    // Reemplazar el marcador del usuario con el ícono pulsante
+    const usuarioMarker = L.marker([ubicacionUsuarioDB.latitud, ubicacionUsuarioDB.longitud], { icon: pulsingIcon })
+        .addTo(map)
+        .bindPopup('¡Estás aquí!').openPopup();
+
+        let userLocation = {
+        lat: ubicacionUsuarioDB.latitud,
+        lng: ubicacionUsuarioDB.longitud
+    };
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                map.setView([userLocation.lat, userLocation.lng], 13);
+                usuarioMarker.setLatLng([userLocation.lat, userLocation.lng])
+                    .bindPopup('Ubicación actual').openPopup();
+            },
+            function(error) {
+                console.warn(`No se pudo obtener la ubicación actual. Usando ubicación predeterminada.`);
+                usuarioMarker.bindPopup('Ubicación predeterminada').openPopup();
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    }
+
+    let currentRoute = null;
+
+    function trazarRuta(origen, destino) {
+        if (currentRoute) {
+            map.removeControl(currentRoute);
+        }
+
+        currentRoute = L.Routing.control({
+            waypoints: [
+                L.latLng(origen.lat, origen.lng),
+                L.latLng(destino.lat, destino.lng)
+            ],
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim(),
+            language: 'es',
+            lineOptions: {
+            styles: [{ color: 'red', opacity: 0.7, weight: 10 }] // Cambia 'color' y 'weight' según tus preferencias
+        },
+            createMarker: function(i, waypoint, n) {
+                if (i === n - 1) {
+                    return L.marker(waypoint.latLng).bindPopup('Destino');
+                } else if (i > 0) {
+                    return L.marker(waypoint.latLng).bindPopup(`Parada ${i}`);
+                }
+                return null;
+            }
+        }).addTo(map);
+    }
+
+    comerciosEnRadio.forEach(comercio => {
+        const comercioMarker = L.marker([comercio.latitud, comercio.longitud])
+            .addTo(map)
+            .bindPopup(comercio.nombre);
+
+        comercioMarker.on('click', function() {
+            trazarRuta(userLocation, { lat: comercio.latitud, lng: comercio.longitud });
+        });
+    });
+</script>
+</section>
 
 <script>
     // Verifica los datos pasados desde el backend a la plantilla

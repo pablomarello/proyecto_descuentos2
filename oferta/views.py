@@ -1,10 +1,11 @@
+import datetime
 import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.shortcuts import render, redirect
 from .forms import ComentarioForm, OfertaForm
 from oferta.models import Comentario, Oferta
-from producto.models import Producto
+from producto.models import Categoria, Producto
 from django.contrib import messages
 from django.shortcuts import redirect, render
 import requests
@@ -24,10 +25,26 @@ from persona.models import ubicaciones
 from oferente.models import ubicacionesComercio
 from geopy.distance import distance
 
+from datetime import datetime, date 
+
+
+
+        
+
 def comercios_cercanos(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Primero debes iniciar sesión')
         return redirect('login')
+    
+    ofertas = Oferta.objects.filter(activo=True)
+    baratos = Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
+    hoy = datetime.date.today()
+    categorias = Categoria.objects.all()
+    vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
+    
+
+    # Crear lista de ofertas con sus calificaciones
+    
 
     persona = request.user.persona_id
     ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
@@ -53,9 +70,21 @@ def comercios_cercanos(request):
                     "longitud": float(comercio.longitud),
                 })
 
+    ofertas_con_calificaciones = []
+    for oferta in ofertas:
+        calificaciones = Puntuacion.objects.filter(oferta=oferta)
+        cantidad_calificaciones = calificaciones.count()
+        calificacion_promedio = calificaciones.aggregate(Avg('calificacion'))['calificacion__avg'] or 0
+
+        ofertas_con_calificaciones.append({
+            'oferta': oferta,
+            'calificacion_promedio': calificacion_promedio,
+            'cantidad_calificaciones': cantidad_calificaciones,
+        })
+
     context = {
         'ubicacion_usuario': {'latitud': lat_usuario, 'longitud': lon_usuario},
-        'comercios_en_radio': comercios_en_radio
+        'comercios_en_radio': comercios_en_radio,
     }
 
     return render(request, 'oferta/comercios_cercanos.html', context)
@@ -236,6 +265,7 @@ def siguiente_oferta(request, oferta_id):
 
 
 
+
 def crear_oferta(request):
     if request.method == 'POST':
         print(request.FILES)  # Añade esta línea para revisar si el archivo se está enviando correctamente
@@ -302,14 +332,87 @@ def buscar_productos(request):
     return JsonResponse(resultados, safe=False)
  """
 
+
+
 def mis_ofertas(request):
     # Obtén el usuario actual
+    hoy = date.today()
     user = request.user
     
     # Filtra las ofertas por los comercios que pertenecen al usuario
-    ofertas = Oferta.objects.filter(oferente__id_usuario=user)
+    ofertas_vencidas = Oferta.objects.filter(oferente__id_usuario=user)
+    for oferta in ofertas_vencidas:
+        # Si la oferta está vencida, desactívala
+        if oferta.fecha_fin < hoy:
+            oferta.activo = False
+            oferta.save()
     
-    return render(request, 'oferta/mis_ofertas.html', {'ofertas': ofertas})
+    ofertas = Oferta.objects.filter(oferente__id_usuario=user, eliminado=False)
+    
+    return render(request, 'oferta/mis_ofertas.html', {'ofertas': ofertas, 'hoy':hoy})
+
+def editar_oferta(request,id_oferta):
+    oferta = get_object_or_404(Oferta, id=id_oferta)
+    
+    if request.method == 'POST':
+        oferta.titulo = request.POST.get('titulo')
+        oferta.descripcion = request.POST.get('descripcion')
+        oferta.precio_normal = request.POST.get('precio_normal')
+        oferta.precio_oferta = request.POST.get('precio_oferta')
+        oferta.fecha_inicio = request.POST.get('fecha_inicio')
+        oferta.fecha_fin = request.POST.get('fecha_fin')
+        
+        hoy = date.today()
+
+        # Validar fechas
+        if oferta.fecha_inicio and oferta.fecha_fin:
+            # Convertir las fechas a objetos datetime.date para comparación
+            fecha_inicio = datetime.strptime(oferta.fecha_inicio, '%Y-%m-%d').date()
+            fecha_fin = datetime.strptime(oferta.fecha_fin, '%Y-%m-%d').date()
+
+            # Validar que las fechas no sean anteriores a hoy
+            if fecha_inicio < hoy:
+                messages.error(request, "La fecha de inicio no puede ser anterior a hoy.")
+                return render(request, 'oferta/editar_oferta.html', {'oferta': oferta})
+
+            if fecha_fin < hoy:
+                messages.error(request, "La fecha de fin no puede ser anterior a hoy.")
+                return render(request, 'oferta/editar_oferta.html', {'oferta': oferta})
+
+            # Validar que la fecha de inicio no sea posterior a la fecha de fin
+            if fecha_inicio > fecha_fin:
+                messages.error(request, "La fecha de inicio no puede ser posterior a la fecha de fin.")
+                return render(request, 'oferta/editar_oferta.html', {'oferta': oferta})
+        
+        # Si hay una nueva imagen, actualizarla
+        if request.FILES.get('imagen'):
+            oferta.imagen = request.FILES['imagen']
+        
+        oferta.save()
+        
+        messages.success(request, "La oferta ha sido actualizada correctamente.")
+        return redirect('mis_ofertas')
+    
+    return render(request, 'oferta/editar_oferta.html', {'oferta': oferta})
+
+def eliminar_oferta(request,id_oferta):
+    if request.method == "POST":
+        # Obtiene la oferta o muestra un error 404 si no existe
+        oferta = get_object_or_404(Oferta, pk = id_oferta)
+        
+        # Elimina la oferta
+        oferta.eliminado=True
+        oferta.save()
+        
+        # Agrega un mensaje de éxito (opcional)
+        messages.success(request, "La oferta ha sido eliminada exitosamente.")
+        
+        # Redirige a la página de las ofertas
+        return redirect('mis_ofertas')
+    else:
+        # Si no es un método POST, redirige a la página de ofertas
+        return redirect('mis_ofertas')
+
 
 def ofertas(request):
     ofertas = Oferta.objects.filter(activo=True)
