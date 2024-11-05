@@ -32,5 +32,5 @@ class ComentarioForm(forms.ModelForm):
     class Meta:
         model=Comentario
         fields=['comentario']
-        widgets = {'comentario':forms.Textarea(attrs={'class':'form-control','placeholder':'Escribe tu comentario aquí'}),}
+        widgets = {'comentario':forms.Textarea(attrs={'class':'form-control','placeholder':'Escribe tu comentario aquí','style': 'border: 1px solid #d1d5db; padding: 4px; border-radius: 4px;'}),}
         
