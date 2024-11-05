@@ -3,6 +3,7 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from .forms import ComentarioForm, OfertaForm
 from oferta.models import Comentario, Oferta
 from producto.models import Categoria, Producto
@@ -179,8 +180,10 @@ def recibir_comentario(request, oferta_id):
 
 def detalle_oferta(request, oferta_id):
     if not request.user.is_authenticated:
-        messages.error(request, 'Primero debes iniciar sesión')
-        return redirect('login')
+        messages.error(request, 'Inicia sesión para ver los detalles de cada oferta')
+        # Redirige al usuario a la página de inicio de sesión, pasando la URL actual como `next`
+        login_url = f"{reverse('login')}?next={request.path}"
+        return redirect(login_url)
 
     oferta = get_object_or_404(Oferta, id=oferta_id)
     
