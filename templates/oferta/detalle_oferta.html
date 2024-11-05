@@ -1,25 +1,25 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}
-  Detalle de oferta
+Detalle de oferta
 {% endblock title %}
 
-{% block js %}
-{% endblock %}
-
 {% block content %}
-<h1 class="font-bold text-xl mb-4 ">DETALLES DE LA OFERTA</h1>
+<h1 class="font-extrabold text-3xl sm:text-4xl md:text-5xl mb-6 text-gray-800 tracking-wide uppercase text-center mb-10">
+  Detalles de la Oferta
+</h1>
+
 <div class="flex space-x-0 items-start">
   <!-- Tarjeta de la oferta -->
-   <div class="w-1/2 border border-gray-300 rounded-lg shadow-lg mb-4 mt-4 bg-white p-6 rounded-lg mx-[10px] my-[10px]">
-    <h1>Detalles de oferta</h1>
+  <div class="w-1/2 border border-gray-300 rounded-lg shadow-lg mb-4 mt-4 bg-white p-6 mx-[10px] my-[10px] flex flex-col">
     <h2 class="text-xl font-semibold mb-2">{{ oferta.titulo }}</h2>
     <p class="text-gray-600 mb-4">{{ oferta.descripcion }}</p>
 
     <h3 class="font-bold text-gray-700">Productos:</h3>
     <ul class="list-disc pl-5">
       {% for producto in oferta.productos.all %}
-        <li>{{ producto.nombre }}</li>
+      <li>{{ producto.nombre }}</li>
       {% endfor %}
     </ul>
 
@@ -32,93 +32,100 @@
     </div>
 
     <!-- Rating form -->
-    <div id="form">
-      <form id="ratingForm" action="{% url 'recibir_puntuacion' oferta.id %}" method="POST">
-        {% csrf_token %}
-        <p class="clasificacion">
-          {% if user_ha_votado %}
-            <p>Puntuación: {{ calificacion_promedio }}</p>
-            {% for i in "12345" %}
-              {% if forloop.counter <= calificacion_promedio %}
-                <label class="text-3xl" style="color: orange;">★ </label>
-              {% else %}
-                <label class="text-3xl" style="color: grey;">★</label>
-              {% endif %}
-            {% endfor %}
-            <p>Calificaciones: {{ cantidad_calificaciones }}</p>
-          {% else %}
-            <style>
-              .estrellas {
-                font-size: 2rem;
-                color: grey;
-                cursor: pointer;
-                direction: rtl;
-              }
-              .estrellas:hover,
-              .estrellas:hover ~ .estrellas {
-                color: orange;
-              }
-              input[type="radio"]:checked + label,
-              input[type="radio"]:checked + label ~ label {
-                color: orange;
-              }
-            </style>
-            <p class="clasificacion" style="display: flex; flex-direction: row-reverse; margin-right: 70px;">
-              <input id="radio5" type="radio" name="estrellas" value="5" onchange="this.form.submit();" style="display: none;">
-              <label for="radio5" class="estrellas">★</label>
-              <input id="radio4" type="radio" name="estrellas" value="4" onchange="this.form.submit();" style="display: none;">
-              <label for="radio4" class="estrellas">★</label>
-              <input id="radio3" type="radio" name="estrellas" value="3" onchange="this.form.submit();" style="display: none;">
-              <label for="radio3" class="estrellas">★</label>
-              <input id="radio2" type="radio" name="estrellas" value="2" onchange="this.form.submit();" style="display: none;">
-              <label for="radio2" class="estrellas">★</label>
-              <input id="radio1" type="radio" name="estrellas" value="1" onchange="this.form.submit();" style="display: none;">
-              <label for="radio1" class="estrellas">★</label>
-            </p>
-          {% endif %}
+    <form id="ratingForm" action="{% url 'recibir_puntuacion' oferta.id %}" method="POST">
+      {% csrf_token %}
+      <p class="clasificacion">
+        {% if user_ha_votado %}
+        <p>Puntuación: {{ calificacion_promedio }}</p>
+        {% for i in "12345" %}
+        <label class="text-3xl" style="color: {% if forloop.counter <= calificacion_promedio %}orange{% else %}grey{% endif %};">★</label>
+        {% endfor %}
+        <p>Calificaciones: {{ cantidad_calificaciones }}</p>
+        {% else %}
+        <style>
+          .estrellas {
+            font-size: 2rem;
+            color: grey;
+            cursor: pointer;
+            direction: rtl;
+          }
+
+          .estrellas:hover,
+          .estrellas:hover~.estrellas {
+            color: orange;
+          }
+
+          input[type="radio"]:checked+label,
+          input[type="radio"]:checked+label~label {
+            color: orange;
+          }
+        </style>
+        <p class="clasificacion" style="display: flex; flex-direction: row-reverse; margin-right: 70px;">
+          {% for valor in "12345" %}
+          <input id="radio{{ valor }}" type="radio" name="estrellas" value="{{ valor }}" onchange="this.form.submit();" style="display: none;">
+          <label for="radio{{ valor }}" class="estrellas">★</label>
+          {% endfor %}
         </p>
-      </form>
-    </div>
+        {% endif %}
+      </p>
+    </form>
 
     <div class="flex justify-between items-center mb-4">
       <p>Desde: {{ oferta.fecha_inicio|date:"d/m/Y" }}</p>
       <p>Hasta: {{ oferta.fecha_fin|date:"d/m/Y" }}</p>
     </div>
     
-    <h3>Comentarios:</h3>
-{% for comentario in comentarios %}
-    <p><strong>{{ comentario.usuario.username }}:</strong> {{ comentario.comentario }}</p> <!-- Cambia "texto" por el campo real de comentario -->
-{% empty %}
-    <p>No hay comentarios para esta oferta.</p>
-{% endfor %}
-
-{% if puede_comentar %}
-    <h4 class="font-bold">Agregar un comentario:</h4>
-    <form method="POST" action="{% url 'recibir_comentario' oferta.id %}">
-      {% csrf_token %}
-      {{ comentario_form.comentario }} <!-- Renderizar el formulario -->
-      <button type="submit" class="btn btn-primary bg-gray-200 p-3 mb-4 mt-4">Enviar comentario</button>
-  </form>
-{% else %}
-    <p>Ya has comentado esta oferta.</p>
-{% endif %}
-
-
-    <a href="{% url 'siguiente_oferta' oferta.id %}" class="bg-red-600 text-white rounded-r px-1 py-1 hover:bg-red-500">
-      Siguiente oferta
-    </a>
+    <div class="mt-6">
+      <a href="{% url 'siguiente_oferta' oferta.id %}" class="bg-red-600 text-white rounded-r px-3 py-2 hover:bg-red-500 transition duration-200">
+        Siguiente oferta
+      </a>
+    </div>
   </div>
 
   <!-- Mapa -->
-  <div id="map" style="height: 500px; width:100%; position: relative; z-index: 1;"></div>
-    
+  <div id="map" style="height:500px; width:100%; position: relative; z-index: 1; margin-top:15px;"></div>
+</div>
+
+<div class="comments-section border-gray-300 pt-6 m-4">
+  <h3 class="text-xl font-semibold mb-4">Comentarios:</h3>
+  {% if comentarios_con_puntuacion %}
+    <div class="space-y-4">
+      {% for item in comentarios_con_puntuacion %}
+      <div class="bg-gray-100 p-4 py-2 px-10 rounded-lg">
+        {% if item.puntuacion %}
+        <p class="flex items-center">
+          {% for i in "12345" %}
+          <label class="text-{% if forloop.counter <= item.puntuacion %}yellow-500{% else %}gray-300{% endif %} text-xl">★</label>
+          {% endfor %}
+        </p>
+        {% endif %}
+        <p class="text-gray-700"><strong>{{ item.comentario.usuario.username }}:</strong> {{ item.comentario.comentario }}</p>
+        <p class="text-sm text-gray-500">{{ item.comentario.fecha|date:"d M Y H:i" }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-gray-500">No hay comentarios para esta oferta.</p>
+  {% endif %}
+
+  <div class="mt-8">
+    {% if puede_comentar %}
+      <h4 class="text-lg font-bold mt-3">Agregar un comentario:</h4>
+      <form method="POST" action="{% url 'recibir_comentario' oferta.id %}" class="space-y-2">
+        {% csrf_token %}
+        {{ comentario_form.comentario }}
+        
+      </form>
+      <button type="submit" class="bg-blue-900 hover:bg-blue-800 text-white px-2 py-2 rounded shadow">
+        Enviar comentario
+      </button>
+    {% endif %}
   </div>
 </div>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
@@ -128,7 +135,7 @@
 <script>
   const ubicacionUsuarioDB = {{ ubicacion_usuario|safe }};
   const ubicacionComercio = {{ ubicacion_comercio|safe }};
-  
+
   const map = L.map('map').setView([0, 0], 5);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -136,32 +143,31 @@
 
   const pulsingIcon = L.icon.pulse({ iconSize: [20, 20], color: 'red' });
   const usuarioMarker = L.marker([0, 0], { icon: pulsingIcon }).addTo(map);
-
   let currentRoute = null;
 
   function trazarRuta(origen, destino) {
     if (currentRoute) {
-        map.removeControl(currentRoute);
+      map.removeControl(currentRoute);
     }
     currentRoute = L.Routing.control({
-        waypoints: [
-            L.latLng(origen.lat, origen.lng),
-            L.latLng(destino.lat, destino.lng)
-        ],
-        routeWhileDragging: true,
-        geocoder: L.Control.Geocoder.nominatim(),
-        language: 'es',
-        lineOptions: {
-            styles: [{ color: 'red', opacity: 0.7, weight: 10 }]
-        },
-        createMarker: function(i, waypoint, n) {
-            if (i === n - 1) {
-                return L.marker(waypoint.latLng).bindPopup('Destino');
-            } else if (i > 0) {
-                return L.marker(waypoint.latLng).bindPopup(`Parada ${i}`);
-            }
-            return null;
+      waypoints: [
+        L.latLng(origen.lat, origen.lng),
+        L.latLng(destino.lat, destino.lng)
+      ],
+      routeWhileDragging: true,
+      geocoder: L.Control.Geocoder.nominatim(),
+      language: 'es',
+      lineOptions: {
+        styles: [{ color: 'red', opacity: 0.7, weight: 10 }]
+      },
+      createMarker: function (i, waypoint, n) {
+        if (i === n - 1) {
+          return L.marker(waypoint.latLng).bindPopup('Destino');
+        } else if (i > 0) {
+          return L.marker(waypoint.latLng).bindPopup(`Parada ${i}`);
         }
+        return null;
+      }
     }).addTo(map);
   }
 
@@ -172,22 +178,18 @@
 
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      function(position) {
+      function (position) {
         const userLocation = {
           lat: position.coords.latitude,
           lng: position.coords.longitude
         };
         map.setView([userLocation.lat, userLocation.lng], 13);
         usuarioMarker.setLatLng([userLocation.lat, userLocation.lng]).bindPopup('Ubicación actual').openPopup();
-        
-        // Trazar ruta desde la ubicación actual
         trazarRuta(userLocation, { lat: ubicacionComercio.latitud, lng: ubicacionComercio.longitud });
       },
-      function(error) {
+      function (error) {
         map.setView([fallbackLocation.lat, fallbackLocation.lng], 10);
         L.marker([fallbackLocation.lat, fallbackLocation.lng], { icon: pulsingIcon }).addTo(map).bindPopup('Ubicación predeterminada').openPopup();
-        
-        // Trazar ruta desde la ubicación predeterminada
         trazarRuta(fallbackLocation, { lat: ubicacionComercio.latitud, lng: ubicacionComercio.longitud });
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -195,10 +197,7 @@
   } else {
     map.setView([fallbackLocation.lat, fallbackLocation.lng], 10);
     L.marker([fallbackLocation.lat, fallbackLocation.lng], { icon: pulsingIcon }).addTo(map).bindPopup('Ubicación predeterminada').openPopup();
-    
-    // Trazar ruta desde la ubicación predeterminada
     trazarRuta(fallbackLocation, { lat: ubicacionComercio.latitud, lng: ubicacionComercio.longitud });
   }
 </script>
-
 {% endblock %}

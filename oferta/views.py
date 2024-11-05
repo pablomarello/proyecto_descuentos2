@@ -190,26 +190,33 @@ def detalle_oferta(request, oferta_id):
     # Verificar si el usuario ya hizo un comentario en esta oferta
     puede_comentar = not Comentario.objects.filter(oferta=oferta, usuario=request.user).exists()
     # Inicializar el formulario de comentarios
-    comentario_form = ComentarioForm()  # Crear una instancia del formulario
+    # Obtener comentarios junto con sus puntuaciones
+    comentarios_con_puntuacion = []
+    comentarios = Comentario.objects.filter(oferta=oferta)
+
+    for comentario in comentarios:
+        # Obtener la puntuación del usuario para la oferta específica, si existe
+        puntuacion_usuario = Puntuacion.objects.filter(oferta=oferta, usuario=comentario.usuario).first()
+        comentarios_con_puntuacion.append({
+            'comentario': comentario,
+            'puntuacion': puntuacion_usuario.calificacion if puntuacion_usuario else None
+        })
+
+    # Inicializar el formulario de comentarios
+    comentario_form = ComentarioForm()
     
-    print("Esta es la califiiicacion ",calificacion_promedio)
-    print("Esta es la cantidad ",cantidad_calificaciones)
-    print(comentarios)
-    
-    
+    # Pasar la información al contexto
     context = {
         'oferta': oferta,
         'user_ha_votado': user_ha_votado,
-        'comentarios':comentarios,
+        'comentarios_con_puntuacion': comentarios_con_puntuacion,
         'calificacion_promedio': calificacion_promedio,
-        'cantidad_calificaciones':cantidad_calificaciones,
+        'cantidad_calificaciones': cantidad_calificaciones,
         'ubicacion_usuario': json.dumps(ubicacion_usuario),
         'ubicacion_comercio': json.dumps(ubicacion_comercio_data),
         'puede_comentar': puede_comentar,
         'comentario_form': comentario_form
     }
-    
-    
     return render(request, 'oferta/detalle_oferta.html', context)
 
 def siguiente_oferta(request, oferta_id):
