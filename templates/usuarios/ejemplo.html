@@ -152,18 +152,13 @@ Index
 
 
 <div id="map" style="width:100%; position: relative; z-index: 1; margin-left: 15px; margin-top: 75px;"></div>
-
 <script>
-
+    const ubicacionUsuarioDB = {{ ubicacion_usuario|safe }};
+    const comerciosEnRadio = {{ comercios_en_radio|safe }};
+    
     const usuarioAutenticado = {{ usuario_autenticado|yesno:"true,false" }};
     console.log("¿El usuario está autenticado?", usuarioAutenticado);
 
-
-    if (usuarioAutenticado===true){
-
-    
-    const ubicacionUsuarioDB = {{ ubicacion_usuario|safe }};
-    const comerciosEnRadio = {{ comercios_en_radio|safe }};
     const map = L.map('map').setView([ubicacionUsuarioDB.latitud, ubicacionUsuarioDB.longitud], 15);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -298,72 +293,7 @@ document.querySelector('.leaflet-control-custom button').addEventListener('click
 
     console.log("El mapa ha sido limpiado.");
 });
-    }
 
-
-    else {
-    // Código para usuarios no autenticados
-    const comerciosEnRadio = {{ comercios_en_radio|safe }};
-    const map = L.map('map').setView([comerciosEnRadio[0].latitud, comerciosEnRadio[0].longitud], 15);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    // Objeto para registrar los marcadores
-    const marcadores = {};
-
-    // Agregar marcadores al mapa
-    comerciosEnRadio.forEach(comercio => {
-        const marker = L.marker([comercio.latitud, comercio.longitud], { id: comercio.id })
-            .addTo(map)
-            .bindPopup(`
-                 <div>
-                    <h3>${comercio.nombre}</h3>
-                    <br>
-                    <button class="btn2 bg-red-600 text-white shadow-sm hover:bg-red-500 rounded px-1 py-1 cursor-pointer" data-id="${comercio.id}">¿CÓMO LLEGO?</button>
-                </div>
-            `);
-
-        marcadores[comercio.id] = marker;
-    });
-
-    // Manejo del clic en las tarjetas
-    document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('click', function () {
-            const comercioId = this.getAttribute('data-id');
-            if (marcadores[comercioId]) {
-                const marcador = marcadores[comercioId];
-                map.setView(marcador.getLatLng(), 15);
-                marcador.openPopup();
-            } else {
-                console.warn('No se encontró marcador para el ID:', comercioId);
-            }
-        });
-    });
-
-    // Manejo del clic en "¿CÓMO LLEGO?"
-    document.addEventListener('click', function (event) {
-        if (event.target.classList.contains('btn2')) {
-            const mapCenter = map.getCenter();
-            const popup = L.popup()
-                .setLatLng(mapCenter)
-                .setContent(`
-                    <div style="text-align: center;">
-                        <p><a href="{% url 'login' %}" class="text-blue">Inicia sesión</a> o <a href="{% url 'registrar_persona' %}" class="text-blue">Regístrate</a> para ver más información.</p>
-                    </div>
-                `)
-                .openOn(map);
-        }
-    });
-}
-
-
-
-
-
-
-    
 </script>
 
 

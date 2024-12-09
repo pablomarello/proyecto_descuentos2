@@ -94,6 +94,7 @@ def index(request):
                     "latitud": float(comercio.latitud),
                     "longitud": float(comercio.longitud),
                 })
+    
 
     # Crear lista de ofertas con sus calificaciones
     ofertas_con_calificaciones = []
