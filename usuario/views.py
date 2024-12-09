@@ -34,10 +34,10 @@ import datetime
 from geopy.distance import geodesic
 from geopy.distance import distance
 
+
+
 def index(request):
-    if not request.user.is_authenticated:
-        messages.error (request, 'Primero debes iniciar sesión')
-        return redirect('login')
+    # Consultas de ofertas y categorías, accesibles a todos los usuarios
     ofertas_vencidas = Oferta.objects.filter(activo=True)
     hoy = datetime.date.today()
     for oferta in ofertas_vencidas:
@@ -45,37 +45,56 @@ def index(request):
         if oferta.fecha_fin < hoy:
             oferta.activo = False
             oferta.save()
+
     baratos = Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
     ofertas = Oferta.objects.filter(activo=True)
     categorias = Categoria.objects.all()
     vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
-    
-    
-    #COMERCIOS CERCANOS-MAPA
-    persona = request.user.persona_id
-    ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
 
-    lat_usuario = float(ubicacion_usuario.latitud)
-    lon_usuario = float(ubicacion_usuario.longitud)
-    
-    #LIMITA LA DISTACIA EN KILOMETROS
-    radio_km = 100
-
-    ubicaciones_comercio = ubicacionesComercio.objects.all()
-
+    # Variables para ubicación y comercios
+    ubicacion_usuario = None
     comercios_en_radio = []
-    
-    for comercio in ubicaciones_comercio:
-        if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
-            distancia_km = distance((lat_usuario, lon_usuario), 
-                                    (float(comercio.latitud), float(comercio.longitud))).km
-            if distancia_km <= radio_km:
+
+    if request.user.is_authenticated:
+        try:
+            persona = request.user.persona_id
+            ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
+
+            lat_usuario = float(ubicacion_usuario.latitud)
+            lon_usuario = float(ubicacion_usuario.longitud)
+
+            # Limita la distancia en kilómetros
+            radio_km = 100
+            ubicaciones_comercio = ubicacionesComercio.objects.all()
+
+            for comercio in ubicaciones_comercio:
+                if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
+                    distancia_km = distance(
+                        (lat_usuario, lon_usuario),
+                        (float(comercio.latitud), float(comercio.longitud))
+                    ).km
+                    if distancia_km <= radio_km:
+                        comercios_en_radio.append({
+                            "id": comercio.comercio_id.id,
+                            "nombre": comercio.comercio_id.nombrecomercio,
+                            "latitud": float(comercio.latitud),
+                            "longitud": float(comercio.longitud),
+                        })
+        except ubicaciones.DoesNotExist:
+            # Manejo en caso de que la ubicación no se encuentre
+            pass
+    else:
+        # Si el usuario no está autenticado, muestra todos los comercios
+        ubicaciones_comercio = ubicacionesComercio.objects.all()
+        for comercio in ubicaciones_comercio:
+            if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
                 comercios_en_radio.append({
+                    "id": comercio.comercio_id.id,
                     "nombre": comercio.comercio_id.nombrecomercio,
                     "latitud": float(comercio.latitud),
                     "longitud": float(comercio.longitud),
                 })
-                
+
     # Crear lista de ofertas con sus calificaciones
     ofertas_con_calificaciones = []
     for oferta in ofertas:
@@ -89,16 +108,26 @@ def index(request):
             'cantidad_calificaciones': cantidad_calificaciones,
         })
 
-    return render(request, 'usuarios/ind.html',{
+    # Renderizado de la plantilla
+    return render(request, 'usuarios/ind.html', {
         'categorias': categorias,
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
-        'baratos': baratos,
+        
         'vencen_hoy': vencen_hoy,
-        'ubicacion_usuario': {'latitud': lat_usuario, 'longitud': lon_usuario},
-        'comercios_en_radio': comercios_en_radio
+        'ubicacion_usuario': {
+            'latitud': float(ubicacion_usuario.latitud) if ubicacion_usuario else None,
+            'longitud': float(ubicacion_usuario.longitud) if ubicacion_usuario else None,
+        } if request.user.is_authenticated else None,
+        'comercios_en_radio': comercios_en_radio,
+        'usuario_autenticado': request.user.is_authenticated,  # Nuevo parámetro
     })
 
+
+
 def descuentos_destacados(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Inicia sesión para ver los descuentos destacados')
+        return redirect('login')
     # Filtro de Categorías
     categoria_nombres = request.GET.getlist('category[]')
     if categoria_nombres:
@@ -143,9 +172,6 @@ def descuentos_destacados(request):
 
 
     # Filtro de Ubicación (por distancia máxima desde el usuario)
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Usuario no autenticado"}, status=401)
-
     persona = request.user.persona_id
     ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
     
@@ -432,26 +458,31 @@ class CustomPasswordResetView(PasswordResetView):
 #Logueo de usuario
 
 def iniciar_sesion(request):
-    if request.method=='POST':
-        form= LogeoForm(request.POST)
+    # Obtén el valor de `next` desde GET y pásalo al formulario en el contexto
+    next_url = request.GET.get('next', reverse('index'))
+    
+    if request.method == 'POST':
+        form = LogeoForm(request.POST)
         if form.is_valid():
             username = request.POST['usuario']
             password = request.POST['contraseña']
-            #captcha = request.POST['captcha']
-            user=authenticate(request,username=username, password=password)#, captcha=captcha
+            user = authenticate(request, username=username, password=password)
             if user is not None:
-                    login(request, user)
-                    return redirect('index')
+                login(request, user)
+                # Redirige al usuario a la URL de `next` si está presente
+                return redirect(request.POST.get('next', reverse('index')))
             else:
-                    messages.error(request, 'Verifique los datos ingresados')
-                    return redirect('login')
+                messages.error(request, 'Verifique los datos ingresados')
+                return redirect('login')
     else:
         form = LogeoForm()  
-    return render(request,'registration/login.html', {'form':form})
+    
+    return render(request, 'registration/login.html', {'form': form, 'next': next_url})
+
 
 def cerrar_sesion(request):
     logout(request)
-    messages.success(request, 'Sesión cerrada')
+    messages.success(request, 'Cerraste la sesión')
     return redirect('login') 
 
 #cambiar contraseña

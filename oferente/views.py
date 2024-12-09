@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, TablaProvincia
 from .forms import CuitForm, OferenteForm, UbiComercio
@@ -20,6 +21,11 @@ afip = Afip({
 
 
 def verificarCuit(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Para registrar tu comercio primero debes iniciar sesión')
+        # Redirige al usuario a la página de inicio de sesión, pasando la URL actual como `next`
+        login_url = f"{reverse('login')}?next={request.path}"
+        return redirect(login_url)
     nombre = apellido = direccion = '-----'  # Inicializa las variables
     if request.method == 'POST':
         form = CuitForm(request.POST)
@@ -52,8 +58,8 @@ def verificarCuit(request):
                     return redirect('registrar_comercio')
                 
                 elif error_constancia:
-                    nombre = error_constancia.get('nombre', '-----')
-                    apellido = error_constancia.get('apellido', '-----')
+                    nombre = error_constancia.get('razonSocial', '--')
+                    apellido = error_constancia.get('apellido', '---')
                     
                     domicilio_fiscal = error_constancia.get('domicilioFiscal', {})
                     direccion = error_constancia.get('direccion', '----')

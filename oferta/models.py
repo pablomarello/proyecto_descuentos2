@@ -18,6 +18,9 @@ class Oferta(models.Model):
     eliminado = models.BooleanField(default=False)
     imagen = models.ImageField(upload_to='ofertas/',default='default_image.png',null=True,blank=True)
     
+    class Meta:
+        Managed:True
+    
     def __str__(self):
         return self.titulo
     

@@ -45,14 +45,23 @@ def bag_of_words(sentence):
                 bag[i] = 1
     return np.array(bag)
 
-def predict_class(sentence):
+def predict_class(sentence, threshold=0.3):  # Agregar el parámetro threshold
     bow = bag_of_words(sentence)
     res = model.predict(np.array([bow]))[0]
     max_index = np.argmax(res)
-    category = classes[max_index]
+    confidence = res[max_index]  # Obtener la confianza de la predicción
+
+    if confidence >= threshold:
+        category = classes[max_index]
+    else:
+        category = None  # Indicar que no se tiene suficiente confianza en la predicción
+
     return category
 
 def get_response(tag, intents_json):
+    if tag is None:
+        return "Lo siento, no entendí tu pregunta."  # Respuesta para baja confianza
+
     list_of_intents = intents_json['intents']
     for i in list_of_intents:
         if i["tag"] == tag:
