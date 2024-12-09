@@ -58,8 +58,8 @@ def verificarCuit(request):
                     return redirect('registrar_comercio')
                 
                 elif error_constancia:
-                    nombre = error_constancia.get('nombre', '-----')
-                    apellido = error_constancia.get('apellido', '-----')
+                    nombre = error_constancia.get('razonSocial', '--')
+                    apellido = error_constancia.get('apellido', '---')
                     
                     domicilio_fiscal = error_constancia.get('domicilioFiscal', {})
                     direccion = error_constancia.get('direccion', '----')

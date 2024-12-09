@@ -34,24 +34,27 @@ import datetime
 from geopy.distance import geodesic
 from geopy.distance import distance
 
-from django.shortcuts import render, get_object_or_404
-from django.db.models import Avg
-from geopy.distance import distance
-import datetime
+
 
 def index(request):
     # Consultas de ofertas y categorías, accesibles a todos los usuarios
-    ofertas = Oferta.objects.filter(activo=True)
+    ofertas_vencidas = Oferta.objects.filter(activo=True)
+    hoy = datetime.date.today()
+    for oferta in ofertas_vencidas:
+        # Si la oferta está vencida, desactívala
+        if oferta.fecha_fin < hoy:
+            oferta.activo = False
+            oferta.save()
+
     baratos = Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
     ofertas = Oferta.objects.filter(activo=True)
     categorias = Categoria.objects.all()
     vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
 
-    # Variables para ubicación y comercios cercanos, inicializadas como None
+    # Variables para ubicación y comercios
     ubicacion_usuario = None
     comercios_en_radio = []
 
-    # Datos de la ubicación y los comercios cercanos solo si el usuario ha iniciado sesión
     if request.user.is_authenticated:
         try:
             persona = request.user.persona_id
@@ -72,6 +75,7 @@ def index(request):
                     ).km
                     if distancia_km <= radio_km:
                         comercios_en_radio.append({
+                            "id": comercio.comercio_id.id,
                             "nombre": comercio.comercio_id.nombrecomercio,
                             "latitud": float(comercio.latitud),
                             "longitud": float(comercio.longitud),
@@ -79,6 +83,17 @@ def index(request):
         except ubicaciones.DoesNotExist:
             # Manejo en caso de que la ubicación no se encuentre
             pass
+    else:
+        # Si el usuario no está autenticado, muestra todos los comercios
+        ubicaciones_comercio = ubicacionesComercio.objects.all()
+        for comercio in ubicaciones_comercio:
+            if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
+                comercios_en_radio.append({
+                    "id": comercio.comercio_id.id,
+                    "nombre": comercio.comercio_id.nombrecomercio,
+                    "latitud": float(comercio.latitud),
+                    "longitud": float(comercio.longitud),
+                })
 
     # Crear lista de ofertas con sus calificaciones
     ofertas_con_calificaciones = []
@@ -97,15 +112,16 @@ def index(request):
     return render(request, 'usuarios/ind.html', {
         'categorias': categorias,
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
-        'baratos': baratos,
+        
         'vencen_hoy': vencen_hoy,
-        # Solo envía ubicación y comercios si el usuario está autenticado
         'ubicacion_usuario': {
             'latitud': float(ubicacion_usuario.latitud) if ubicacion_usuario else None,
             'longitud': float(ubicacion_usuario.longitud) if ubicacion_usuario else None,
         } if request.user.is_authenticated else None,
-        'comercios_en_radio': comercios_en_radio if request.user.is_authenticated else None,
+        'comercios_en_radio': comercios_en_radio,
+        'usuario_autenticado': request.user.is_authenticated,  # Nuevo parámetro
     })
+
 
 
 def descuentos_destacados(request):

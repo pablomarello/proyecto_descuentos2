@@ -74,6 +74,7 @@ class LogeoForm(forms.Form):
     )
     contraseña= forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete': 'off'}))
     captcha  =  ReCaptchaField ( 
+        label='',
         public_key =RECAPTCHA_PUBLIC_KEY, 
         private_key = RECAPTCHA_PRIVATE_KEY,
     )

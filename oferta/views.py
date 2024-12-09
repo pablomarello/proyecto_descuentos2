@@ -158,11 +158,11 @@ def recibir_comentario(request, oferta_id):
         oferta = get_object_or_404(Oferta, id=oferta_id)
         comentario = request.POST.get('comentario')
 
-        # Verifica si ya ha puntuado esta oferta
+        # Verifica si ya ha comentado esta oferta
         comentario_existente = Comentario.objects.filter(oferta=oferta, usuario=request.user).exists()
 
         if not comentario_existente:
-            # Crea una nueva puntuación utilizando los campos correctos
+            # Crea una nuevo comentario 
             Comentario.objects.create(
                 oferta=oferta,
                 usuario=request.user,  # Campo 'usuario' en lugar de 'user'

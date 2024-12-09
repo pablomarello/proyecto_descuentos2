@@ -23,6 +23,15 @@
             ]
         },
         {
+            "tag": "chau",
+            "patterns": [
+                "hasta la proxima","nos vemos","chau chau"
+            ],
+            "responses": [
+                "Nos vemos, ten un lindo dia xD"
+            ]
+        },
+        {
             "tag": "ofertas",
             "patterns": [
                 "ofertas",
