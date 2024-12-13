@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from .forms import ComentarioForm, OfertaForm
 from oferta.models import Comentario, Oferta
-from producto.models import Categoria, Producto
+from producto.models import Categoria, Producto, Subcategoria
 from django.contrib import messages
 from django.shortcuts import redirect, render
 import requests
@@ -291,6 +291,7 @@ def crear_oferta(request):
             return redirect('mis_ofertas')  
     else:
         form = OfertaForm(user=request.user)
+
 
     return render(request, 'oferta/crear_oferta.html', {'form': form})
 

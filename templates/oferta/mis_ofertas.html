@@ -2,6 +2,11 @@
 
 {% block content %}
 
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
 <style>
     .img {
         border-radius: 50%;
@@ -11,7 +16,56 @@
     }
 </style>
 
+<!-- Breadcrumb -->
+<nav class="flex text-gray-700 text-sm" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <!-- Inicio -->
+        <li class="inline-flex items-center">
+            <a href="{% url 'index' %}" class="inline-flex items-center text-gray-500 hover:text-blue-600">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M10 20a1 1 0 01-1-1V8.414L2.293 14.293a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0l8 8a1 1 0 01-1.414 1.414L11 8.414V19a1 1 0 01-1 1z"/>
+                </svg>
+                Inicio
+            </a>
+        </li>
+        <!-- Separador -->
+        <li>
+            <div class="flex items-center">
+                <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </div>
+        </li>
+        <!-- Productos -->
+        <li class="inline-flex items-center">
+            <a href="{% url 'lista_comercios' %}" class="text-gray-500 hover:text-blue-600">
+                Mis comercios
+            </a>
+        </li>
+        <!-- Separador -->
+        <li>
+            <div class="flex items-center">
+                <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </div>
+        </li>
+        <!-- Página actual (sin enlace) -->
+        <li class="inline-flex items-center">
+            <span class="text-gray-400">Mis ofertas</span>
+        </li>
+    </ol>
+</nav>
+
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    {% if messages %}
+    <div id="messages" style="display: none;">
+        {% for message in messages %}
+        <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <h1 class="text-3xl font-bold mb-6">MIS OFERTAS</h1>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -89,7 +143,43 @@
                     </form>
                 </div>
             </div>
+            {% empty %}
+      <tr>
+        <td colspan="4" class="px-6 py-4 text-center">No tienes ofertas registradas.</td>
+      </tr>
             {% endfor %}
         </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        const messageContainer = document.getElementById('messages');
+        if (messageContainer) {
+            const messageElements = messageContainer.querySelectorAll('[data-message]');
+            messageElements.forEach(element => {
+                const message = element.getAttribute('data-message');
+                const tags = element.getAttribute('data-tags');
+                
+                // Mostrar alertas según los tags
+                if (tags === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: message,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK'
+                    });
+                } else if (tags === 'error') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '¡Error!',
+                        text: message,
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'Entendido'
+                    });
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

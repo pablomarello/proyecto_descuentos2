@@ -1,6 +1,9 @@
 # oferta/urls.py
 from django.urls import path
 from . import views
+from producto.views import ProductoCreateView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('crear_oferta/', views.crear_oferta, name='crear_oferta'),
@@ -15,3 +18,6 @@ urlpatterns = [
     path('eliminar_oferta/<int:id_oferta>/',views.eliminar_oferta, name='eliminar_oferta'),
     path('editar_oferta/<int:id_oferta>/',views.editar_oferta,name='editar_oferta'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

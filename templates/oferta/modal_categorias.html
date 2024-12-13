@@ -1,0 +1,93 @@
+<!-- modal_categorias.html -->
+<div id="modalProducto" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-6 rounded-lg shadow-md max-w-xl w-full">
+      <div class="flex justify-between items-center">
+          <h2 class="text-xl font-semibold">Agregar Producto</h2>
+          <button id="cerrarModalProducto" class="text-gray-600 hover:text-gray-800">&times;</button>
+      </div>
+      <hr class="my-4">
+
+      <!-- Formulario para agregar producto -->
+      <div class="max-w-2xl mx-auto bg-white p-5 rounded-md shadow-md">
+          {% if messages %}
+          <div id="messages" style="display: none;">
+              {% for message in messages %}
+              <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+              {% endfor %}
+          </div>
+          {% endif %}
+      
+          {% if form.non_field_errors %}
+          <div class="text-red-500 mb-4">
+              {% for error in form.non_field_errors %}
+                  <p>{{ error }}</p>
+              {% endfor %}
+          </div>
+          {% endif %}
+          <h1 class="text-2xl font-bold mb-4">Agregar un nuevo producto</h1>
+      
+          <form method="post" enctype="multipart/form-data" action="{% url 'crear_producto' %}">
+              {% csrf_token %}
+      
+              <!-- Campo para el nombre -->
+              <div class="mb-4">
+                  <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+                  <input type="text" name="nombre" id="nombre" value="{{ form.nombre.value|default_if_none:'' }}"
+                      class="mt-1 p-2 block w-full border rounded-md" placeholder="Nombre del producto">
+                  {{ form.nombre.errors }}
+              </div>
+      
+              <!-- Campo para la descripción -->
+              <div class="mb-4">
+                  <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+                  <textarea name="descripcion" id="descripcion" class="mt-1 p-2 block w-full border rounded-md"
+                      placeholder="Descripción del producto">{{ form.descripcion.value|default_if_none:'' }}</textarea>
+                  {{ form.descripcion.errors }}
+              </div>
+      
+              <!-- Campo para la imagen del producto -->
+              <div class="mb-4">
+                  <label for="imagen" class="block text-sm font-medium text-gray-700">Imagen del producto</label>
+                  <input type="file" name="imagen" id="imagen"
+                      class="mt-1 block w-full text-sm text-gray-900 border rounded-md cursor-pointer focus:outline-none">
+                  {{ form.imagen.errors }}
+              </div>
+      
+              <!-- Campo para la marca -->
+              <div class="mb-4">
+                  <label for="marca" class="block text-sm font-medium text-gray-700">Marca</label>
+                  <input type="text" name="marca" id="marca"
+                      value="{{ form.marca.value|default_if_none:'' }}"
+                      class="mt-1 p-2 block w-full border rounded-md" placeholder="Ingrese la marca del producto">
+                  {{ form.marca.errors }}
+              </div>
+              <div>
+                
+
+              </div>
+              <div class="mb-4">
+                <label for="categoria" class="block text-sm font-medium text-gray-700">Selecciona la subcategoría</label>
+                <select name="categoria" id="categoria" class="mt-1 block w-full p-2 border rounded-md">
+                  <option value="">-- Selecciona una subcategoría --</option>
+                  {% for subcategoria in subcategorias %}
+                      <option value="{{ subcategoria.id }}">{{ subcategoria.nombre }}</option>
+                  {% empty %}
+                      <option value="">No hay subcategorías disponibles</option>
+                  {% endfor %}
+              </select>
+              
+                {% for error in form.categoria.errors %}
+                    <p class="text-red-500">{{ error }}</p>
+                {% endfor %}
+            </div>
+            
+            
+      
+              <!-- Botón de envío -->
+              <div class="flex justify-end">
+                  <button type="submit" class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none btn btn-primary">Guardar producto</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
