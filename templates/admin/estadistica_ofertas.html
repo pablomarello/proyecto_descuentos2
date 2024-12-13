@@ -1,0 +1,221 @@
+{% extends "base_admin.html" %}
+
+
+{% block content %}
+<main>
+        <div class="container-fluid px-4">
+
+            <h1>Estadísticas</h1>
+
+            <div class="row">
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            Ofertas más puntuadas
+                        </div>
+                        <div class="card-body"><canvas id="chartPuntuacion"  width="130%" height="100"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            Ofertas más comentadas
+                        </div>
+                        <div class="card-body"> <canvas id="chartComentarios" width="130%" height="100"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            Comercios mejores puntuados
+                        </div>
+                        <div class="card-body"><canvas id="chartOferentesPuntuacion"  width="130%" height="100"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            Comercios con mas comentarios
+                        </div>
+                        <div class="card-body"><canvas id="chartOferentesComentarios" width="130%" height="100"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            <div class='row'>
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            Tráfico por Mes
+                        </div>
+                        <div class="card-body"><canvas id="chartMes"  width="130%" height="100"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            Tráfico por Día
+                        </div>
+                        <div class="card-body"><canvas id="chartDia"  width="130%" height="100"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-chart-area me-1"></i>
+                        Tráfico por Hora
+                    </div>
+                    <div class="card-body"><canvas id="chartHora"  width="130%" height="100"></canvas></div>
+                </div>
+            </div>
+        </div>
+</main>
+
+
+    
+
+{% endblock content %}
+{% block js %}
+<script>
+    fetch("{% url 'estadisticas' %}", { headers: { 'X-Requested-With': 'XMLHttpRequest' } }) // Cambiá por la URL real de la vista
+        .then(response => response.json())
+        .then(data => {
+            // Ofertas más puntuadas
+            new Chart(document.getElementById('chartPuntuacion'), {
+                type: 'bar',
+                data: {
+                    labels: data.ofertas_mas_puntuadas.labels,
+                    datasets: [{
+                        label: 'Promedio de Puntuaciones',
+                        data: data.ofertas_mas_puntuadas.data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { 
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true // Configuración para que comience desde 0
+                        }
+                    }
+                }
+            });
+
+            // Ofertas más comentadas
+            new Chart(document.getElementById('chartComentarios'), {
+                type: 'bar',
+                data: {
+                    labels: data.ofertas_mas_comentadas.labels,
+                    datasets: [{
+                        label: 'Total de Comentarios',
+                        data: data.ofertas_mas_comentadas.data,
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true }
+            });
+
+            // Comercios con más interacción - Puntuaciones
+            new Chart(document.getElementById('chartOferentesPuntuacion'), {
+                type: 'line',
+                data: {
+                    labels: data.oferentes_interaccion.labels,
+                    datasets: [{
+                        label: 'Promedio de Puntuaciones',
+                        data: data.oferentes_interaccion.data_puntuacion,
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true }
+            });
+
+            // Comercios con más interacción - Comentarios
+            new Chart(document.getElementById('chartOferentesComentarios'), {
+                type: 'line',
+                data: {
+                    labels: data.oferentes_interaccion.labels,
+                    datasets: [{
+                        label: 'Total de Comentarios',
+                        data: data.oferentes_interaccion.data_comentarios,
+                        backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true }
+            });
+            const meses = data.trafico_por_mes.map(item => `Mes ${item.mes}`);
+            const totalMeses = data.trafico_por_mes.map(item => item.total);
+
+            new Chart(document.getElementById('chartMes'), {
+                type: 'bar',
+                data: {
+                    labels: meses,
+                    datasets: [{
+                        label: 'Inicios de Sesión',
+                        data: totalMeses,
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true }
+            });
+
+            // Tráfico por Día
+            const dias = data.trafico_por_dia.map(item => `Día ${item.dia}`);
+            const totalDias = data.trafico_por_dia.map(item => item.total);
+
+            new Chart(document.getElementById('chartDia'), {
+                type: 'line',
+                data: {
+                    labels: dias,
+                    datasets: [{
+                        label: 'Inicios de Sesión',
+                        data: totalDias,
+                        backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true }
+            });
+
+            // Tráfico por Hora
+            const horas = data.trafico_por_hora.map(item => `${item.hora}:00`);
+            const totalHoras = data.trafico_por_hora.map(item => item.total);
+
+            new Chart(document.getElementById('chartHora'), {
+                type: 'line',
+                data: {
+                    labels: horas,
+                    datasets: [{
+                        label: 'Inicios de Sesión',
+                        data: totalHoras,
+                        backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { responsive: true }
+            });
+        });
+</script>
+
+{% endblock js %}
+
+

@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Mis comercios
+{% endblock title %}
+
+{% block content %}
+<script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+<link href="{% static "css/styles_admin.css" %} " rel="stylesheet" />
+<style>
+
+.tabla-container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que las tablas se ajusten automáticamente */
+    gap: 2rem; /* Espaciado entre cada comercio */
+    margin-top: 2rem;
+}
+
+
+.tabla-item {
+    flex: 1 1 calc(50% - 2rem); /* Ocupa el 50% del ancho y respeta el espaciado */
+    background: #f9f9f9; /* Fondo claro */
+    border: 1px solid #ddd; /* Borde tenue */
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+
+.tabla-item h4 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #333; /* Texto más oscuro */
+}
+
+.table-auto {
+    width: 100%;
+    border-collapse: collapse; /* Evita doble borde */
+}
+
+.table-auto th, .table-auto td {
+    border: 1px solid #ddd; /* Bordes entre celdas */
+    padding: 0.75rem; /* Espaciado interno */
+    text-align: left; /* Alinea texto a la izquierda */
+    font-size: 0.95rem; /* Ajusta tamaño del texto */
+}
+
+.table-auto th {
+    background: #eaeaea; /* Fondo gris claro */
+    font-weight: bold;
+    text-transform: uppercase; /* Texto en mayúsculas */
+}
+
+.table-auto tbody tr:nth-child(even) {
+    background: #f3f3f3; /* Alterna colores en las filas */
+}
+
+.table-auto tbody tr:hover {
+    background: #d1e7fd; /* Fondo azul claro al pasar el mouse */
+    cursor: pointer; /* Indica interactividad */
+}
+
+.tabla-item h3 {
+    font-size: 1.5rem;
+    color: #0056b3; /* Azul llamativo */
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #ddd; /* Línea divisoria */
+    padding-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .tabla-item {
+        flex: 1 1 100%; /* Ocupa todo el ancho en pantallas pequeñas */
+    }
+}
+
+</style>
+
+
+    <h1>Estadísticas</h1>
+    <div class="tabla-container flex flex-wrap gap-4">
+        <div class="tabla-item">
+            <div id="estadisticas_por_comercio-container"></div>
+        </div>
+    </div>
+    
+   
+{% endblock content %}
+
+{% block js %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const url = "{% url 'estadisticas_oferente' %}";
+    
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.json())
+            .then(data => {
+
+                const ofertas = data.estadisticas_por_comercio.map(item => item.ofertas);
+                const promedioOfertas = data.estadisticas_por_comercio.map(item => item.promedio_ofertas);
+
+                
+                const container = document.getElementById('estadisticas_por_comercio-container');
+                const estadisticas_por_comercio = data.estadisticas_por_comercio;
+    
+                estadisticas_por_comercio.forEach(comercio => {
+                    const comercioDiv = document.createElement('div');
+                    comercioDiv.innerHTML = `
+                    <div class="tabla-container flex flex-wrap gap-4">
+                        
+                        <div class="tabla-item">
+                            <h3>${comercio.comercio}</h3>
+                            <h4>Ofertas más comentadas</h4>
+                            ${
+                                comercio.mas_comentadas.length > 0
+                            ?`
+                            <table class="table-auto border-collapse border border-gray-300">
+                                <thead class="bg-gray-200">
+                                    <tr>
+                                        <th class="border border-gray-300 px-4 py-2 text-left">Título</th>
+                                        <th class="border border-gray-300 px-4 py-2 text-left">Comentarios</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${comercio.mas_comentadas.map(oferta => `
+                                        <tr class="hover:bg-gray-100">
+                                            <td class="border border-gray-300 px-4 py-2">${oferta.titulo}</td>
+                                            <td class="border border-gray-300 px-4 py-2">${oferta.total_comentarios}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>`
+                            : `<p>No hay comentarios en sus ofertas.</p>` // Mensaje si no hay comentarios
+                    }
+                        </div>
+                        
+                        <div class="tabla-item">
+                            <h3>${comercio.comercio}</h3>
+                            <h4>Ofertas mejor puntuadas</h4>
+                            <table class="table-auto border-collapse border border-gray-300">
+                                <thead class="bg-gray-200">
+                                    <tr>
+                                        <th class="border border-gray-300 px-4 py-2 text-left">Título</th>
+                                        <th class="border border-gray-300 px-4 py-2 text-left">Puntuación Promedio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${comercio.mejor_puntuadas.map(oferta => `
+                                        <tr class="hover:bg-gray-100">
+                                            <td class="border border-gray-300 px-4 py-2">${oferta.titulo}</td>
+                                            <td class="border border-gray-300 px-4 py-2">${oferta.promedio_puntuacion.toFixed(1)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        Promedio de tus ofertas
+                                    </div>
+                                    <div class="card-body"> <canvas id="chart-${comercio.id}" width="130%" height="100">
+                                    </canvas></div>
+                                </div>
+                            </div>
+                    </div>
+                    `;
+                    container.appendChild(comercioDiv);
+                });
+
+                // Crear gráfico de torta
+                new Chart(document.getElementById(`chart-${comercio.id}`), {
+                    type: 'pie',
+                    data: {
+                        labels: ofertas, // Nombres de los comercios
+                        datasets: [{
+                            label: 'Promedio de ofertas destacadas',
+                            data: promedioOfertas, // Promedio de ofertas por comercio
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.5)',
+                                'rgba(54, 162, 235, 0.5)',
+                                'rgba(255, 206, 86, 0.5)',
+                                'rgba(75, 192, 192, 0.5)',
+                                'rgba(153, 102, 255, 0.5)',
+                                'rgba(255, 159, 64, 0.5)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+
+            })
+            .catch(error => console.error('Error:', error));
+    });
+</script>
+{% endblock js %}
