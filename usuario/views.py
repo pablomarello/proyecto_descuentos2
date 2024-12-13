@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 import folium.map
 from requests import request
-from oferente.models import ubicacionesComercio
+from oferente.models import ubicacionesComercio, Oferente
 from oferta.models import Oferta, Puntuacion
 from producto.models import Categoria, Producto, Subcategoria
 from usuario.sms import send_sms
@@ -54,6 +54,7 @@ def index(request):
     # Variables para ubicación y comercios
     ubicacion_usuario = None
     comercios_en_radio = []
+    tiene_comercios = False  # Inicialización predeterminada
 
     if request.user.is_authenticated:
         try:
@@ -80,6 +81,8 @@ def index(request):
                             "latitud": float(comercio.latitud),
                             "longitud": float(comercio.longitud),
                         })
+            # Verificar si el usuario tiene comercios registrados
+            tiene_comercios = Oferente.objects.filter(id_usuario=request.user).exists()
         except ubicaciones.DoesNotExist:
             # Manejo en caso de que la ubicación no se encuentre
             pass
@@ -121,6 +124,7 @@ def index(request):
         } if request.user.is_authenticated else None,
         'comercios_en_radio': comercios_en_radio,
         'usuario_autenticado': request.user.is_authenticated,  # Nuevo parámetro
+        'tiene_comercios': tiene_comercios,  # Variable para mostrar botones en el nav en el template
     })
 
 
@@ -396,6 +400,10 @@ def registrar_usuario(request, persona_id):
             # Genera token y se guarda en la base de datos
             verification_token = generate_verification_token()
             usuario.token = verification_token
+            usuario.save()
+
+            # Si el usuario se está registrando por sí mismo, lo asignamos como usuario_creacion
+            usuario.usuario_creacion = usuario
             usuario.save()
 
             metodo_verificacion = form.cleaned_data['metodo_verificacion']

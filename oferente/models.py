@@ -1,6 +1,9 @@
+from django.utils import timezone
+from crum import get_current_user
 from django.db import models
 from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, TablaPais, TablaProvincia
 from usuario.models import Usuario, Rol
+from django.conf import settings
 
 class Oferente(models.Model):
 
@@ -8,14 +11,40 @@ class Oferente(models.Model):
     cuit=models.BigIntegerField(null=False,unique=True,max_length=11)
     categoria=models.CharField(max_length=25, null=True, blank=True)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='comercios', db_column='id_usuario',null=True)
-    fecha_creacion= models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    usuario_creacion = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                         null=True, blank=True, related_name='oferentes_creados')
+    fecha_creacion = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    usuario_modificacion = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                             null=True, blank=True, related_name='oferentes_modificados')
+    fecha_modificacion = models.DateTimeField(auto_now=True, null=True, blank=True)
     habilitado = models.BooleanField(default=True)
     eliminado = models.BooleanField(default=False)
-    fecha_eliminacion= models.DateTimeField(null=True,blank=True)
-    usuario_eliminacion= models.PositiveIntegerField(null=True,blank=True)
+    usuario_eliminacion = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,
+                                            null=True, blank=True, related_name='oferentes_eliminados')
+    fecha_eliminacion = models.DateTimeField(null=True, blank=True)
+
+
     
     def __str__(self):
         return self.nombrecomercio
+    
+    def save(self, force_insert = False, force_update = False, using = None,
+              update_fields = None):
+        user = get_current_user()
+        if user is not None:
+            if not self.pk:
+                self.usuario_creacion = user
+            else:
+                self.usuario_modificacion = user
+        super(Oferente, self).save()
+
+    def delete(self, using=None, keep_parents=False):
+        user = get_current_user()
+        if user is not None:
+            self.usuario_eliminacion = user
+        self.fecha_eliminacion = timezone.now()
+        self.eliminado = True
+        self.save()
 
     class Meta:
         managed = True

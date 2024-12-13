@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, TablaProvincia
 from .forms import CuitForm, OferenteForm, UbiComercio
-from .models import Oferente
+from .models import Oferente, ubicacionesComercio
 from afip import Afip
 
 cert = open('oferente/certificado.crt').read()
@@ -15,7 +15,7 @@ afip = Afip({
     "CUIT": 23395413929,
     "cert": cert,
     "key": key,
-    "access_token": "MR8rd6rny4pMm1aSahFiVqFYbyGaR3OjFvOhwPuGNaTAoHPOU4A24EbFErqzOAot",
+    "access_token": "xkGoHbluDKEPBiW9kFGqsHdwb54q2rAEUO6WCZHE8cJsYz77nF0by7Vy09WT4Ken",
     "production": True
 })
 
@@ -164,7 +164,9 @@ def lista_comercio(request):
     if request.user.is_authenticated:
         # Filtrar los comercios asociados al usuario logueado
         comercios = Oferente.objects.filter(id_usuario=request.user)
-        return render(request, 'oferente/lista_comercios.html', {'comercios': comercios})
+        ubicaciones_comercios = ubicacionesComercio.objects.filter(comercio_id__id_usuario=request.user)
+        return render(request, 'oferente/lista_comercios.html', {'comercios': comercios,
+                                                                 'ubicaciones_comercios': ubicaciones_comercios})
     else:
         return redirect('login')
     

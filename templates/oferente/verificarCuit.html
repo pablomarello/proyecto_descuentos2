@@ -9,6 +9,48 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
+
+<!-- Breadcrumb -->
+<nav class="flex text-gray-700 text-sm" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <!-- Inicio -->
+        <li class="inline-flex items-center">
+            <a href="{% url 'index' %}" class="inline-flex items-center text-gray-500 hover:text-blue-600">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M10 20a1 1 0 01-1-1V8.414L2.293 14.293a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0l8 8a1 1 0 01-1.414 1.414L11 8.414V19a1 1 0 01-1 1z"/>
+                </svg>
+                Inicio
+            </a>
+        </li>
+        <!-- Separador -->
+        <li>
+            <div class="flex items-center">
+                <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </div>
+        </li>
+        <!-- Productos -->
+        <li class="inline-flex items-center">
+            <a href="{% url 'lista_comercios' %}" class="text-gray-500 hover:text-blue-600">
+                Mis comercios
+            </a>
+        </li>
+        <!-- Separador -->
+        <li>
+            <div class="flex items-center">
+                <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </div>
+        </li>
+        <!-- Página actual (sin enlace) -->
+        <li class="inline-flex items-center">
+            <span class="text-gray-400">Verificar CUIT</span>
+        </li>
+    </ol>
+</nav>
+
 <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-3xl m-4">    
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-3xl m-4">

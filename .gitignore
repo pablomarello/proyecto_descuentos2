@@ -173,3 +173,6 @@ cython_debug/
 
 #certificado pro-ca-2021 de supabase
 prod-ca-2021.crt
+
+#app chatbot
+chabot/
