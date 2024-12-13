@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, TablaProvincia
 from .forms import CuitForm, OferenteForm, UbiComercio
-from .models import Oferente
+from .models import Oferente, ubicacionesComercio
 from afip import Afip
 
 cert = open('oferente/certificado.crt').read()
@@ -14,12 +15,17 @@ afip = Afip({
     "CUIT": 23395413929,
     "cert": cert,
     "key": key,
-    "access_token": "MR8rd6rny4pMm1aSahFiVqFYbyGaR3OjFvOhwPuGNaTAoHPOU4A24EbFErqzOAot",
+    "access_token": "xkGoHbluDKEPBiW9kFGqsHdwb54q2rAEUO6WCZHE8cJsYz77nF0by7Vy09WT4Ken",
     "production": True
 })
 
 
 def verificarCuit(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'Para registrar tu comercio primero debes iniciar sesión')
+        # Redirige al usuario a la página de inicio de sesión, pasando la URL actual como `next`
+        login_url = f"{reverse('login')}?next={request.path}"
+        return redirect(login_url)
     nombre = apellido = direccion = '-----'  # Inicializa las variables
     if request.method == 'POST':
         form = CuitForm(request.POST)
@@ -52,8 +58,8 @@ def verificarCuit(request):
                     return redirect('registrar_comercio')
                 
                 elif error_constancia:
-                    nombre = error_constancia.get('nombre', '-----')
-                    apellido = error_constancia.get('apellido', '-----')
+                    nombre = error_constancia.get('razonSocial', '--')
+                    apellido = error_constancia.get('apellido', '---')
                     
                     domicilio_fiscal = error_constancia.get('domicilioFiscal', {})
                     direccion = error_constancia.get('direccion', '----')
@@ -158,7 +164,9 @@ def lista_comercio(request):
     if request.user.is_authenticated:
         # Filtrar los comercios asociados al usuario logueado
         comercios = Oferente.objects.filter(id_usuario=request.user)
-        return render(request, 'oferente/lista_comercios.html', {'comercios': comercios})
+        ubicaciones_comercios = ubicacionesComercio.objects.filter(comercio_id__id_usuario=request.user)
+        return render(request, 'oferente/lista_comercios.html', {'comercios': comercios,
+                                                                 'ubicaciones_comercios': ubicaciones_comercios})
     else:
         return redirect('login')
     

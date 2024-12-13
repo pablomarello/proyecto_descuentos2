@@ -32,7 +32,8 @@ class Persona(models.Model):
 
     #usuario_id = models.OneToOneField(Usuario, on_delete=models.CASCADE, blank=True,null=True)
     
-    
+    def __str__(self):
+        return f"{self.nombres} {self.apellidos}"
 
     class Meta:
         verbose_name='Persona'

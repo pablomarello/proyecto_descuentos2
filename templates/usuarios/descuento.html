@@ -80,7 +80,7 @@ Index
         </div>
       </div>
   
-      <main class="mx-auto max-w-10xl px-10 sm:px-6 lg:px-8">
+      <main class="mx-auto max-w-10xl px-0 sm:px-6 lg:px-14">
         <div class="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
           <h1 class="text-4xl font-bold tracking-tight text-gray-900">Descuentos Destacados</h1>
 
@@ -192,7 +192,7 @@ Index
                     </div>
                     {% endfor %}
                 </div>                 
-            </div><link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+            </div>{% comment %} <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
             <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
             <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
             
@@ -291,7 +291,7 @@ Index
                         trazarRuta(userLocation, { lat: comercio.latitud, lng: comercio.longitud });
                     });
                 });
-            </script>
+            </script> {% endcomment %}
         </section>
 
       </main>

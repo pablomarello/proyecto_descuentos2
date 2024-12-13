@@ -9,6 +9,7 @@ from nltk.stem import WordNetLemmatizer
 nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
+import matplotlib.pyplot as plt
 
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
@@ -116,5 +117,27 @@ sgd = SGD(learning_rate=0.001, decay=1e-6, momentum=0.9, nesterov=True)
 model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
 
 # Entrenamiento y guardado del modelo
-model.fit(train_x, train_y, epochs=200, batch_size=10, verbose=1)
+
+history = model.fit(train_x, train_y, epochs=600, batch_size=10, verbose=1)
 model.save("chatbot_model.h5")
+
+# Graficar precisión y pérdida
+plt.figure(figsize=(12, 5))
+
+# Gráfica de la pérdida (loss)
+plt.subplot(1, 2, 1)
+plt.plot(history.history['loss'], label='Pérdida de entrenamiento')
+plt.title('Pérdida durante el entrenamiento')
+plt.xlabel('Épocas')
+plt.ylabel('Pérdida')
+plt.legend()
+
+# Gráfica de la precisión (accuracy)
+plt.subplot(1, 2, 2)
+plt.plot(history.history['accuracy'], label='Precisión de entrenamiento')
+plt.title('Precisión durante el entrenamiento')
+plt.xlabel('Épocas')
+plt.ylabel('Precisión')
+plt.legend()
+
+plt.show()

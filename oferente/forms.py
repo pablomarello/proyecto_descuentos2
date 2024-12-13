@@ -5,13 +5,50 @@ from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, Ta
 from proyecto_descuentos2.settings import RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY
 
 
+""" label='CUIT',
+        max_length=11,
+        min_length=11,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ingresa el CUIT',
+            'autocomplete': 'off',
+            'pattern': '[0-9]{11}',  
+            'maxlength': '11',
+            'title': 'Debe ser un número de 11 dígitos',
+            'style': 'border: 1px solid #d1d5db; padding-left: 10px; border-radius: 4px;'
+        })) """
+
 class CuitForm(forms.Form):
     
-    cuit = forms.CharField(label='CUIT', max_length=11, min_length=11)
+    cuit = forms.CharField(
+        label='CUIT', 
+        max_length=11, 
+        min_length=11,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',       # Clases de Bootstrap o Tailwind para estilos
+            'placeholder': 'Ingresa el CUIT',
+            'autocomplete': 'off',         # Evita el autocompletado
+            'pattern': '[0-9]{11}',        # Asegura que solo se permitan 11 dígitos
+            'title': 'Debe ser un número de 11 dígitos',
+            'style': 'border: 1px solid #d1d5db; padding: 2px; border-radius: 4px;'
+        })
+    )
+        
+    
+    
     captcha  =  ReCaptchaField ( 
+        label='',
         public_key =RECAPTCHA_PUBLIC_KEY, 
         private_key = RECAPTCHA_PRIVATE_KEY,
     )
+    
+    def clean_cuit(self):
+        cuit = self.cleaned_data.get('cuit')
+        if not cuit.isdigit():
+            raise forms.ValidationError("El CUIT debe contener solo números.")
+        return cuit
+    
+    
 class OferenteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(OferenteForm, self).__init__(*args, **kwargs)

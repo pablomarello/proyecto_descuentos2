@@ -6,6 +6,47 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+<!-- Breadcrumb -->
+<nav class="flex text-gray-700 text-sm" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <!-- Inicio -->
+        <li class="inline-flex items-center">
+            <a href="{% url 'index' %}" class="inline-flex items-center text-gray-500 hover:text-blue-600">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M10 20a1 1 0 01-1-1V8.414L2.293 14.293a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0l8 8a1 1 0 01-1.414 1.414L11 8.414V19a1 1 0 01-1 1z"/>
+                </svg>
+                Inicio
+            </a>
+        </li>
+        <!-- Separador -->
+        <li>
+            <div class="flex items-center">
+                <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </div>
+        </li>
+        <!-- Productos -->
+        <li class="inline-flex items-center">
+            <a href="{% url 'lista_comercios' %}" class="text-gray-500 hover:text-blue-600">
+                Mis comercios
+            </a>
+        </li>
+        <!-- Separador -->
+        <li>
+            <div class="flex items-center">
+                <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </div>
+        </li>
+        <!-- Página actual (sin enlace) -->
+        <li class="inline-flex items-center">
+            <span class="text-gray-400">Publicar nueva oferta</span>
+        </li>
+    </ol>
+</nav>
+
 <div class="max-w-2xl mx-auto bg-white p-5 rounded-md shadow-md">
     {% if messages %}
     <div id="messages" style="display: none;">
@@ -32,7 +73,9 @@
             <label for="titulo" class="block text-sm font-medium text-gray-700">Título de la oferta</label>
             <input type="text" name="titulo" id="titulo" value="{{ form.titulo.value|default_if_none:'' }}"
                 class="mt-1 p-2 block w-full border rounded-md" placeholder="Título de la oferta">
-            {{ form.titulo.errors }}
+            {% for error in form.titulo.errors %}
+                <p class="text-red-500">{{ error }}</p>
+            {% endfor %}
         </div>
 
         <!-- Campo para la descripción -->
@@ -40,7 +83,9 @@
             <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
             <textarea name="descripcion" id="descripcion" class="mt-1 p-2 block w-full border rounded-md"
                 placeholder="Descripción de la oferta">{{ form.descripcion.value|default_if_none:'' }}</textarea>
-            {{ form.descripcion.errors }}
+            {% for error in form.descripcion.errors %}
+                <p class="text-red-500">{{ error }}</p>
+            {% endfor %}
         </div>
 
         <!-- Campo para la imagen de la oferta -->
@@ -48,7 +93,9 @@
             <label for="imagen" class="block text-sm font-medium text-gray-700">Imagen de la oferta</label>
             <input type="file" name="imagen" id="imagen"
                 class="mt-1 block w-full text-sm text-gray-900 border rounded-md cursor-pointer focus:outline-none">
-            {{ form.imagen_oferta.errors }}
+            {% for error in form.imagen_oferta.errors %}
+                <p class="text-red-500">{{ error }}</p>
+            {% endfor %}
         </div>
 
         <!-- Campo para el precio normal -->
@@ -57,7 +104,9 @@
             <input type="number" name="precio_normal" id="precio_normal"
                 value="{{ form.precio_normal.value|default_if_none:'' }}"
                 class="mt-1 p-2 block w-full border rounded-md" placeholder="Precio normal">
-            {{ form.precio_normal.errors }}
+            {% for error in form.precio_normal.errors %}
+                <p class="text-red-500">{{ error }}</p>
+            {% endfor %}
         </div>
 
         <!-- Campo para el precio de oferta -->
@@ -66,7 +115,9 @@
             <input type="number" name="precio_oferta" id="precio_oferta"
                 value="{{ form.precio_oferta.value|default_if_none:'' }}"
                 class="mt-1 p-2 block w-full border rounded-md" placeholder="Precio de oferta">
-            {{ form.precio_oferta.errors }}
+            {% for error in form.precio_oferta.errors %}
+                <p class="text-red-500">{{ error }}</p>
+            {% endfor %}
         </div>
 
         <!-- Selección de productos -->
@@ -77,6 +128,17 @@
                 placeholder="Escribe el nombre del producto...">
             <div id="resultados_productos" class="mt-2 bg-white border rounded-md max-h-60 overflow-auto z-50"></div>
         </div>
+        
+
+        <div class="mb-4">
+            <a href="{% url 'crear_producto' %}" class="bg-gray-500 text-white font-semibold py-2 px-4 rounded hover:bg-gray-700">
+                Agregar un producto
+            </a>
+        </div>
+
+      
+
+
         <!-- Contenedor para productos seleccionados -->
         <div id="productos_seleccionados" class="mb-4 flex flex-wrap"></div>
         <!-- Campo oculto para productos seleccionados -->
@@ -86,7 +148,9 @@
         <div class="mb-4">
             <label for="oferente" class="block text-sm font-medium text-gray-700">Selecciona el comercio</label>
             {{ form.oferente }}
-            {{ form.oferente.errors }}
+            {% for error in form.oferente.errors %}
+                <p class="text-red-500">{{ error }}</p>
+            {% endfor %}
         </div>
 
         <!-- Campo para la fecha de inicio -->
@@ -95,7 +159,9 @@
             <input type="date" name="fecha_inicio" id="fecha_inicio"
                 value="{{ form.fecha_inicio.value|default_if_none:'' }}"
                 class="mt-1 p-2 block w-full border rounded-md">
-            {{ form.fecha_inicio.errors }}
+            {% for error in form.fecha_inicio.errors %}
+                <p class="text-red-500">{{ error }}</p>
+            {% endfor %}
         </div>
 
         <!-- Campo para la fecha de fin -->
@@ -103,7 +169,9 @@
             <label for="fecha_fin" class="block text-sm font-medium text-gray-700">Fecha de fin</label>
             <input type="date" name="fecha_fin" id="fecha_fin" value="{{ form.fecha_fin.value|default_if_none:'' }}"
                 class="mt-1 p-2 block w-full border rounded-md">
-            {{ form.fecha_fin.errors }}
+            {% for error in form.fecha_fin.errors %}
+                <p class="text-red-500">{{ error }}</p>
+            {% endfor %}
         </div>
 
         <!-- Botón de envío -->
@@ -116,7 +184,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        // Array para almacenar los productos seleccionados
+        // Array para almacenar los productos seleccionados (ID y nombre)
         var productosSeleccionados = [];
 
         // Búsqueda de productos mediante AJAX
@@ -131,7 +199,7 @@
                     success: function (data) {
                         $('#resultados_productos').html(''); // Limpiar resultados anteriores
                         for (var i = 0; i < data.length; i++) {
-                            $('#resultados_productos').append('<div class="producto-item p-2 cursor-pointer hover:bg-gray-100" data-id="' + data[i].id + '">' + data[i].nombre + '</div>');
+                            $('#resultados_productos').append('<div class="producto-item p-2 cursor-pointer hover:bg-gray-100" data-id="' + data[i].id + '" data-nombre="' + data[i].nombre + '">' + data[i].nombre + '</div>');
                         }
                     },
                     error: function (xhr, status, error) {
@@ -146,10 +214,11 @@
         // Evento para seleccionar un producto
         $(document).on('click', '.producto-item', function () {
             var productoId = $(this).data('id');
+            var productoNombre = $(this).data('nombre');
 
             // Verifica si el producto ya está seleccionado
-            if (!productosSeleccionados.includes(productoId)) {
-                productosSeleccionados.push(productoId); // Agrega el ID del producto al array
+            if (!productosSeleccionados.some(producto => producto.id === productoId)) {
+                productosSeleccionados.push({ id: productoId, nombre: productoNombre }); // Agrega el producto al array
                 mostrarProductosSeleccionados();
             }
 
@@ -162,11 +231,11 @@
             $('#productos_seleccionados').html(''); // Limpiar el contenedor antes de mostrar
             var ids = []; // Array para almacenar los IDs de los productos seleccionados
             for (var i = 0; i < productosSeleccionados.length; i++) {
-                var productoId = productosSeleccionados[i];
-                ids.push(productoId); // Agrega el ID al array de IDs
+                var producto = productosSeleccionados[i];
+                ids.push(producto.id); // Agrega el ID al array de IDs
                 $('#productos_seleccionados').append(`
-                    <div class="bg-gray-200 p-2 rounded-md flex items-center mr-2 mb-2" data-id="${productoId}">
-                        <span>${productoId} (Nombre del producto)</span>
+                    <div class="bg-gray-200 p-2 rounded-md flex items-center mr-2 mb-2" data-id="${producto.id}">
+                        <span>${producto.nombre}</span>
                         <button class="eliminar-producto ml-2 text-red-600">x</button>
                     </div>
                 `);
@@ -178,12 +247,14 @@
         // Evento para eliminar un producto seleccionado
         $(document).on('click', '.eliminar-producto', function () {
             var productoId = $(this).parent().data('id');
-            productosSeleccionados = productosSeleccionados.filter(function (id) {
-                return id !== productoId; // Filtra el ID que se está eliminando
+            productosSeleccionados = productosSeleccionados.filter(function (producto) {
+                return producto.id !== productoId; // Filtra el producto que se está eliminando
             });
             mostrarProductosSeleccionados(); // Actualiza la visualización
         });
     });
+
+
     document.addEventListener("DOMContentLoaded", function () {
         var messageContainer = document.getElementById('messages');
         if (messageContainer) {
@@ -212,5 +283,40 @@
         }
     });
 </script>
+
+<script>
+    $(document).ready(function () {
+        const messageContainer = document.getElementById('messages');
+        if (messageContainer) {
+            const messageElements = messageContainer.querySelectorAll('[data-message]');
+            messageElements.forEach(element => {
+                const message = element.getAttribute('data-message');
+                const tags = element.getAttribute('data-tags');
+                
+                // Mostrar alertas según los tags
+                if (tags === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: message,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK'
+                    });
+                } else if (tags === 'error') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '¡Error!',
+                        text: message,
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'Entendido'
+                    });
+                }
+            });
+        }
+    });
+</script>
+
+
+
 
 {% endblock %}

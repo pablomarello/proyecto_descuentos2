@@ -2,6 +2,8 @@
 # Byte-compiled / optimized / DLL files
 */__pycache__/
 *.py[cod]
+
+chatbot/
 *$py.class
 
 # Ignorar archivos .pyc y __pycache__
@@ -173,3 +175,6 @@ cython_debug/
 
 #certificado pro-ca-2021 de supabase
 prod-ca-2021.crt
+
+#app chatbot
+chabot/

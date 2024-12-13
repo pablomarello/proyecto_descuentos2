@@ -3,9 +3,10 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from .forms import ComentarioForm, OfertaForm
 from oferta.models import Comentario, Oferta
-from producto.models import Categoria, Producto
+from producto.models import Categoria, Producto, Subcategoria
 from django.contrib import messages
 from django.shortcuts import redirect, render
 import requests
@@ -157,11 +158,11 @@ def recibir_comentario(request, oferta_id):
         oferta = get_object_or_404(Oferta, id=oferta_id)
         comentario = request.POST.get('comentario')
 
-        # Verifica si ya ha puntuado esta oferta
+        # Verifica si ya ha comentado esta oferta
         comentario_existente = Comentario.objects.filter(oferta=oferta, usuario=request.user).exists()
 
         if not comentario_existente:
-            # Crea una nueva puntuación utilizando los campos correctos
+            # Crea una nuevo comentario 
             Comentario.objects.create(
                 oferta=oferta,
                 usuario=request.user,  # Campo 'usuario' en lugar de 'user'
@@ -179,8 +180,10 @@ def recibir_comentario(request, oferta_id):
 
 def detalle_oferta(request, oferta_id):
     if not request.user.is_authenticated:
-        messages.error(request, 'Primero debes iniciar sesión')
-        return redirect('login')
+        messages.error(request, 'Inicia sesión para ver los detalles de cada oferta')
+        # Redirige al usuario a la página de inicio de sesión, pasando la URL actual como `next`
+        login_url = f"{reverse('login')}?next={request.path}"
+        return redirect(login_url)
 
     oferta = get_object_or_404(Oferta, id=oferta_id)
     
@@ -289,6 +292,7 @@ def crear_oferta(request):
     else:
         form = OfertaForm(user=request.user)
 
+
     return render(request, 'oferta/crear_oferta.html', {'form': form})
 
 
@@ -387,7 +391,9 @@ def editar_oferta(request,id_oferta):
         # Si hay una nueva imagen, actualizarla
         if request.FILES.get('imagen'):
             oferta.imagen = request.FILES['imagen']
+            
         
+        oferta.activo = True
         oferta.save()
         
         messages.success(request, "La oferta ha sido actualizada correctamente.")

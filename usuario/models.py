@@ -1,9 +1,11 @@
 from django.db import models
+from crum import get_current_user
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Permission
 from persona.models import Persona
 from django.utils import timezone
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.conf import settings
 
 
 # Create your models here.
@@ -67,10 +69,15 @@ class Usuario(AbstractBaseUser,PermissionsMixin):
     actividad_inicio= models.DateTimeField(null=True,blank=True)
     actividad_fin = models.DateTimeField(null=True,blank=True)
     fecha_creacion= models.DateTimeField(auto_now_add=True,null=True,blank=True)
-    usuario_creacion= models.PositiveIntegerField(null=True,blank=True)
+    usuario_creacion = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                         null=True, blank=True, related_name='usuarios_creados')
+    usuario_modificacion = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                             null=True, blank=True, related_name='usuarios_modificados')
+    fecha_modificacion = models.DateTimeField(auto_now=True, null=True, blank=True)
     eliminado = models.BooleanField(default=False)
-    fecha_eliminacion= models.DateTimeField(null=True,blank=True)
-    usuario_eliminacion= models.PositiveIntegerField(null=True,blank=True)
+    usuario_eliminacion = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,
+                                            null=True, blank=True, related_name='usuarios_eliminados')
+    fecha_eliminacion = models.DateTimeField(null=True, blank=True)
     #campos c/ clave foranea
     rol_id = models.OneToOneField(Rol, on_delete=models.CASCADE, blank=True,null=True) #depues sacar blank y null
     persona_id = models.OneToOneField(Persona, on_delete=models.CASCADE,related_name='usuario', blank=True,null=True)  #depues sacar blank y null
@@ -84,6 +91,25 @@ class Usuario(AbstractBaseUser,PermissionsMixin):
 
     def __str__ (self):
         return f'Usuario: {self.username}'
+    
+    def save(self, force_insert = False, force_update = False, using = None,
+              update_fields = None):
+        user = get_current_user()
+        # Evitar bucles y usuarios no válidos
+        if user and user.is_authenticated:
+            if not self.pk:  # Usuario nuevo
+                self.usuario_creacion = user
+            else:  # Actualización de usuario existente
+                self.usuario_modificacion = user
+        super(Usuario, self).save(force_insert, force_update, using, update_fields)
+
+    def delete(self, using=None, keep_parents=False):
+        user = get_current_user()
+        if user is not None:
+            self.usuario_eliminacion = user
+        self.fecha_eliminacion = timezone.now()
+        self.eliminado = True
+        self.save()
 
     class Meta:
         verbose_name = 'Usuario'
@@ -96,6 +122,8 @@ class Usuario(AbstractBaseUser,PermissionsMixin):
 def set_usuario_creacion(sender, instance, **kwargs):
     if not instance.pk and hasattr(instance, '_current_user'):
         instance.usuario_creacion = instance._current_user.id
+        
+        
 class ActividadUsuario(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     actividadinicio = models.DateTimeField(null=True, blank=True)

@@ -30,15 +30,16 @@
 
       <form class="space-y-8" action="{%url 'login'%}" method="POST">
         {% csrf_token %}
-        <div class="mt-2">
-          <div class="g-recaptcha block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" data-sitekey="6LdBNegpAAAAAARTf3pLUTxikRi6B3XD7delajxJ"></div>
-        </div>
+        
         <div>
           <label for="username" class="block text-sm font-medium leading-6 text-gray-900">Usuario</label>
           <div class="mt-2">
             <input id="username" name="username" type="text" placeholder=" Ingrese su nombre de usuario" 
             autocomplete="off"  required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
           </div>
+          {% for error in form.username.errors %}
+                <p class="text-red-500">{{ error }}</p>
+            {% endfor %}
         </div>
         <div>
           <div class="flex items-center justify-between">
@@ -50,7 +51,11 @@
           <div class="mt-2">
             <input id="password" name="password" type="password" autocomplete="off"  placeholder=" Ingrese su contraseña" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
           </div>
+          {% for error in form.password.errors %}
+                <p class="text-red-500">{{ error }}</p>
+            {% endfor %}
         </div>
+
 
         <div>
           <button type="submit" class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">Ingresar</button>

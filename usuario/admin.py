@@ -3,8 +3,12 @@ from usuario.models import Usuario, Rol, ActividadUsuario
 
 # Register your models here.
 
+class UsuarioAdmin(admin.ModelAdmin):
+    list_display = ('username','email','persona_id','usuario_creacion','fecha_creacion',
+                  'usuario_modificacion','fecha_modificacion','eliminado','usuario_eliminacion','fecha_eliminacion')
 
-admin.site.register(Usuario)
+
+admin.site.register(Usuario, UsuarioAdmin)
 admin.site.register(Rol)
 # Register your models here.
 

@@ -1,5 +1,4 @@
 {% load static %}
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,11 +9,13 @@
     <!-- SWEET ALERT -->
 
      <!-- Select -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
     
   <!-- Your code -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="{% static 'admin/css/styles.css' %}">
   <link rel="stylesheet" href="{% static 'css/styles_chat.css' %}">
   
@@ -154,8 +155,11 @@
                                 <p class="font-bold text-white">{{ user.username }}</p>
                                 <p class="text-xs text-gray-300">{{ user.email }}</p>
                             </div>
-                            <a href="{% url 'lista_comercios'%}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Mis comercios</a>
-                            <a href="{% url 'verificar_cuit' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Registrar Mi Comercio</a>
+                            {% if tiene_comercios %}
+                                <a href="{% url 'lista_comercios' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Mis comercios</a>
+                            {% else %}
+                                <a href="{% url 'verificar_cuit' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Registrar Mi Comercio</a>
+                            {% endif %}
                             <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Perfil</a>
                             <a href="{% url 'reset_password' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cambiar contraseña</a>
                             <a href="{% url 'cerrar_sesion' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cerrar Sesión</a>
@@ -338,12 +342,12 @@
     </div>
 
 <!-- Botón del icono del chatbot -->
-<div id="chatbot-icon" class="fixed bg-white bottom-2 right-2 text-white rounded-full p-2 shadow-xl cursor-pointer z-10">
+<!-- <div id="chatbot-icon" class="fixed bg-white bottom-2 right-2 text-white rounded-full p-2 shadow-xl cursor-pointer z-10">
     <img src="{% static "images/png/chatbot.png" %}" alt="" class="" width="50">
-</div>
+</div> -->
 
 <!-- Modal del chatbot -->
-<div id="chatbot-modal" class="fixed bottom-20 p-0 pb-1  right-4 bg-white rounded-lg shadow-lg max-w-lg w-80 max-h-400 z-20 hidden">
+<!-- <div id="chatbot-modal" class="fixed bottom-20 p-0 pb-1  right-4 bg-white rounded-lg shadow-lg max-w-lg w-80 max-h-400 z-20 hidden">
     <div id="chatbot" class="chat- p-0 rounded-lg ">
         <div class="chat-header p-1 pr-2 bg-red-600 rounded-lg ">ChatBot 
             <button id="close-modal" class="absolute font-bold top-1 right-4 text-white-500">&times;</button>
@@ -360,113 +364,8 @@
             </button>
         </form>
     </div>
-</div>
+</div> -->
 
-<script>
-    const chatMessages = document.getElementById('chatMessages');
-    const chatForm = document.getElementById('chatForm');
-    const userInput = document.getElementById('userInput');
-    const chatbotModal = document.getElementById('chatbot-modal');
-    const closeModal = document.getElementById('close-modal');
-    const chatIcon = document.getElementById('chatbot-icon');
-
-    // Mostrar el modal al hacer clic en el icono
-    chatIcon.addEventListener('click', () => {
-        chatbotModal.classList.remove('hidden');
-        loadMessages(); // Cargar los mensajes guardados en sessionStorage
-    });
-
-    // Ocultar el modal al hacer clic en el botón de cerrar
-    closeModal.addEventListener('click', () => {
-        chatbotModal.classList.add('hidden');
-    });
-
-    // Función para añadir un mensaje al chat y guardarlo en sessionStorage
-    function addMessage(content, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message', sender);
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        if (sender === 'bot') {
-            messageDiv.innerHTML = `
-                <div class="user-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                </div>
-                <div class="message-content">${content}</div>
-            `;
-        } else {
-            messageDiv.innerHTML = `
-                <div class="message-content">${content}</div>
-                <div class="user-circle">Yo</div>
-            `;
-        }
-
-        // Guardar mensaje en sessionStorage
-        const messages = JSON.parse(sessionStorage.getItem('chatMessages') || '[]');
-        messages.push({ content, sender });
-        sessionStorage.setItem('chatMessages', JSON.stringify(messages));
-    }
-
-    // Función para cargar los mensajes desde sessionStorage
-    function loadMessages() {
-        chatMessages.innerHTML = ''; // Limpiar mensajes anteriores
-        const messages = JSON.parse(sessionStorage.getItem('chatMessages') || '[]');
-        messages.forEach(({ content, sender }) => {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', sender);
-            chatMessages.appendChild(messageDiv);
-
-            if (sender === 'bot') {
-                messageDiv.innerHTML = `
-                    <div class="user-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                    </div>
-                    <div class="message-content">${content}</div>
-                `;
-            } else {
-                messageDiv.innerHTML = `
-                    <div class="message-content">${content}</div>
-                    <div class="user-circle">Yo</div>
-                `;
-            }
-        });
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    chatForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const userMessage = userInput.value.trim();
-        if (userMessage) {
-            addMessage(userMessage, 'user');
-            userInput.value = '';
-
-            fetch('{% url "chat_view" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': '{{ csrf_token }}',
-                },
-                body: 'message=' + encodeURIComponent(userMessage)
-            })
-            .then(response => response.json())
-            .then(data => {
-                addMessage(data.response, 'bot');
-            });
-        }
-    });
-
-    // Mensaje inicial del bot, solo si no hay mensajes guardados
-    if (!sessionStorage.getItem('chatMessages')) {
-        addMessage('¡Hola! Soy el asistente de Descuentos Catamarca. ¿En qué puedo ayudarte hoy?', 'bot');
-    }
-</script>
 
 
 
@@ -512,7 +411,7 @@
             </div>
       
             <div>
-                <h3 class="text-sm font-semibold text-gray-200 mb-4">Contaco</h3>
+                <h3 class="text-sm font-semibold text-gray-200 mb-4">Contacto</h3>
                 <ul class="space-y-2">
                     <div class="flex items-center">
                         <img src="{% static "images/svg/white/header/sidebars/email.svg" %}" alt="" class="h-6 w-6 mr-2">
