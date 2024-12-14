@@ -1,0 +1,61 @@
+{% extends 'administracion/base_admin.html' %}
+
+{% block style %}
+<style>
+    #map {
+        height: 500px;
+        width: 100%;
+    }
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.animatedmarker/src/AnimatedMarker.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
+{% endblock style %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1>Inicios de sesion por zona</h1>
+    <div id="map" style="height: 500px; width:90%; z-index: 1; margin-left: 15px; margin-top: 75px;"></div>
+</div>
+{% endblock content %}
+
+{% block js %}
+<script>
+    const map = L.map('map').setView([-28.4654203,-65.7787809], 14); // Coordenadas centradas en Argentina
+
+    // Cargar mapa base
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+
+</script>
+
+<script>
+    fetch("{% url 'mapa_calor' %}", { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(response => {
+        if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+        return response.json();
+    })
+    .then(data => {
+        console.log(data); // Para depurar los datos obtenidos
+
+        const heatData = data.data.map(point => [
+            parseFloat(point.lat),
+            parseFloat(point.lng),
+            point.count
+        ]);
+
+        // Agregar la capa de calor al mapa
+        L.heatLayer(heatData, { radius: 30,blur: 15,   // Suavizado de los bordes de calor
+            maxZoom: 17 }).addTo(map);
+    })
+    .catch(error => console.error('Error al cargar los datos del mapa:', error));
+</script>
+{% endblock js %}

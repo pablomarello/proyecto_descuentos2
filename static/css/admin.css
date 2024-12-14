@@ -1,0 +1,254 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap');
+
+/* CSS DEL BASE ---------------------------------------------------------------*/
+body {
+    transition: margin-left 0.3s;
+}
+
+/* Barra superior (navbar) */
+.navbar {
+    background-color: rgb(55 65 81 / var(--tw-bg-opacity, 1));
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+/* Wrapper para el contenido */
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: rgb(55 65 81 / var(--tw-bg-opacity, 1));
+    width: 220px;
+    height: 100vh;
+    position: fixed;
+    top: 40px;
+    left: 0;
+    padding: 20px 0;
+    color: white;
+    z-index: 999;
+    transition: 0.3s ;
+}
+
+/* Estilos para los enlaces dentro del sidebar */
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    text-shadow: #000000;
+    display: block;
+    font-weight: 600;
+    margin-left: 10px;
+    padding: 18px 0;
+}
+
+.sidebar a:hover {
+    background-color: #0056b3;
+    border-radius: 5px;
+}
+
+/* Contenido */
+.content {
+    margin-top: 50px;
+    margin-left: 220px;
+    padding: 20px;
+    width: calc(100% - 220px);
+    transition: 0.3s ;
+}
+
+/* Estilos cuando el sidebar está oculto */
+.content-shift {
+    margin-left: 0;
+    width: 100%;
+}
+
+
+
+/* Estilos para el card */
+.card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.card i {
+    font-size: 2rem;
+}
+
+/* CSS DEL SWITCH ENCENDIDO-APAGADO */
+.container {
+    display: flex;
+    align-items: start;
+    max-width: min-content;
+    max-height: min-content;
+    margin: 0;
+}
+
+.container .switch {
+    height: 40px;
+    width: 90px;
+    padding: 0 1rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.container .switch .input {
+    display: none;
+}
+
+.container .switch .rail {
+    border: solid 1px black;
+    position: relative;
+    width: 60px;
+    height: 28px;
+    background-color: #fff;
+    border-radius: 3rem;
+}
+
+.container .switch .rail .circle {
+    display: block;
+    width: 25px;
+    height: 25px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    transition: transform 0.4s;
+}
+
+.container .switch .input:checked ~ .rail .circle {
+    transform: translate(30px, -50%);
+}
+
+/* Estilos para el contenedor general del login de administrador */
+.login_administrador {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8f9fa; /* Fondo claro */
+}
+
+/* Estilo para el formulario dentro de col-md-6 */
+.login_administrador .col-md-6 {
+    max-width: 500px;
+    margin: auto;
+}
+
+/* Personalizar la tarjeta del formulario */
+.login_administrador .card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+}
+
+/* Encabezado del formulario */
+.login_administrador .card-header {
+    background-color: #1b334d; /* Azul de Bootstrap */
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Botón de envío */
+.login_administrador .btn-primary {
+    background-color: #1b334d; /* Azul de Bootstrap */
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.login_administrador .btn-primary:hover {
+    background-color: #265c96; /* Azul de Bootstrap */
+}
+
+/* Estilo general para los mensajes de error */
+.error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+/* Estilos para el icono de los enlaces dentro del sidebar */
+.sb-nav-link-icon {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: flex-start;
+    align-items: baseline;
+}
+
+/* Estilos para el botón de collapse en el sidebar */
+.sb-sidenav-collapse-arrow {
+    font-size: 15px;
+    transition: transform 0.3s ease;
+    margin-left: 7rem;
+}
+
+.nav-link.collapsed .sb-sidenav-collapse-arrow {
+    transform: rotate(0deg);
+}
+
+.nav-link:not(.collapsed) .sb-sidenav-collapse-arrow {
+    transform: rotate(90deg);
+}
+
+.collapse .nav-link {
+    padding-left: 10px;
+    font-size: 15px;
+}
+
+.sb-sidenav-menu-nested {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    margin-left: 1rem;
+}
+
+/* Media Queries para pantallas pequeñas */
+@media (max-width: 768px) {
+    .sidebar {
+        position: absolute;
+        top: 40px;
+        left: -220px; /* Sidebar fuera de la vista */
+        transition: 0.3s ;
+    }
+
+    .sidebar-hidden {
+        left: 0; /* Sidebar visible cuando se agrega la clase */
+    }
+
+    .content {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+
+/* Estilos para el sidebar cuando está oculto */
+.sidebar-hidden {
+    left: 0; /* Ocultar el sidebar moviéndolo fuera de la vista */
+}
+
+/* Para pantallas grandes, se usa position fixed y left para ocultar */
+@media (min-width: 769px) {
+    .sidebar-hidden {
+        transform: translateX(-100%); /* Mueve el sidebar fuera de la vista */
+        transition: 0.3s ;
+    }
+    
+}

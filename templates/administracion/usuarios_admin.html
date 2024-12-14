@@ -1,0 +1,132 @@
+{% extends "administracion/base_admin.html" %}
+
+{% block content %}
+ <!-- Scripts para DataTables -->
+
+
+
+
+<div class="container-fluid justify-content-center">
+    <h2 class="text-center text-black">USUARIOS</h2>
+    <div class="d-flex justify-content-between mb-3">
+        
+    </div>
+    <div class="d-flex justify-content-end">
+        <a href="{% url 'usuarios_admin' %}" class="btn btn-link">Mostrar todo el listado</a>
+    </div>
+
+
+    <div class="table-responsive">
+        <table id="datatablesSimple" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Teléfono</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario.persona_id.nombres }}</td>
+                    <td>{{ usuario.persona_id.apellidos }}</td>
+                    <td>{{ usuario.username }}</td>
+                    <td>{{ usuario.email }}</td>
+                    <td>{{ usuario.telefono|default:"-----" }}</td>
+                    <td>
+                        <div class="container">
+                            {% if usuario.id != request.user.id %}
+                            <label class="switch">
+                                <input type="checkbox" class="input toggle-active" data-id="{{ usuario.id }}" {% if usuario.is_active %}checked{% endif %}>
+                                <div class="rail {% if usuario.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                    <span class="circle"></span>
+                                </div>
+                            </label>
+
+                            {% else %}
+                            <label class="switch">
+                                <input type="checkbox" class="input toggle-active" data-id="{{ usuario.id }}" {% if usuario.is_active %}checked{% endif %} disabled>
+                                <div class="rail {% if usuario.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                    <span class="circle"></span>
+                                </div>
+                            </label>
+                            {% endif %}
+                            
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            {% if usuario.id != request.user.id %}
+                           
+                            <a href="{% url 'editar_usuario' usuario.id %}" class="btn btn-warning">
+                                <img src="/media/user/icons8-editar-25.png" alt="">
+                            </a>
+                            {% else %}
+                            <button type="button" class="btn btn-warning" disabled>
+                                <img src="/media/user/icons8-editar-25.png" alt="editar usuario"
+                                    title="No puedes editar tu propia cuenta">
+                            </button>
+                            
+                            {% endif %}
+                            
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+   
+    <script>
+        $(document).ready(function () {
+        $('#datatablesSimple').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/Spanish.json"
+            },
+            "dom": 'Bfrtip',
+            "paging": false,
+            "searching": false,
+            "ordering": false,
+            "info": false 
+    });
+
+
+    function getCSRFToken() {
+                return $('meta[name="csrf-token"]').attr('content');
+            }
+
+    function toggleUserStatus(element) {
+    const userId = $(element).data('id');
+    const isActive = $(element).is(':checked');
+    const url = `{% url 'toggle_user_status' 0 %}`.replace('0', userId);
+
+    $.ajax({
+        url: url,
+        method: "POST",
+        headers: { 'X-CSRFToken': getCSRFToken() },
+        data: { is_active: isActive },
+        success: function (response) {
+            // Recargar la página para mostrar el mensaje de éxito
+            location.reload();
+        },
+        error: function (xhr) {
+            alert("Error al actualizar el estado del usuario: " + xhr.responseText);
+        }
+    });
+}
+
+            $(document).on('change', '.toggle-active', function () {
+                toggleUserStatus(this);
+            });
+});
+    </script>
+
+{% endblock %}

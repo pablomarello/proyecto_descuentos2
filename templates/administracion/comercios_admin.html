@@ -1,0 +1,107 @@
+{% extends "administracion/base_admin.html" %}
+
+{% block content %}
+<!-- Scripts para DataTables -->
+<!-- Scripts para DataTables -->
+
+
+
+<div class="container-fluid justify-content-center">
+    <h2 class="text-center text-black">COMERCIOS</h2>
+
+    <div class="d-flex justify-content-end">
+        <a href="{% url 'comercios_admin' %}" class="btn btn-link">Mostrar todo el listado</a>
+    </div>
+
+    <div class="table-responsive">
+        <table id="datatablesSimple" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+
+                    <th>Comercio</th>
+                    <th>CUIT</th>
+                    <th>oferente</th>
+                    <th>CATEGORÍA</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for comercios in comercios %}
+                <tr>
+
+                    <td>{{ comercios.nombrecomercio }}</td>
+                    <td>{{ comercios.cuit }}</td>
+                    <td>{{ comercios.id_usuario.username }}</td>
+                    <td>{{ comercios.categoria }}</td>
+                    <td>
+                        <div class="container">
+                            <label class="switch">
+                                <input type="checkbox" class="input toggle-active" data-id="{{ comercios.id }}" {% if comercios.habilitado %}checked{% endif %}>
+                                <div class="rail {% if comercios.habilitado %}bg-success{% else %}bg-danger{% endif %}">
+                                    <span class="circle"></span>
+                                </div>
+                            </label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+
+
+                            <a href="{% url 'editar_comercio' comercios.id %}" class="btn btn-warning">
+                                <img src="/media/user/icons8-editar-25.png" alt="">
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('#datatablesSimple').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/Spanish.json"
+                },
+                "dom": 'Bfrtip',
+                "paging": false,
+                "searching": false,
+                "ordering": false,
+                "info": false
+            });
+            function getCSRFToken() {
+                return $('meta[name="csrf-token"]').attr('content');
+            }
+
+            function toggleUserStatus(element) {
+                const userId = $(element).data('id');
+                const isActive = $(element).is(':checked');
+                const url = `{% url 'toggle_oferente_status' 0 %}`.replace('0', userId);
+
+                $.ajax({
+                    url: url,
+                    method: "POST",
+                    headers: { 'X-CSRFToken': getCSRFToken() },
+                    data: { is_active: isActive },
+                    success: function (response) {
+                        // Recargar la página para mostrar el mensaje de éxito
+                        location.reload();
+                    },
+                    error: function (xhr) {
+                        alert("Error al actualizar el estado del oferente: " + xhr.responseText);
+                    }
+                });
+            }
+
+            $(document).on('change', '.toggle-active', function () {
+                toggleUserStatus(this);
+            });
+        });
+    </script>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap');
+
+/* CSS DEL SWITCH ENCENDIDO-APAGADO */
+.container {
+  display: flex;
+  align-items: start;
+  max-width: min-content;
+  max-height: min-content;
+  margin: 0;
+}
+
+.container .switch {
+  height: 40px;
+  width: 90px;
+  padding: 0 1rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.container .switch .input {
+  display: none;
+}
+
+.container .switch .rail {
+  border: solid 1px black;
+  position: relative;
+  width: 60px;
+  height: 28px;
+  background-color: #fff;
+  border-radius: 3rem;
+}
+
+.container .switch .rail .circle {
+  display: block;
+  width: 25px;
+  height: 25px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  transition: transform 0.4s;
+}
+
+.container .switch .input:checked ~ .rail .circle {
+  transform: translate(30px, -50%);
+}

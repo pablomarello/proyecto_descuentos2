@@ -1,0 +1,69 @@
+{% extends 'administracion/base_admin.html' %}
+
+{% block content %}
+
+
+
+<div class="container-fluid justify-content-center">
+    <div class="col-md-10">
+        {% if messages %}
+        <div class="alert alert-danger" role="alert">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <a href="{% url 'usuarios_admin' %}">Volver al listado</a>
+
+        <!-- Formulario -->
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Editar Usuario</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'editar_usuario' usuario.id %}">
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    <!-- Renderizar otros campos -->
+
+                    <!-- Botones para guardar o cancelar -->
+                    <div class="flex justify-end gap-4">
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-800">Guardar
+                            Cambios</button>
+                        <a class="px-4 py-2 bg-gray-600 text-white font-bold rounded-md hover:bg-gray-800 "
+                            href="{% url 'usuarios_admin' %}">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para validar las contraseñas -->
+<script>
+    const password1 = document.getElementById('password1');
+    const password2 = document.getElementById('password2');
+    const passwordError = document.getElementById('passwordError');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function checkPasswords() {
+        if (password1.value !== password2.value) {
+            passwordError.style.display = 'block';
+            submitBtn.disabled = true; // Deshabilita el botón si las contraseñas no coinciden
+        } else {
+            passwordError.style.display = 'none';
+            submitBtn.disabled = false; // Habilita el botón si las contraseñas coinciden
+        }
+    }
+
+    // Escuchar cambios en los campos de contraseña
+    password1.addEventListener('input', checkPasswords);
+    password2.addEventListener('input', checkPasswords);
+</script>
+
+
+<!-- Scripts de Bootstrap -->
+
+</html>
+{% endblock%}
