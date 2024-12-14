@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'chatbot',
     'estadistica',
     'rest_framework',
+    'administracion',
+    
 ]
 
 #crispy tailwind css settings
@@ -66,6 +68,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'crum.CurrentRequestUserMiddleware',
+    'proyecto_descuentos2.middleware.RedirectUnauthenticatedMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'proyecto_descuentos2.urls'

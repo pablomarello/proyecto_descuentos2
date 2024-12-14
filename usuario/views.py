@@ -37,11 +37,10 @@ from geopy.distance import distance
 
 
 def index(request):
-    # Consultas de ofertas y categorías, accesibles a todos los usuarios
+    # Consultas generales de ofertas y categorías
     ofertas_vencidas = Oferta.objects.filter(activo=True)
     hoy = datetime.date.today()
     for oferta in ofertas_vencidas:
-        # Si la oferta está vencida, desactívala
         if oferta.fecha_fin < hoy:
             oferta.activo = False
             oferta.save()
@@ -50,6 +49,17 @@ def index(request):
     ofertas = Oferta.objects.filter(activo=True)
     categorias = Categoria.objects.all()
     vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
+
+    # Funcionalidad de búsqueda
+    query = request.GET.get('q', '').strip()
+    if query:
+        ofertas = ofertas.filter(
+            Q(titulo__icontains=query) |
+            Q(descripcion__icontains=query) |
+            Q(productos__nombre__icontains=query) |
+            Q(productos__categoria__nombre__icontains=query) |
+            Q(productos__categoria__categoria__nombre__icontains=query)
+        ).distinct()
 
     # Variables para ubicación y comercios
     ubicacion_usuario = None
@@ -66,7 +76,7 @@ def index(request):
 
             # Limita la distancia en kilómetros
             radio_km = 100
-            ubicaciones_comercio = ubicacionesComercio.objects.all()
+            ubicaciones_comercio = ubicacionesComercio.objects.filter(comercio_id__habilitado=True)
 
             for comercio in ubicaciones_comercio:
                 if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
@@ -84,11 +94,9 @@ def index(request):
             # Verificar si el usuario tiene comercios registrados
             tiene_comercios = Oferente.objects.filter(id_usuario=request.user).exists()
         except ubicaciones.DoesNotExist:
-            # Manejo en caso de que la ubicación no se encuentre
             pass
     else:
-        # Si el usuario no está autenticado, muestra todos los comercios
-        ubicaciones_comercio = ubicacionesComercio.objects.all()
+        ubicaciones_comercio = ubicacionesComercio.objects.filter(comercio_id__habilitado=True)
         for comercio in ubicaciones_comercio:
             if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
                 comercios_en_radio.append({
@@ -97,7 +105,6 @@ def index(request):
                     "latitud": float(comercio.latitud),
                     "longitud": float(comercio.longitud),
                 })
-    
 
     # Crear lista de ofertas con sus calificaciones
     ofertas_con_calificaciones = []
@@ -116,7 +123,8 @@ def index(request):
     return render(request, 'usuarios/ind.html', {
         'categorias': categorias,
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
-        
+        'query': query,
+       
         'vencen_hoy': vencen_hoy,
         'ubicacion_usuario': {
             'latitud': float(ubicacion_usuario.latitud) if ubicacion_usuario else None,
@@ -130,10 +138,20 @@ def index(request):
 
 
 def descuentos_destacados(request):
-    if not request.user.is_authenticated:
-        messages.error(request, 'Inicia sesión para ver los descuentos destacados')
-        return redirect('login')
-    # Filtro de Categorías
+    # Consultas de ofertas y categorías
+    ofertas_vencidas = Oferta.objects.filter(activo=True)
+    hoy = datetime.date.today()
+    for oferta in ofertas_vencidas:
+        # Si la oferta está vencida, desactívala
+        if oferta.fecha_fin < hoy:
+            oferta.activo = False
+            oferta.save()
+
+    ofertas = Oferta.objects.filter(activo=True)
+    categorias = Categoria.objects.all()
+    vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
+
+    # Aplicar filtros de categorías
     categoria_nombres = request.GET.getlist('category[]')
     if categoria_nombres:
         categoria_ids = Categoria.objects.filter(nombre__in=categoria_nombres).values_list('id', flat=True)
@@ -145,86 +163,115 @@ def descuentos_destacados(request):
     selected_price = request.GET.get('price')  # Obtener el rango de precio seleccionado
     print(f"Rango de precio seleccionado: {selected_price}")
 
+    # Aplicar filtro de precio
+    selected_price = request.GET.get('price')
     precio_min = None
     precio_max = None
-
     if selected_price:
-        # Procesar el rango de precio seleccionado
         if selected_price == '10000+':
             precio_min = 10000
-            precio_max = None  # Sin límite superior
         else:
             try:
                 min_max = selected_price.split('-')
                 precio_min = float(min_max[0])
-                if len(min_max) > 1:
-                    precio_max = float(min_max[1])
-                else:
-                    precio_max = None  # Sin límite superior si no se proporciona
+                precio_max = float(min_max[1]) if len(min_max) > 1 else None
             except ValueError:
-                print("Error: Rango de precio no válido.")
-                precio_min = None
-                precio_max = None
-
-    # Aplicar filtro de precio si se proporcionan valores válidos
+                pass
     if precio_min is not None:
-        print(f"Filtrando ofertas con precio mínimo {precio_min}")
         ofertas = ofertas.filter(precio_oferta__gte=precio_min)
-
     if precio_max is not None:
-        print(f"Filtrando ofertas con precio máximo {precio_max}")
         ofertas = ofertas.filter(precio_oferta__lte=precio_max)
 
+    # Filtro de ubicación (por distancia máxima desde el usuario)
+    ubicacion_usuario = None
+    comercios_en_radio = []
+    if request.user.is_authenticated:
+        try:
+            persona = request.user.persona_id
+            ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
 
-    # Filtro de Ubicación (por distancia máxima desde el usuario)
-    persona = request.user.persona_id
-    ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
+            user_lat = float(ubicacion_usuario.latitud)
+            user_lon = float(ubicacion_usuario.longitud)
+
+            # Obtener distancias mínimas y máximas
+            distance_min_str = request.GET.get('distance_min')
+            distance_max_str = request.GET.get('distance_max')
+            distance_min = float(distance_min_str) if distance_min_str else 0.0
+            distance_max = float(distance_max_str) if distance_max_str else float('inf')
+
+            ofertas_filtradas = []
+            for oferta in ofertas:
+                ubicacion_comercio = ubicacionesComercio.objects.filter(comercio_id=oferta.oferente).first()
+                if ubicacion_comercio and ubicacion_comercio.latitud and ubicacion_comercio.longitud:
+                    comercio_coords = (float(ubicacion_comercio.latitud), float(ubicacion_comercio.longitud))
+                    distancia_km = distance((user_lat, user_lon), comercio_coords).km
+                    if distance_min <= distancia_km <= distance_max:
+                        ofertas_filtradas.append(oferta)
+                        comercios_en_radio.append({
+                            "id": oferta.oferente.id,
+                            "nombre": oferta.oferente.nombrecomercio,
+                            "latitud": float(ubicacion_comercio.latitud),
+                            "longitud": float(ubicacion_comercio.longitud),
+                        })
+            ofertas = ofertas_filtradas
+        except ubicaciones.DoesNotExist:
+            pass
+    else:
+        # Si el usuario no está autenticado, muestra todos los comercios
+        ubicaciones_comercio = ubicacionesComercio.objects.all()
+        for comercio in ubicaciones_comercio:
+            if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
+                
+                comercios_en_radio.append({
+                    "id": comercio.comercio_id.id,
+                    "nombre": comercio.comercio_id.nombrecomercio,
+                    "latitud": float(comercio.latitud),
+                    "longitud": float(comercio.longitud),
+                })
+    # Calcular calificaciones para ofertas
+    ofertas_con_calificaciones = []
+    for oferta in ofertas:
+        calificaciones = Puntuacion.objects.filter(oferta=oferta)
+        cantidad_calificaciones = calificaciones.count()
+        calificacion_promedio = calificaciones.aggregate(Avg('calificacion')).get('calificacion__avg', 0) or 0
+
+        ofertas_con_calificaciones.append({
+            'oferta': oferta,
+            'calificacion_promedio': calificacion_promedio,
+            'cantidad_calificaciones': cantidad_calificaciones,
+        })
+
+    # Ordenar las ofertas por calificación promedio y limitar a las mejores 3
+    ofertas_con_calificaciones = sorted(ofertas_con_calificaciones, key=lambda x: x['calificacion_promedio'], reverse=True)[:3]
+
+    # Renderizado de la plantilla
+    return render(request, 'usuarios/descuento.html', {
+        'categorias': categorias,
+        'ofertas_con_calificaciones': ofertas_con_calificaciones,
+        'vencen_hoy': vencen_hoy,
+        'ubicacion_usuario': {
+            'latitud': float(ubicacion_usuario.latitud) if ubicacion_usuario else None,
+            'longitud': float(ubicacion_usuario.longitud) if ubicacion_usuario else None,
+        } if request.user.is_authenticated else None,
+        'comercios_en_radio': comercios_en_radio,
+        'usuario_autenticado': request.user.is_authenticated,
+    })
+
     
-    user_lat = float(ubicacion_usuario.latitud)
-    user_lon = float(ubicacion_usuario.longitud)
+""" def descuentos_destacados(request):
+    categoria_nombres = request.GET.getlist('category[]')
+    print("Nombres de categorías recibidos:", categoria_nombres)  # Verificación
     
-    max_distance = request.GET.get('distance_max')
-    
-    # Inicializar las distancias a None
-    distance_min = None
-    distance_max = None
-    
-    # Obtener las distancias mínimas y máximas desde la solicitud
-    distance_min_str = request.GET.get('distance_min')
-    distance_max_str = request.GET.get('distance_max')
-
-    # Convertir distances a float, manejar errores
-    try:
-        if distance_min_str:
-            distance_min = float(distance_min_str)
-        else:
-            distance_min = 0.0  # Asignar un valor predeterminado si no se proporciona
-
-        if distance_max_str:
-            distance_max = float(distance_max_str)
-        else:
-            distance_max = float('inf')  # Asignar infinito si no se proporciona
-    except (ValueError, TypeError):
-        return JsonResponse({"error": "Distancias no válidas"}, status=400)
-
-    # Filtrar ofertas según la distancia calculada desde el usuario
-    if user_lat and user_lon:
-        user_coords = (user_lat, user_lon)
-
-        # Filtrar solo las ofertas dentro del rango de distancia
-        ofertas_filtradas = []
-        for oferta in ofertas:
-            # Obtener la ubicación del comercio relacionado con la oferta
-            ubicacion_comercio = ubicacionesComercio.objects.filter(comercio_id=oferta.oferente).first()
-            if ubicacion_comercio and ubicacion_comercio.latitud and ubicacion_comercio.longitud:
-                comercio_coords = (float(ubicacion_comercio.latitud), float(ubicacion_comercio.longitud))
-                distance = geodesic(user_coords, comercio_coords).km
-                # Verificar que la distancia esté dentro del rango especificado
-                if distance_min <= distance <= distance_max:
-                    ofertas_filtradas.append(oferta)
-
-        # Actualizar la lista de ofert
-        ofertas = ofertas_filtradas
+    # Obtener los IDs de las categorías a partir de los nombres
+    if categoria_nombres:
+        categoria_ids = Categoria.objects.filter(nombre__in=categoria_nombres).values_list('id', flat=True)
+        print("IDs de categorías obtenidos:", list(categoria_ids))  # Verificación
+    else:
+        categoria_ids = []
+    if categoria_ids:
+        ofertas = Oferta.objects.filter(productos__categoria__categoria__id__in=categoria_ids, activo=True)
+    else:
+        ofertas = Oferta.objects.filter(activo=True)
 
     # Obtener las ofertas con su calificación promedio
     ofertas_con_calificaciones = []
@@ -233,28 +280,18 @@ def descuentos_destacados(request):
         cantidad_calificaciones = calificaciones.count()
         calificacion_promedio = calificaciones.aggregate(Avg('calificacion')).get('calificacion__avg', 0) or 0
 
-        # Obtener la ubicación del comercio
-        ubicacion_comercio = ubicacionesComercio.objects.filter(comercio_id=oferta.oferente).first()
-        
-        # Agregar al contexto la latitud y longitud del comercio si está disponible
-        latitud = float(ubicacion_comercio.latitud) if ubicacion_comercio and ubicacion_comercio.latitud else None
-        longitud = float(ubicacion_comercio.longitud) if ubicacion_comercio and ubicacion_comercio.longitud else None
-
         ofertas_con_calificaciones.append({
             'oferta': oferta,
             'calificacion_promedio': calificacion_promedio,
             'cantidad_calificaciones': cantidad_calificaciones,
-            'latitud': latitud,
-            'longitud': longitud,
         })
-
-    # Ordenar las ofertas por calificación promedio y limitar a las 3 mejores
-    ofertas_con_calificaciones = sorted(ofertas_con_calificaciones, key=lambda x: x['calificacion_promedio'], reverse=True)[:3]
-
-    # Renderizar la plantilla con las ofertas filtradas y sus ubicaciones
-    return render(request, 'usuarios/descuento.html', {
+    
+    # Ordenar las ofertas por calificación promedio
+    ofertas_con_calificaciones=sorted(ofertas_con_calificaciones, key=lambda x: x['calificacion_promedio'], reverse=True)[:3]
+    
+    return render(request, 'usuarios/descuentos.html', {
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
-    })
+    }) """
 
 def ofertas_por_categoria(request, categoria_id):
     categoria = get_object_or_404(Categoria, id=categoria_id)
@@ -278,12 +315,8 @@ def ofertas_por_categoria(request, categoria_id):
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
     })
 
-def buscar(request):
-    query = request.GET.get('q', '').strip()
-    ofertas = []
-    
 
-    if query:  # Verificar que la consulta no esté vacía
+    """ if query:  # Verificar que la consulta no esté vacía
         ofertas = Oferta.objects.filter(activo=True, eliminado= False and
             Q(titulo__icontains=query) |
             Q(descripcion__icontains=query) |
@@ -309,7 +342,7 @@ def buscar(request):
         'query': query,
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
     })
-
+ """
     
     
     

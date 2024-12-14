@@ -1,0 +1,269 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>{% block title %}{% endblock title %}</title>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+        <link href="{% static "css/styles_admin.css" %} " rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <link href="{% static "css/boton.css" %} " rel="stylesheet" />
+        
+        
+        <!--Datatables-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+    
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        {% block style %}
+        {% endblock style %}
+    </head>
+    <body class="sb-nav-fixed">
+        {% if messages %}
+    <div id="messages" style="display: none;">
+        {% for message in messages %}
+        <div class="message" data-tags="{{ message.tags }}">{{ message|safe }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <!-- Navbar Brand-->
+            <!-- Navbar Brand-->
+            <a class="navbar-brand ps-3 text-white" href="#">Administración</a>
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0 ps-2 text-white" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+            <!-- Navbar Search-->
+            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                <div class="input-group">
+                </div>
+            </form>
+            <!-- Navbar-->
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" id="navbarDropdown" href="#" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user fa-fw"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#!">Configuración</a></li>
+                        <li><a class="dropdown-item" href="#!">Registro de Actividad</a></li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <li><a class="dropdown-item" href="{% url 'logout_superuser' %}">Cerrar Sesión</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            
+                            <a class="nav-link" href="{% url 'index_admin' %}">
+                                <div class="sb-nav-link-icon"><i class="fa fa-home text-white"></i></div>
+                                INICIO
+                            </a>
+                            <a class="nav-link" href="{% url 'comercios_admin' %}"">
+                                <div class="sb-nav-link-icon"><i class="fa fa-store text-white"></i></div>
+                                COMERCIOS
+                            </a>
+                            
+                            <a class="nav-link collapsed" href="" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fa fa-tags text-white"></i></div>
+                                OFERTAS
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down text-white"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested">
+                                    <a class="nav-link" href="{% url 'ofertas_admin' %}">Ofertas publicadas</a>
+                                    <a class="nav-link" href="#!">Productos</a>
+                                    <a class="nav-link" href="#!">Categorias</a>
+                
+                                </nav>
+                            </div>
+                            <a class="nav-link" href="{% url 'usuarios_admin' %}">
+                                <div class="sb-nav-link-icon"><i class="fa fa-users fa-shopping-cart text-white"></i></div>
+                                USUARIOS
+                            </a>
+                            <a class="nav-link" href="{% url 'estadisticas'%}">
+                                <div class="sb-nav-link-icon"><i class="fa fa-chart-line text-white"></i></div>
+                                ESTADISTICAS
+                            </a>
+
+                            <a class="nav-link" href="{% url 'mapa_calor'%}">
+                                <div class="sb-nav-link-icon"><i class="fa fa-map text-white" ></i></div>
+                                MAPAS DE CALOR
+                            </a>
+                            <a class="nav-link" href="#">
+                                <div class="sb-nav-link-icon"><i class="fa fa-clipboard-check text-white"></i></div>
+                                AUDITORIA
+                            </a>
+
+                            <a class="nav-link" href="#"">
+                                <div class="sb-nav-link-icon"><i class="fa fa-cog text-white"></i></div>
+                                CONF. DE SISTEMA
+                            </a>
+                     
+
+
+
+
+                            
+                        </div>
+                    </div>
+                    
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                {% block content %}
+                
+                <div class="row g-4 m-4 mx-5">
+                    
+                    <!-- Card 1 -->
+                    <div class="col-md-4">
+                        <div class="card text-white bg-danger">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa fa-box me-3"></i>
+                                <div>
+                                    <h5 class="card-title">Comercios</h5>
+                                    <p class="card-text">1</p>
+                                    <a href="#" class="text-white">Ver más</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="col-md-4">
+                        <div class="card text-white bg-success">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa fa-shopping-cart me-3"></i>
+                                <div>
+                                    <h5 class="card-title">Ofertas</h5>
+                                    <p class="card-text">1</p>
+                                    <a href="{% url 'comercios_admin' %}" class="text-white">Ver más</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Card 3 -->
+                    <div class="col-md-4">
+                        <div class="card text-white bg-primary">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa fa-truck me-3"></i>
+                                <div>
+                                    <h5 class="card-title">Usuarios</h5>
+                                    <p class="card-text">0</p>
+                                    <a href="#" class="text-white">Ver más</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="col-md-4">
+                        <div class="card text-white bg-warning">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa fa-user me-3"></i>
+                                <div>
+                                    <h5 class="card-title">Estadísticas</h5>
+                                    <p class="card-text">1</p>
+                                    <a href="#" class="text-white">Ver más</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 5 -->
+                    <div class="col-md-4">
+                        <div class="card text-white bg-info">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa fa-briefcase me-3"></i>
+                                <div>
+                                    <h5 class="card-title">Auditoria</h5>
+                                    <p class="card-text">1</p>
+                                    <a href="#" class="text-white">Ver más</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 6 -->
+                    <div class="col-md-4">
+                        <div class="card text-white bg-secondary">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="fa fa-users me-3"></i>
+                                <div>
+                                    <h5 class="card-title">Conf. de sistema</h5>
+                                    <p class="card-text">2</p>
+                                    <a href="{% url 'usuarios_admin' %}" class="text-white">Ver más</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                {% endblock content %}
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Descuentos Catamarca</div>
+                            
+                        </div>
+                    </div>
+                    </footer>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+           
+                // Mostrar mensajes con SweetAlert
+                var messageContainer = document.getElementById('messages');
+                if (messageContainer) {
+                    var messages = messageContainer.getElementsByClassName('message');
+                    for (var i = 0; i < messages.length; i++) {
+                        var messageContent = messages[i].innerHTML;
+                        var tags = messages[i].dataset.tags;
+                        var icon = 'info';
+    
+                        if (tags.includes('danger') || tags.includes('error')) {
+                            icon = 'error';
+                        } else if (tags.includes('success')) {
+                            icon = 'success';
+                        } else if (tags.includes('warning')) {
+                            icon = 'warning';
+                        } else if (tags.includes('info')) {
+                            icon = 'info';
+                        }
+    
+                        Swal.fire({
+                            html: messageContent,
+                            icon: icon,
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                }
+            });
+        </script>
+    
+        <script src="{%static 'js/scripts.js'%}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="{%static 'demo/chart-area-demo.js' %} "></script>
+        <script src=" {%static 'demo/chart-bar-demo.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+        <script src="{%static 'js/datatables-simple-demo.js' %}"></script>
+
+        {% block js %}
+        {% endblock js %}
+    </body>
+</html>
