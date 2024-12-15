@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.conf import settings
-
+from django.utils.timezone import now
 
 # Create your models here.
 
@@ -90,7 +90,7 @@ class Usuario(AbstractBaseUser,PermissionsMixin):
     REQUIRED_FIELDS = ['email']
 
     def __str__ (self):
-        return f'Usuario: {self.username}'
+        return self.username
     
     def save(self, force_insert = False, force_update = False, using = None,
               update_fields = None):
@@ -101,6 +101,9 @@ class Usuario(AbstractBaseUser,PermissionsMixin):
                 self.usuario_creacion = user
             else:  # Actualización de usuario existente
                 self.usuario_modificacion = user
+        # Asegurarte de que si eliminado=True, is_active=False
+        if self.eliminado:
+            self.is_active = False
         super(Usuario, self).save(force_insert, force_update, using, update_fields)
 
     def delete(self, using=None, keep_parents=False):
@@ -154,3 +157,13 @@ class ActividadUsuario(models.Model):
     def is_staff(self):
         return self.usuario_administrador
  """
+# funcion para enviar la señal luego del eliminado logico guarda el usuario y la fecha que eliminó el usuario
+def set_eliminacion_info(sender, instance, **kwargs):
+    if instance.eliminado:  # Verifica si está siendo marcado como eliminado
+        user = get_current_user()
+        if user: 
+            instance.usuario_eliminacion = user
+        instance.fecha_eliminacion = now()
+    
+
+pre_save.connect(set_eliminacion_info, sender = Usuario ) 

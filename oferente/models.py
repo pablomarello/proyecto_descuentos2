@@ -4,6 +4,8 @@ from django.db import models
 from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, TablaPais, TablaProvincia
 from usuario.models import Usuario, Rol
 from django.conf import settings
+from django.db.models.signals import pre_save
+from django.utils.timezone import now
 
 class Oferente(models.Model):
 
@@ -70,3 +72,14 @@ class ubicacionesComercio(models.Model):
         verbose_name='ubicacion_comercio'
         db_table= 'ubicacion_comercio'
         managed=True
+
+# funcion para enviar la señal luego del eliminado logico guarda el usuario y la fecha que elimino al comercio(oferente) 
+def set_eliminacion_info(sender, instance, **kwargs):
+    if instance.eliminado:  # Verifica si está siendo marcado como eliminado
+        user = get_current_user()
+        if user: 
+            instance.usuario_eliminacion = user
+        instance.fecha_eliminacion = now()
+    
+
+pre_save.connect(set_eliminacion_info, sender = Oferente )

@@ -1,0 +1,120 @@
+{% extends "administracion/base_admin.html" %}
+
+{% block content %}
+<div class="container-fluid justify-content-center">
+    <h2 class="text-center text-black">PERSONAS</h2>
+
+    <div class="d-flex justify-content-end">
+        <a href="{% url 'comercios_admin' %}" class="btn btn-link">Mostrar todo el listado</a>
+    </div>
+
+    <div class="table-responsive">
+        <table id="datatablesSimple" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>DNI</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Género</th>
+                    <th>Foto</th>
+                    <th>Eliminado</th>
+                    <th>Activo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for persona in personas %}
+                <tr>
+                    <td>{{ persona.identificacion|default:"-" }}</td>
+                    <td>{{ persona.nombres|default:"-" }}</td>
+                    <td>{{ persona.apellidos|default:"-" }}</td>
+                    <td>{{ persona.genero|default:"-" }}</td>
+                    <td>{{ persona.foto|default:"Sin foto/imagen" }}</td>
+                    <td>{{ persona.eliminado|yesno:"Sí,No" }}</td>
+                    <td>
+                      <div class="container">
+                        <label class="switch">
+                            <input type="checkbox" class="input toggle-active" 
+                                   data-id="{{ persona.id }}" 
+                                   {% if persona.eliminado %}disabled{% endif %} 
+                                   {% if persona.habilitado %}checked{% endif %}>
+                            <div class="rail {% if persona.habilitado %}bg-success{% else %}bg-danger{% endif %}">
+                                <span class="circle"></span>
+                            </div>
+                        </label>
+                        {% if persona.eliminado %}
+                            <small class="text-danger">No se puede activar a una persona eliminada</small>
+                        {% endif %}
+                        
+                    </div>
+                    </td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <!-- Botón de editar -->
+                        <a href="{% url 'editar_persona_admin' persona.identificacion %}" 
+                           class="btn btn-warning {% if persona.eliminado %}disabled{% endif %}" 
+                           {% if comercio.eliminado %}title="No se puede editar a una persona eliminada"{% endif %}>
+                            <img src="/media/user/icons8-editar-25.png" alt="">
+                        </a>
+                        <!-- Botón de eliminar -->
+                        <form action="{% url 'eliminar_persona_admin' persona.identificacion %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger" 
+                                {% if persona.eliminado %}disabled{% endif %}
+                                {% if persona.eliminado %}title="Este comercio ya está eliminado"{% endif %}>
+                                <img src="/media/user/icons8-eliminar-25.png" alt="">
+                            </button>
+                        </form>
+                    </div>
+                    </td>
+                    
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatablesSimple').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/2.1.8/i18n/es-AR.json"
+                },
+                "dom": 'Bfrtip',
+                "paging": false,
+                "searching": false,
+                "ordering": false,
+                "info": false
+            });
+
+            function getCSRFToken() {
+                return $('meta[name="csrf-token"]').attr('content');
+            }
+
+            function toggleUserStatus(element) {
+                const userId = $(element).data('identificacion');
+                const isActive = $(element).is(':checked');
+                const url = `{% url 'toggle_persona_status' 0 %}`.replace('0', userId);
+
+                $.ajax({
+                    url: url,
+                    method: "POST",
+                    headers: { 'X-CSRFToken': getCSRFToken() },
+                    data: { is_active: isActive },
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function (xhr) {
+                        alert("Error al actualizar el estado de la persona: " + xhr.responseText);
+                    }
+                });
+            }
+
+            $(document).on('change', '.toggle-active', function () {
+                toggleUserStatus(this);
+            });
+        });
+    </script>
+</div>
+{% endblock %}

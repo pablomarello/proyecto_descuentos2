@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container-fluid justify-content-center">
-    <h2 class="text-center text-black">COMERCIOS</h2>
+    <h2 class="text-center text-black">SUBCATEGORIAS</h2>
 
     <div class="d-flex justify-content-end">
         <a href="{% url 'comercios_admin' %}" class="btn btn-link">Mostrar todo el listado</a>
@@ -12,62 +12,32 @@
         <table id="datatablesSimple" class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    <th>Comercio</th>
-                    <th>CUIT</th>
-                    <th>Dirección</th>
-                    <th>oferente</th>
-                    <th>CATEGORÍA</th>
+                    <th>Nombre de la Subcategoría</th>
+                    <th>Categoría</th>
                     <th>Eliminado</th>
-                    <th>Activo</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for comercio in comercios %}
+                {% for subcategoria in subcategorias %}
                 <tr>
-                    <td>{{ comercio.nombrecomercio }}</td>
-                    <td>{{ comercio.cuit }}</td>
-                    <td>
-                        {% if comercio.ubicacionescomercio %}
-                            {{ comercio.ubicacionescomercio.calle }} {{ comercio.ubicacionescomercio.altura }}
-                        {% else %}
-                            Sin ubicación
-                        {% endif %}
-                    </td>
-                    <td>{{ comercio.id_usuario.username }}</td>
-                    <td>{{ comercio.categoria }}</td>
-                    <td>{{ comercio.eliminado|yesno:"Sí,No" }}</td>
-                    <td>
-                        <div class="container">
-                            <label class="switch">
-                                <input type="checkbox" class="input toggle-active" 
-                                       data-id="{{ comercio.id }}" 
-                                       {% if comercio.eliminado %}disabled{% endif %} 
-                                       {% if comercio.habilitado %}checked{% endif %}>
-                                <div class="rail {% if comercio.habilitado %}bg-success{% else %}bg-danger{% endif %}">
-                                    <span class="circle"></span>
-                                </div>
-                            </label>
-                            {% if comercio.eliminado %}
-                                <small class="text-danger">No se puede activar un comercio eliminado</small>
-                            {% endif %}
-                            
-                        </div>
-                    </td>
+                    <td>{{ subcategoria.nombre }}</td>
+                    <td>{{ subcategoria.categoria }}</td>
+                    <td>{{ subcategoria.eliminado|yesno:"Sí,No" }}</td>
                     <td>
                         <div class="btn-group" role="group">
                             <!-- Botón de editar -->
-                            <a href="{% url 'editar_comercio' comercio.id %}" 
-                               class="btn btn-warning {% if comercio.eliminado %}disabled{% endif %}" 
-                               {% if comercio.eliminado %}title="No se puede editar un comercio eliminado"{% endif %}>
+                            <a href="{% url 'editar_subcategoria_admin' subcategoria.id %}" 
+                               class="btn btn-warning {% if subcategoria.eliminado %}disabled{% endif %}" 
+                               {% if subcategoria.eliminado %}title="No se puede editar una subcategoria eliminada"{% endif %}>
                                 <img src="/media/user/icons8-editar-25.png" alt="">
                             </a>
                             <!-- Botón de eliminar -->
-                            <form action="{% url 'eliminar_comercio' comercio.id %}" method="POST" style="display:inline;">
+                            <form action="{% url 'eliminar_subcategoria_admin' subcategoria.id %}" method="POST" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger" 
-                                    {% if comercio.eliminado %}disabled{% endif %}
-                                    {% if comercio.eliminado %}title="Este comercio ya está eliminado"{% endif %}>
+                                    {% if subcategoria.eliminado %}disabled{% endif %}
+                                    {% if subcategoria.eliminado %}title="Esta subcategoría ya está eliminada"{% endif %}>
                                     <img src="/media/user/icons8-eliminar-25.png" alt="">
                                 </button>
                             </form>

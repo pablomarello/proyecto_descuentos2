@@ -1,0 +1,24 @@
+{% extends "administracion/base_admin.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Registrar Usuario</h2>
+    <form method="POST" action="{% url 'registrar_usuario_admin' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+       <!--  <label for="persona_id">Seleccionar Persona:</label>
+        <select id="persona_id" name="persona_id" class="form-control">
+            <option value="">Seleccione una persona</option>
+            {% for persona in personas %}
+                <option value="{{ persona.id }}">{{ persona }}</option>
+            {% endfor %}
+        </select> -->
+        
+    
+        <button type="submit" class="btn btn-primary">Registrar Usuario</button>
+    </form>
+    
+</div>
+{% endblock %}
+

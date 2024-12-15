@@ -3,7 +3,8 @@ from django.utils import timezone
 from crum import get_current_user
 from django.db import models
 from django.conf import settings
-# Create your models here.
+from django.db.models.signals import pre_save
+from django.utils.timezone import now
 
 class Categoria(models.Model):
     nombre=models.CharField(max_length=255)
@@ -120,6 +121,18 @@ class Producto(models.Model):
         if Producto.objects.filter(nombre=self.nombre, eliminado=False).exists():
             raise ValidationError({'nombre': "Este producto ya existe."})
 
+# funcion para enviar la señal luego del eliminado logico guarda el usuario y la fecha que elimino el producto 
+def set_eliminacion_info(sender, instance, **kwargs):
+    if instance.eliminado:  # Verifica si está siendo marcado como eliminado
+        user = get_current_user()
+        if user: 
+            instance.usuario_eliminacion = user
+        instance.fecha_eliminacion = now()
+    
+
+pre_save.connect(set_eliminacion_info, sender = Producto )
+pre_save.connect(set_eliminacion_info, sender = Categoria )
+pre_save.connect(set_eliminacion_info, sender = Subcategoria )
     
 #modelo para usar en supabase
 """class ProductoSupabase(models.Model):

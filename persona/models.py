@@ -1,6 +1,11 @@
+from crum import get_current_user
+from django.utils import timezone
 from django.db import models
 from django.conf import settings
 from django.core.validators import RegexValidator
+from django.db.models.signals import pre_save
+from django.utils.timezone import now
+from django.dispatch import receiver
 #from usuario.models import Usuario
 
 validacion = RegexValidator(
@@ -24,11 +29,17 @@ class Persona(models.Model):
     genero=models.CharField(max_length=15,choices=GENERO,null=True,blank=True)
     fecha_creacion= models.DateTimeField(auto_now_add=True,null=True,blank=True)
     foto=models.ImageField(upload_to='personas/',default='avatar_default.png',null=True,blank=True)
-    usuario_creacion= models.PositiveIntegerField(null=True,blank=True)
+    usuario_creacion = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                         null=True, blank=True, related_name='personas_creadas')
+    fecha_creacion = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    usuario_modificacion = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                                             null=True, blank=True, related_name='personas_modificadas')
+    fecha_modificacion = models.DateTimeField(auto_now=True, null=True, blank=True)
     habilitado = models.BooleanField(default=True)
     eliminado = models.BooleanField(default=False)
-    fecha_eliminacion= models.DateTimeField(null=True,blank=True)
-    usuario_eliminacion= models.PositiveIntegerField(null=True,blank=True)
+    usuario_eliminacion = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,
+                                            null=True, blank=True, related_name='personas_eliminadas')
+    fecha_eliminacion = models.DateTimeField(null=True, blank=True)
 
     #usuario_id = models.OneToOneField(Usuario, on_delete=models.CASCADE, blank=True,null=True)
     
@@ -40,6 +51,34 @@ class Persona(models.Model):
         verbose_name_plural= 'Personas'
         db_table= 'persona'
 
+    def save(self, force_insert = False, force_update = False, using = None,
+              update_fields = None):
+        user = get_current_user()
+        # Evitar bucles y usuarios no válidos
+        if user and user.is_authenticated:
+            if not self.pk:  # Usuario nuevo
+                self.usuario_creacion = user
+            else:  # Actualización de usuario existente
+                self.usuario_modificacion = user
+        # Asegurarte de que si eliminado=True, is_active=False
+        if self.eliminado:
+            self.is_active = False
+        super(Persona, self).save(force_insert, force_update, using, update_fields)
+
+    def delete(self, using=None, keep_parents=False):
+        user = get_current_user()
+        if user is not None:
+            self.usuario_eliminacion = user
+        self.fecha_eliminacion = timezone.now()
+        self.eliminado = True
+        self.save()
+
+    #AUIDITORIAS
+    # Señal para registrar el usuario que crea la cuenta
+@receiver(pre_save, sender=Persona)
+def set_persona_creacion(sender, instance, **kwargs):
+    if not instance.pk and hasattr(instance, '_current_user'):
+        instance.usuario_creacion = instance._current_user.id
 
 class TablaPais(models.Model):
     cod_pais = models.CharField(primary_key=True)
@@ -128,5 +167,16 @@ class ubicaciones(models.Model):
         verbose_name='Ubicacion'
         verbose_name_plural= 'Ubicaciones'
         db_table= 'ubicacion'
+
+# funcion para enviar la señal luego del eliminado logico guarda el usuario y la fecha que elimino a la persona 
+def set_eliminacion_info(sender, instance, **kwargs):
+    if instance.eliminado:  # Verifica si está siendo marcado como eliminado
+        user = get_current_user()
+        if user: 
+            instance.usuario_eliminacion = user
+        instance.fecha_eliminacion = now()
+    
+
+pre_save.connect(set_eliminacion_info, sender = Persona )
 
 

@@ -7,9 +7,14 @@
 
 
 <div class="container-fluid justify-content-center">
+    
+
+
+        
+    </a>
     <h2 class="text-center text-black">USUARIOS</h2>
     <div class="d-flex justify-content-between mb-3">
-        
+        <a href="{% url 'registrar_usuario_admin' %}" class="btn btn-success">Registrar Usuario</a>
     </div>
     <div class="d-flex justify-content-end">
         <a href="{% url 'usuarios_admin' %}" class="btn btn-link">Mostrar todo el listado</a>
@@ -25,6 +30,7 @@
                     <th>Usuario</th>
                     <th>Email</th>
                     <th>Teléfono</th>
+                    <th>Eliminado</th>
                     <th>Activo</th>
                     <th>Acciones</th>
                 </tr>
@@ -32,49 +38,69 @@
             <tbody>
                 {% for usuario in usuarios %}
                 <tr>
-                    <td>{{ usuario.persona_id.nombres }}</td>
-                    <td>{{ usuario.persona_id.apellidos }}</td>
-                    <td>{{ usuario.username }}</td>
-                    <td>{{ usuario.email }}</td>
-                    <td>{{ usuario.telefono|default:"-----" }}</td>
+
+                    <td>{{ usuario.persona_id.nombres|default:"-" }}</td>
+                    <td>{{ usuario.persona_id.apellidos|default:"-" }}</td>
+                    <td>{{ usuario.username|default:"-" }}</td>
+                    <td>{{ usuario.email|default:"-" }}</td>
+                    <td>{{ usuario.telefono|default:"-" }}</td>
+                    <td>{{ usuario.eliminado|yesno:"Sí,No" }}</td>
                     <td>
                         <div class="container">
                             {% if usuario.id != request.user.id %}
-                            <label class="switch">
-                                <input type="checkbox" class="input toggle-active" data-id="{{ usuario.id }}" {% if usuario.is_active %}checked{% endif %}>
-                                <div class="rail {% if usuario.is_active %}bg-success{% else %}bg-danger{% endif %}">
-                                    <span class="circle"></span>
-                                </div>
-                            </label>
-
+                                <label class="switch">
+                                    <input type="checkbox" class="input toggle-active" 
+                                           data-id="{{ usuario.id }}" 
+                                           {% if usuario.is_active %}checked{% endif %} 
+                                           {% if usuario.eliminado %}disabled{% endif %}>
+                                    <div class="rail {% if usuario.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                        <span class="circle"></span>
+                                    </div>
+                                </label>
+                                {% if usuario.eliminado %}
+                                    <small class="text-danger">No se puede activar un usuario eliminado</small>
+                                {% endif %}
                             {% else %}
-                            <label class="switch">
-                                <input type="checkbox" class="input toggle-active" data-id="{{ usuario.id }}" {% if usuario.is_active %}checked{% endif %} disabled>
-                                <div class="rail {% if usuario.is_active %}bg-success{% else %}bg-danger{% endif %}">
-                                    <span class="circle"></span>
-                                </div>
-                            </label>
+                                <!-- Toggle deshabilitado para el propio usuario -->
+                                <label class="switch">
+                                    <input type="checkbox" class="input toggle-active" 
+                                           data-id="{{ usuario.id }}" 
+                                           {% if usuario.is_active %}checked{% endif %} disabled>
+                                    <div class="rail {% if usuario.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                        <span class="circle"></span>
+                                    </div>
+                                </label>
                             {% endif %}
-                            
                         </div>
                     </td>
+                    
                     <td>
                         <div class="btn-group" role="group">
-                            {% if usuario.id != request.user.id %}
-                           
-                            <a href="{% url 'editar_usuario' usuario.id %}" class="btn btn-warning">
-                                <img src="/media/user/icons8-editar-25.png" alt="">
-                            </a>
+                            {% if not usuario.eliminado %}
+                                <!-- Botón de editar visible solo si el usuario no está eliminado -->
+                                <a href="{% url 'editar_usuario' usuario.id %}" class="btn btn-warning">
+                                    <img src="/media/user/icons8-editar-25.png" alt="Editar">
+                                </a>
                             {% else %}
-                            <button type="button" class="btn btn-warning" disabled>
-                                <img src="/media/user/icons8-editar-25.png" alt="editar usuario"
-                                    title="No puedes editar tu propia cuenta">
-                            </button>
-                            
+                                <!-- Botón de editar oculto si el usuario está eliminado -->
+                                <button class="btn btn-warning" disabled title="Este usuario está eliminado y no puede ser editado">
+                                    <img src="/media/user/icons8-editar-25.png" alt="Editar">
+                                </button>
                             {% endif %}
-                            
+                    
+                            <!-- Botón de eliminar (igual que antes) -->
+                            <form action="{% url 'eliminar_usuario' usuario.id %}" method="POST" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger"
+                                        {% if usuario.eliminado %}disabled{% endif %}
+                                        {% if usuario.eliminado %}title="Este usuario ya está eliminado"{% endif %}>
+                                    <img src="/media/user/icons8-eliminar-25.png" alt="Eliminar">
+                                </button>
+                            </form>
                         </div>
                     </td>
+                    
+
                 </tr>
                 {% endfor %}
             </tbody>

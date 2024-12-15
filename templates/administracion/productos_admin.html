@@ -8,7 +8,7 @@
 
 
 <div class="container-fluid justify-content-center">
-    <h2 class="text-center text-black">OFERTAS</h2>
+    <h2 class="text-center text-black">PRODUCTOS</h2>
     <div class="d-flex justify-content-between mb-3">
         
     </div>
@@ -21,61 +21,41 @@
         <table id="datatablesSimple" class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    <th>Titulo de oferta</th>
-                    <th>Descripcion</th>
-                    <th>Fecha_inicio</th>
-                    <th>Fecha_fin</th>
-                    <th>Comercio</th>
+                    <th>Nombre del producto</th>
+                    <th>Descripción</th>
+                    <th>Marca</th>
+                    <th>Categoría</th>
                     <th>Eliminado</th>
-                    <th>Activa</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for ofertas in ofertas %}
+                {% for producto in productos %}
                 <tr>
-                    <td>{{ ofertas.titulo }}</td>
-                    <td>{{ ofertas.descripcion }}</td>
-                    <td>{{ ofertas.fecha_inicio }}</td>
-                    <td>{{ ofertas.fecha_fin}}</td>
-                    <td>{{ ofertas.oferente.nombrecomercio}}</td>
+                    <td>{{ producto.nombre }}</td>
+                    <td>{{ producto.descripcion }}</td>
+                    <td>{{ producto.marca }}</td>
+                    <td>{{ producto.categoria}}</td>
                     <td>{{ ofertas.eliminado|yesno:"Sí,No" }}</td>
                     <td>
-                        
-                        <div class="container">
-                            <label class="switch">
-                                <input type="checkbox" class="input toggle-active"
-                                        data-id="{{ ofertas.id }}"
-                                        {% if ofertas.eliminado%}disabled{% endif %}
-                                        {% if ofertas.activo %}checked{% endif %}>
-                                <div class="rail {% if ofertas.activo %}bg-success{% else %}bg-danger{% endif %}">
-                                    <span class="circle"></span>
-                                </div>
-                            </label>
-                            {% if ofertas.eliminado %}
-                                <small class="text-danger">No se puede activar una oferta eliminada</small>
-                            {% endif %}
-                        </div>
-                    </td>
-                    <td>
                         <div class="btn-group" role="group">
-                            {% if not ofertas.eliminado %}
+                            {% if not producto.eliminado %}
                             <!-- Botón de editar visible solo si el usuario no está eliminado -->
-                            <a href="{% url 'editar_oferta_admin' ofertas.id %}"
+                            <a href="{% url 'editar_producto_admin' producto.id %}"
                                 class="btn btn-warning">
                                 <img src="/media/user/icons8-editar-25.png" alt="">
                             </a>
                             {% else %}
                             <!-- Botón de editar oculto si el usuario está eliminado -->
-                            <button class="btn btn-warning" disabled title="Este usuario está eliminado y no puede ser editado">
+                            <button class="btn btn-warning" disabled title="Este producto está eliminado y no puede ser editado">
                                 <img src="/media/user/icons8-editar-25.png" alt="Editar">
                             </button>
                             {% endif %}
                             <!-- Botón de eliminar -->
-                            <form action="{% url 'eliminar_oferta_admin' ofertas.id %}" method="POST" style="display:inline;">
+                            <form action="{% url 'eliminar_producto_admin' producto.id %}" method="POST" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger" 
-                                    {% if ofertas.eliminado %}disabled{% endif %}>
+                                    {% if producto.eliminado %}disabled{% endif %}>
                                     <img src="/media/user/icons8-eliminar-25.png" alt="">
                                 </button>
                             </form>

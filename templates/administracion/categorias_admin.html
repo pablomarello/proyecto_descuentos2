@@ -8,7 +8,7 @@
 
 
 <div class="container-fluid justify-content-center">
-    <h2 class="text-center text-black">OFERTAS</h2>
+    <h2 class="text-center text-black">CATEGORIAS</h2>
     <div class="d-flex justify-content-between mb-3">
         
     </div>
@@ -21,61 +21,35 @@
         <table id="datatablesSimple" class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    <th>Titulo de oferta</th>
-                    <th>Descripcion</th>
-                    <th>Fecha_inicio</th>
-                    <th>Fecha_fin</th>
-                    <th>Comercio</th>
+                    <th>Nombre de la categoría</th>
                     <th>Eliminado</th>
-                    <th>Activa</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for ofertas in ofertas %}
+                {% for categoria in categorias %}
                 <tr>
-                    <td>{{ ofertas.titulo }}</td>
-                    <td>{{ ofertas.descripcion }}</td>
-                    <td>{{ ofertas.fecha_inicio }}</td>
-                    <td>{{ ofertas.fecha_fin}}</td>
-                    <td>{{ ofertas.oferente.nombrecomercio}}</td>
-                    <td>{{ ofertas.eliminado|yesno:"Sí,No" }}</td>
-                    <td>
-                        
-                        <div class="container">
-                            <label class="switch">
-                                <input type="checkbox" class="input toggle-active"
-                                        data-id="{{ ofertas.id }}"
-                                        {% if ofertas.eliminado%}disabled{% endif %}
-                                        {% if ofertas.activo %}checked{% endif %}>
-                                <div class="rail {% if ofertas.activo %}bg-success{% else %}bg-danger{% endif %}">
-                                    <span class="circle"></span>
-                                </div>
-                            </label>
-                            {% if ofertas.eliminado %}
-                                <small class="text-danger">No se puede activar una oferta eliminada</small>
-                            {% endif %}
-                        </div>
-                    </td>
+                    <td>{{ categoria.nombre }}</td>
+                    <td>{{ categoria.eliminado|yesno:"Sí,No" }}</td>
                     <td>
                         <div class="btn-group" role="group">
-                            {% if not ofertas.eliminado %}
-                            <!-- Botón de editar visible solo si el usuario no está eliminado -->
-                            <a href="{% url 'editar_oferta_admin' ofertas.id %}"
+                            {% if not categoria.eliminado %}
+                            <!-- Botón de editar visible solo si la categoria no está eliminada -->
+                            <a href="{% url 'editar_categoria_admin' categoria.id %}"
                                 class="btn btn-warning">
                                 <img src="/media/user/icons8-editar-25.png" alt="">
                             </a>
                             {% else %}
-                            <!-- Botón de editar oculto si el usuario está eliminado -->
-                            <button class="btn btn-warning" disabled title="Este usuario está eliminado y no puede ser editado">
+                            <!-- Botón de editar oculto si la categoria está eliminada-->
+                            <button class="btn btn-warning" disabled title="Esta categoría está eliminado y no puede ser editada">
                                 <img src="/media/user/icons8-editar-25.png" alt="Editar">
                             </button>
                             {% endif %}
                             <!-- Botón de eliminar -->
-                            <form action="{% url 'eliminar_oferta_admin' ofertas.id %}" method="POST" style="display:inline;">
+                            <form action="{% url 'eliminar_categoria_admin' categoria.id %}" method="POST" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger" 
-                                    {% if ofertas.eliminado %}disabled{% endif %}>
+                                    {% if categoria.eliminado %}disabled{% endif %}>
                                     <img src="/media/user/icons8-eliminar-25.png" alt="">
                                 </button>
                             </form>
