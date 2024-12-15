@@ -3,6 +3,7 @@ from django import forms
 from oferta.models import Oferta
 from usuario.models import Usuario
 from oferente.models import Oferente
+from persona.models import Persona
 from django import forms
 from django.contrib.auth import authenticate
 
@@ -39,9 +40,17 @@ class LoginSuperuserForm(forms.Form):
 
 
 class UsuarioForm(forms.ModelForm):
+    persona = forms.ModelChoiceField(
+        # usuario__isnull=True, eliminado=Falseasegura que solo se muestren personas que no están asociadas a
+        #  un usuario y que no están eliminadas.
+        queryset=Persona.objects.filter(usuario__isnull=True, eliminado=False),
+        required=True,
+        label="Persona asociada",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     class Meta:
         model = Usuario
-        fields = ['username', 'email', 'is_active']
+        fields = ['username', 'email', 'is_active','persona']
         labels = {
             'username': 'Nombre de usuario',
             'email': 'Correo Electrónico',
@@ -52,6 +61,47 @@ class UsuarioForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el correo electrónico'}),
             'is_active': forms.RadioSelect(choices=[(True, 'Sí'), (False, 'No')]),
         }
+
+    def save(self, commit=True):
+        usuario = super().save(commit=False)
+        # Asocia la persona seleccionada al usuario
+        persona = self.cleaned_data.get('persona')
+        if persona:
+            usuario.persona_id = persona
+        if commit:
+            usuario.save()
+        return usuario
+    
+class PersonForm(forms.ModelForm):
+    class Meta:
+        model = Persona
+        fields = ('identificacion', 'nombres', 'apellidos')  # Personaliza los campos según tus necesidades
+        widgets = {
+            'identificacion': forms.TextInput(attrs={'class': 'form-control',
+                                                     'placeholder': ' Ingrese su DNI (sin puntos)',
+                                                     'min': '1000000',
+                                                     'autocomplete': 'off'}),
+            'nombres': forms.TextInput(attrs={'class': 'form-control',
+                                              'placeholder': 'Ingrese su nombre completo','autocomplete': 'off'}),
+            'apellidos': forms.TextInput(attrs={'class': 'form-control',
+                                                'placeholder': ' Ingrese su apellido/s','autocomplete': 'off'})
+        }
+    def __init__(self, *args, **kwargs):
+        super(PersonForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] += ' mb-2'  # Añadir espacio entre los campos si es necesario
+            field.label_tag = lambda label, attrs={}, field_id=None: (
+                label and label % field.label or ''
+            )
+    
+     #VALIDACIONES
+
+    #validacion de contraseña: el valor ingresado no puede ser menor a 1000000
+    def clean_identificacion(self):
+        identificacion = self.cleaned_data.get('identificacion')
+        if identificacion < 1000000:
+            raise forms.ValidationError('Debes ingresar un número de DNI superior a 1000000')
+        return identificacion
 
 
 class ComercioForm(forms.ModelForm):

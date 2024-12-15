@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'django_recaptcha',
     'django_select2',
     'django_extensions',
-    'chatbot',
     'estadistica',
     'rest_framework',
     'administracion',

@@ -1,0 +1,161 @@
+{% extends "administracion/base_admin.html" %}
+
+{% block content %}
+
+
+<div class="container-fluid justify-content-center ">
+    <div class="col-md-10">
+        {% if messages %}
+        <div class="alert alert-danger" role="alert">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <a href="{% url 'productos_admin' %}">Volver al listado</a>
+
+        <!-- Formulario -->
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Editar subcategoría</h2>
+            </div>
+            <div class="card-body">
+                <form action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Campo para el nombre de la subcategoria -->
+                    <div class="mb-4">
+                        <label for="nombre" class="block text-gray-700 font-bold mb-2">Nombre de la subcategoría:</label>
+                        <input type="text" name="nombre" id="nombre" value="{{ subcategoria.nombre }}" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <!-- Campo para la categoria -->
+                    <div class="mb-4">
+                        <label for="categoria" class="block text-gray-700 font-bold mb-2">Categoría:</label>
+                        <select name="categoria" id="categoria" class="mt-1 block w-full p-2 border rounded-md">
+                          <option value="">-- Selecciona una categoría --</option>
+                          {% for categoria in categorias %}
+                              <option value="{{ categoria.id }}" {% if subcategoria.categoria.id == categoria.id %}selected{% endif %}>{{ categoria.nombre }}</option>
+                          {% empty %}
+                              <option value="">No hay categorías disponibles</option>
+                          {% endfor %}
+                      </select>
+                    </div>
+                    
+                  
+                    
+                    <!-- Botones para guardar o cancelar -->
+                    <div class="flex justify-end gap-4">
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-800">Guardar Cambios</button>
+                        <a class="px-4 py-2 bg-gray-600 text-white font-bold rounded-md hover:bg-gray-800 " href="{% url 'ofertas_admin' %}">Cancelar</a>        
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Array para almacenar los productos seleccionados
+        var productosSeleccionados = [];
+
+        // Búsqueda de productos mediante AJAX
+        $('#buscar_producto').on('input', function () {
+            var query = $(this).val();
+            if (query) {
+                $.ajax({
+                    url: '/oferta/buscar-productos/',
+                    data: {
+                        'query': query
+                    },
+                    success: function (data) {
+                        $('#resultados_productos').html(''); // Limpiar resultados anteriores
+                        for (var i = 0; i < data.length; i++) {
+                            $('#resultados_productos').append('<div class="producto-item p-2 cursor-pointer hover:bg-gray-100" data-id="' + data[i].id + '">' + data[i].nombre + '</div>');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error en la solicitud AJAX:', status, error);
+                    }
+                });
+            } else {
+                $('#resultados_productos').html(''); // Limpiar si no hay texto
+            }
+        });
+
+        // Evento para seleccionar un producto
+        $(document).on('click', '.producto-item', function () {
+            var productoId = $(this).data('id');
+
+            // Verifica si el producto ya está seleccionado
+            if (!productosSeleccionados.includes(productoId)) {
+                productosSeleccionados.push(productoId); // Agrega el ID del producto al array
+                mostrarProductosSeleccionados();
+            }
+
+            $('#buscar_producto').val(''); // Limpiar el campo de búsqueda
+            $('#resultados_productos').html(''); // Limpiar resultados
+        });
+
+        // Función para mostrar productos seleccionados
+        function mostrarProductosSeleccionados() {
+            $('#productos_seleccionados').html(''); // Limpiar el contenedor antes de mostrar
+            var ids = []; // Array para almacenar los IDs de los productos seleccionados
+            for (var i = 0; i < productosSeleccionados.length; i++) {
+                var productoId = productosSeleccionados[i];
+                ids.push(productoId); // Agrega el ID al array de IDs
+                $('#productos_seleccionados').append(`
+                    <div class="bg-gray-200 p-2 rounded-md flex items-center mr-2 mb-2" data-id="${productoId}">
+                        <span>${productoId} (Nombre del producto)</span>
+                        <button class="eliminar-producto ml-2 text-red-600">x</button>
+                    </div>
+                `);
+            }
+            // Actualizar el valor del campo oculto con los IDs separados por comas
+            $('#productos_seleccionados_input').val(ids.join(','));
+        }
+
+        // Evento para eliminar un producto seleccionado
+        $(document).on('click', '.eliminar-producto', function () {
+            var productoId = $(this).parent().data('id');
+            productosSeleccionados = productosSeleccionados.filter(function (id) {
+                return id !== productoId; // Filtra el ID que se está eliminando
+            });
+            mostrarProductosSeleccionados(); // Actualiza la visualización
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        var messageContainer = document.getElementById('messages');
+        if (messageContainer) {
+            var messages = messageContainer.children;
+            for (var i = 0; i < messages.length; i++) {
+                var message = messages[i].dataset.message;
+                var tags = messages[i].dataset.tags;
+                var icon = 'info'; // Default icon
+
+                if (tags.includes('danger') || tags.includes('error')) {
+                    icon = 'error'; // Error icon
+                } else if (tags.includes('success')) {
+                    icon = 'success'; // Success icon
+                } else if (tags.includes('warning')) {
+                    icon = 'warning'; // Warning icon
+                } else if (tags.includes('info')) {
+                    icon = 'info'; // Info icon
+                }
+
+                Swal.fire({
+                    text: message,
+                    icon: icon,
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+    });
+</script>
+
+{% endblock %}

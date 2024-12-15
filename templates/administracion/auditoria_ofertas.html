@@ -1,0 +1,100 @@
+{% extends "administracion/base_admin.html" %}
+
+{% block content %}
+
+<head>
+  <!--tailwind-->
+  <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <div class="container-fluid justify-content-center">
+    <h2 class="text-center text-black">Auditoría ofertas</h2>
+
+    <div class="d-flex justify-content-end">
+        <a href="{% url 'comercios_admin' %}" class="btn btn-link">Mostrar todo el listado</a>
+    </div>
+
+    <div class="table-responsive">
+        <table id="datatablesSimple" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+
+                    <th>Titulo</th>
+                    <th>Comercio</th>
+                    <th>Fecha creación</th>
+                    <th>Usuario creación</th>
+                    <th>Usuario modificación</th>
+                    <th>Fecha modificación</th>
+                    <th>Usuario eliminación</th>
+                    <th>Fecha eliminación</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for oferta in ofertas %}
+                <tr>
+                    <td>{{ oferta.titulo|default_if_none:"-" }}</td>
+                    <td>{{ oferta.oferente|default_if_none:"-" }}</td>
+                    <td>{{ oferta.fecha_creacion|default_if_none:"-" }}</td>
+                    <td>{{ oferta.usuario_creacion|default_if_none:"-" }}</td>
+                    <td>{{ oferta.usuario_modificacion|default_if_none:"-" }}</td>
+                    <td>{{ oferta.fecha_modificacion|default_if_none:"-" }}</td>
+                    <td>{{ oferta.usuario_eliminacion|default_if_none:"-" }}</td>
+                    <td>{{ oferta.fecha_eliminacion|default_if_none:"-" }}</td>
+                  
+                        
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+            
+        </table>
+    </div>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('#datatablesSimple').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/2.1.8/i18n/es-AR.json"
+                },
+                "dom": 'Bfrtip',
+                "paging": false,
+                "searching": false,
+                "ordering": false,
+                "info": false
+            });
+            function getCSRFToken() {
+                return $('meta[name="csrf-token"]').attr('content');
+            }
+
+            function toggleUserStatus(element) {
+                const userId = $(element).data('id');
+                const isActive = $(element).is(':checked');
+                const url = `{% url 'toggle_oferente_status' 0 %}`.replace('0', userId);
+
+                $.ajax({
+                    url: url,
+                    method: "POST",
+                    headers: { 'X-CSRFToken': getCSRFToken() },
+                    data: { is_active: isActive },
+                    success: function (response) {
+                        // Recargar la página para mostrar el mensaje de éxito
+                        location.reload();
+                    },
+                    error: function (xhr) {
+                        alert("Error al actualizar el estado del oferente: " + xhr.responseText);
+                    }
+                });
+            }
+
+            $(document).on('change', '.toggle-active', function () {
+                toggleUserStatus(this);
+            });
+        });
+    </script>
+</div>
+
+{% endblock %}

@@ -34,7 +34,6 @@ urlpatterns = [
     path('oferente/',include('oferente.urls')),
     path('productos/',include('producto.urls')),
     path('oferta/',include('oferta.urls')),
-    path('chatbot/',include('chatbot.urls')),
     path('estadisticas/',include('estadistica.urls')),
     path('administracion/',include('administracion.urls')),
 

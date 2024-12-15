@@ -1,0 +1,50 @@
+{% extends 'administracion/base_admin.html' %}
+
+{% block content %}
+
+
+
+<div class="container-fluid justify-content-center">
+    <div class="col-md-10">
+        {% if messages %}
+        <div class="alert alert-danger" role="alert">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <a href="{% url 'usuarios_admin' %}">Volver al listado</a>
+
+        <!-- Formulario -->
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Editar Persona</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'editar_persona_admin' persona.identificacion %}">
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    <!-- Renderizar otros campos -->
+
+                    <!-- Botones para guardar o cancelar -->
+                    <div class="flex justify-end gap-4">
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-800">Guardar
+                            Cambios</button>
+                        <a class="px-4 py-2 bg-gray-600 text-white font-bold rounded-md hover:bg-gray-800 "
+                            href="{% url 'personas_admin' %}">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- Scripts de Bootstrap -->
+
+</html>
+{% endblock%}
