@@ -10,6 +10,93 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate
 from django import forms
 
+from django import forms
+from usuario.models import Usuario
+from django import forms
+from .models import ConfiguracionSistema
+
+from django import forms
+from .models import ConfiguracionSistema
+
+from django import forms
+from .models import ConfiguracionSistema
+
+class ConfiguracionSistemaForm(forms.ModelForm):
+    FORMATOS_IMAGEN_CHOICES = [
+        ('jpg', 'JPG'),
+        ('png', 'PNG'),
+        ('gif', 'GIF'),
+        ('bmp', 'BMP'),
+        ('webp', 'WebP'),
+    ]
+
+    # Opciones predefinidas para cantidad de ofertas
+    CANTIDAD_OFERTAS_CHOICES = [
+        (3, '3 ofertas'),
+        (5, '5 ofertas'),
+        (10, '10 ofertas'),
+        (15, '15 ofertas'),
+        (20, '20 ofertas'),
+    ]
+
+    formatos_imagen_permitidos = forms.MultipleChoiceField(
+        choices=FORMATOS_IMAGEN_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        label="Formatos de imagen permitidos",
+        help_text="Selecciona los formatos de imagen permitidos.",
+    )
+
+    cantidad_maxima_ofertas = forms.ChoiceField(
+        choices=CANTIDAD_OFERTAS_CHOICES,
+        label="Cantidad máxima de ofertas",
+        widget=forms.Select(attrs={'class': 'form-select'}),
+    )
+
+    class Meta:
+        model = ConfiguracionSistema
+        fields = ['cantidad_maxima_ofertas', 'formatos_imagen_permitidos']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            # Si la instancia existe, carga los formatos guardados y los convierte en lista
+            self.initial['formatos_imagen_permitidos'] = self.instance.formatos_imagen_permitidos.split(",")
+
+    def save(self, commit=True):
+        # Al guardar, convierte la lista en una cadena separada por comas
+        instance = super().save(commit=False)
+        instance.formatos_imagen_permitidos = ",".join(self.cleaned_data['formatos_imagen_permitidos'])
+        if commit:
+            instance.save()
+        return instance
+
+
+
+    
+    
+class SuperUsuarioForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput, label="Contraseña")
+    confirm_password = forms.CharField(widget=forms.PasswordInput, label="Confirmar Contraseña")
+
+    class Meta:
+        model = Usuario
+        fields = ['username', 'email', 'telefono']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if password != confirm_password:
+            raise forms.ValidationError("Las contraseñas no coinciden.")
+        return cleaned_data
+
+
+
+
+
+
+
 class LoginSuperuserForm(forms.Form):
     username = forms.CharField(
         label="Nombre de Usuario",
@@ -31,11 +118,12 @@ class LoginSuperuserForm(forms.Form):
         if user is None:
             raise forms.ValidationError("Nombre de usuario o contraseña incorrectos.")
 
-        if not user.is_superuser:
+        if not (user.is_superuser and user.is_staff):
             raise forms.ValidationError("No tienes permisos para acceder al panel.")
 
-        self.cleaned_data['user'] = user  # Aquí asignamos el usuario autenticado
-        return self.cleaned_data
+        # Guarda el usuario autenticado en cleaned_data
+        cleaned_data['user'] = user
+        return cleaned_data
 
 
 

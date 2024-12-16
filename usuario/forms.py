@@ -24,13 +24,13 @@ class UsuarioCreationForm(UserCreationForm):
     
     metodo_verificacion = forms.ChoiceField( choices=ENVIO_CHOICES,widget=forms.RadioSelect, label="Prefiero recibir el token por", initial='email')#
     telefono = forms.IntegerField(required=False, label="Número de Teléfono", widget=forms.TextInput(attrs={
-        'class': "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6",
+        'class': "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400",
         'autocomplete': 'off',
         'type':'number',
         'placeholder':'Ingrese su número de teléfono'
     }))
     email = forms.CharField(required=False, label="Correo electrónico", max_length=40, widget=forms.TextInput(attrs={
-        'class': "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6",
+        'class': "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400",
         'autocomplete': 'off',
         'placeholder':'Ingrese su correo electrónico'
     }))
@@ -70,9 +70,11 @@ class UsuarioCreationForm(UserCreationForm):
 
 class LogeoForm(forms.Form):
     
-    usuario= forms.CharField(max_length=50, widget=forms.TextInput(attrs={'autocomplete': 'off'})
+    usuario= forms.CharField(max_length=50, widget=forms.TextInput(attrs={'autocomplete': 'off',
+    'class':"w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"})
     )
-    contraseña= forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete': 'off'}))
+    contraseña= forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete': 'off',
+    'class':'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400'}))
     captcha  =  ReCaptchaField ( 
         label='',
         public_key =RECAPTCHA_PUBLIC_KEY, 

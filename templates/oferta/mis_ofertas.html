@@ -2,10 +2,6 @@
 
 {% block content %}
 
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
 
 <style>
     .img {
@@ -16,7 +12,8 @@
     }
 </style>
 
-<!-- Breadcrumb -->
+<div class="min-h-screen flex flex-col bg-gray-100">
+    <!-- Breadcrumb -->
 <nav class="flex text-gray-700 text-sm" aria-label="Breadcrumb">
     <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <!-- Inicio -->
@@ -59,14 +56,17 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     {% if messages %}
-    <div id="messages" style="display: none;">
-        {% for message in messages %}
-        <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
-        {% endfor %}
-    </div>
-    {% endif %}
+            <div id="messages" style="display: none;">
+                {% for message in messages %}
+                    <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+                {% endfor %}
+            </div>
+        {% endif %}
 
-    <h1 class="text-3xl font-bold mb-6">MIS OFERTAS</h1>
+
+        <h2 class="mt-2 mb-6 text-center text-3xl font-extrabold text-gray-900">
+            <span class="section-heading-upper">Mis ofertas </span>                        
+          </h2>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for oferta in ofertas %}
@@ -149,36 +149,35 @@
             {% endfor %}
         </div>
 </div>
+</div>
+
+
 
 <script>
-    $(document).ready(function () {
-        const messageContainer = document.getElementById('messages');
-        if (messageContainer) {
-            const messageElements = messageContainer.querySelectorAll('[data-message]');
-            messageElements.forEach(element => {
-                const message = element.getAttribute('data-message');
-                const tags = element.getAttribute('data-tags');
-                
-                // Mostrar alertas según los tags
-                if (tags === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Éxito!',
-                        text: message,
-                        confirmButtonColor: '#3085d6',
-                        confirmButtonText: 'OK'
-                    });
-                } else if (tags === 'error') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: '¡Error!',
-                        text: message,
-                        confirmButtonColor: '#d33',
-                        confirmButtonText: 'Entendido'
-                    });
+    document.addEventListener("DOMContentLoaded", function() {
+      var messageContainer = document.getElementById('messages');
+      if (messageContainer) {
+          var messages = messageContainer.children;
+          for (var i = 0; i < messages.length; i++) {
+                    var message = messages[i].dataset.message;
+                    var tags = messages[i].dataset.tags;
+                    
+
+                    
+                    if (tags.includes('danger')) {
+                        icon = 'error'; //icono de error
+                    } else if (tags.includes('success')) {
+                        icon = 'success'; //icono de correcto
+                    } else if (tags.includes('warning')) {
+                        icon = 'question'; //icono de pregunta
+                    } else if (tags.includes('info')) {
+                        icon = 'info'; //icono de info
+                    } 
+
+                    notificacionSwal('', message, icon, 'OK');
                 }
-            });
         }
     });
-</script>
+    </script>
+  
 {% endblock %}

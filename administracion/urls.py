@@ -8,6 +8,7 @@ urlpatterns = [
     path('usuarios_admin',views.usuarios_admin , name='usuarios_admin'),
     path('registrar_usuario_admin/', views.registrar_usuario_admin, name='registrar_usuario_admin'),
     path('registrar_usuario_admin/<int:persona_id>/', views.registrar_usuario_admin, name='registrar_usuario_admin'),
+    path('crear_superusuario/', views.crear_superusuario, name='crear_superusuario'),
 
     path('editar_usuario/<int:id_usuario>/',views.editar_usuario, name='editar_usuario'),
     path('eliminar_usuario/<int:id_usuario>/',views.eliminar_usuario, name='eliminar_usuario'),
@@ -21,7 +22,9 @@ urlpatterns = [
     path('editar_producto_admin/<int:id_producto>/',views.editar_producto_admin,name='editar_producto_admin'),
     path('eliminar_producto_admin/<int:id_producto>/',views.eliminar_producto_admin,name='eliminar_producto_admin'),
     path('categorias_admin',views.categorias_admin , name='categorias_admin'),
+    path('editar_categoria_admin/<int:id_categoria>/',views.editar_categoria_admin, name='editar_categoria_admin'),
     path('eliminar_categoria_admin/<int:id_categoria>/',views.eliminar_categoria_admin,name='eliminar_categoria_admin'),
+    path('editar_categoria_admin/<int:id_categoria>/',views.editar_categoria_admin , name='editar_categoria_admin'),
     path('subcategorias_admin',views.subcategorias_admin , name='subcategorias_admin'),
     path('editar_subcategoria_admin/<int:id_subcategoria>/',views.editar_subcategoria_admin,name='editar_subcategoria_admin'),
     path('eliminar_subcategoria_admin/<int:id_subcategoria>/',views.eliminar_subcategoria_admin,name='eliminar_subcategoria_admin'),
@@ -42,6 +45,7 @@ urlpatterns = [
     path('auditoria_admin/categorias',views.auditoria_categorias , name='auditoria_categorias'),
     path('auditoria_admin/subcategorias',views.auditoria_subcategorias , name='auditoria_subcategorias'),
     
+    path("configurar_sistema/", views.configurar_sistema, name="configurar_sistema"),
     path("estadisticas/", views.estadisticas_con_graficos, name="estadisticas"),
     path('mapa_calor/',views.mapa_calor_inicio_sesion,name='mapa_calor'),
     

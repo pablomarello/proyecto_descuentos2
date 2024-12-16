@@ -15,7 +15,7 @@ afip = Afip({
     "CUIT": 23395413929,
     "cert": cert,
     "key": key,
-    "access_token": "xkGoHbluDKEPBiW9kFGqsHdwb54q2rAEUO6WCZHE8cJsYz77nF0by7Vy09WT4Ken",
+    "access_token": "xkGoHbluDKEPBiW9kFGqsHdwb54q2rAEU06WCZHE8cJsYz77nF0by7Vy09WT4Ken",
     "production": True
 })
 
@@ -27,6 +27,7 @@ def verificarCuit(request):
         login_url = f"{reverse('login')}?next={request.path}"
         return redirect(login_url)
     nombre = apellido = direccion = '-----'  # Inicializa las variables
+
     if request.method == 'POST':
         form = CuitForm(request.POST)
         if form.is_valid():
@@ -164,9 +165,22 @@ def lista_comercio(request):
     if request.user.is_authenticated:
         # Filtrar los comercios asociados al usuario logueado
         comercios = Oferente.objects.filter(id_usuario=request.user)
-        ubicaciones_comercios = ubicacionesComercio.objects.filter(comercio_id__id_usuario=request.user)
-        return render(request, 'oferente/lista_comercios.html', {'comercios': comercios,
-                                                                 'ubicaciones_comercios': ubicaciones_comercios})
+        
+        # Crear una lista organizada con los comercios y sus ubicaciones
+        comercios_con_ubicaciones = []
+        for comercio in comercios:
+            # Obtener las ubicaciones relacionadas con el comercio actual
+            ubicaciones = ubicacionesComercio.objects.filter(comercio_id=comercio)
+            
+            # Agregar al diccionario la información del comercio y sus ubicaciones
+            comercios_con_ubicaciones.append({
+                'comercio': comercio,
+                'ubicaciones': ubicaciones
+            })
+        
+        return render(request, 'oferente/lista_comercios.html', {
+            'comercios_con_ubicaciones': comercios_con_ubicaciones
+        })
     else:
         return redirect('login')
     

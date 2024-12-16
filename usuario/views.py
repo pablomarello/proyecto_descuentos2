@@ -47,7 +47,7 @@ def index(request):
 
     baratos = Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
     ofertas = Oferta.objects.filter(activo=True)
-    categorias = Categoria.objects.all()
+    categorias = Categoria.objects.filter(eliminado=False)
     vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
 
     # Funcionalidad de búsqueda

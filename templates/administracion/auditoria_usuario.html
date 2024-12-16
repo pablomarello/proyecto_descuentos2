@@ -2,10 +2,6 @@
 
 {% block content %}
 
-<head>
-  <!--tailwind-->
-  <script src="https://cdn.tailwindcss.com"></script>
-  </head>
 
   <div class="container-fluid justify-content-center">
     <h2 class="text-center text-black">Auditoría Usuarios</h2>
@@ -62,16 +58,7 @@
 
     <script>
         $(document).ready(function () {
-            $('#datatablesSimple').DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/2.1.8/i18n/es-AR.json"
-                },
-                "dom": 'Bfrtip',
-                "paging": false,
-                "searching": false,
-                "ordering": false,
-                "info": false
-            });
+           
             function getCSRFToken() {
                 return $('meta[name="csrf-token"]').attr('content');
             }
