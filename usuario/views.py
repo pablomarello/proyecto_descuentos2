@@ -118,7 +118,7 @@ def index(request):
             'calificacion_promedio': calificacion_promedio,
             'cantidad_calificaciones': cantidad_calificaciones,
         })
-
+    comercios = Oferente.objects.all()
     # Renderizado de la plantilla
     return render(request, 'usuarios/ind.html', {
         'categorias': categorias,
@@ -133,6 +133,7 @@ def index(request):
         'comercios_en_radio': comercios_en_radio,
         'usuario_autenticado': request.user.is_authenticated,  # Nuevo parámetro
         'tiene_comercios': tiene_comercios,  # Variable para mostrar botones en el nav en el template
+        'comercios':comercios,
     })
 
 
