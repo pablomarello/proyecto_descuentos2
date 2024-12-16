@@ -24,6 +24,7 @@ urlpatterns = [
     path('categorias_admin',views.categorias_admin , name='categorias_admin'),
     path('editar_categoria_admin/<int:id_categoria>/',views.editar_categoria_admin, name='editar_categoria_admin'),
     path('eliminar_categoria_admin/<int:id_categoria>/',views.eliminar_categoria_admin,name='eliminar_categoria_admin'),
+    path('editar_categoria_admin/<int:id_categoria>/',views.editar_categoria_admin , name='editar_categoria_admin'),
     path('subcategorias_admin',views.subcategorias_admin , name='subcategorias_admin'),
     path('editar_subcategoria_admin/<int:id_subcategoria>/',views.editar_subcategoria_admin,name='editar_subcategoria_admin'),
     path('eliminar_subcategoria_admin/<int:id_subcategoria>/',views.eliminar_subcategoria_admin,name='eliminar_subcategoria_admin'),

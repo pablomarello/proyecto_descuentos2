@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Iniciar sesion {% endblock %}
+{% block title %}Inicio de sesión {% endblock %}
 <head>
   <script src="https://www.google.com/recaptcha/api.js?render={{site_key}}" async defer></script>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -14,8 +14,8 @@
             <div class="flex flex-auto ">
                 <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm border border-rojo-claro px-6 py-2">
                             
-                        <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                            <span class="section-heading-upper">Iniciar sesion </span>                        
+                        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                            <span class="section-heading-upper">Inicio de sesión </span>                        
                         </h2>  
                         
                         {% if messages %}
@@ -31,15 +31,15 @@
                             {% include "registration/forms_snipets.html" %}
                             <input type="hidden" name="next" value="{{ next }}">
                             <div>
-                              <button type="submit" class="bg-rojo text-blanco border border-rojo  flex w-full justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6  shadow-sm hover:bg-blanco hover:text-rojo focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rojo">Iniciar</button>
+                              <button type="submit" class="bg-rojo text-white flex w-full justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6  shadow-sm text-white bg-red-500 hover:bg-red-700 focus:outline-none">Iniciar</button>
                             </div>
                           </form>
                         {% if form.errors %}                                              
-                            <p class="alert alert-danger" role="alert">Usuario y Contraseña No Coinciden. Intente Nuevamente</p>                        
+                            <p class="text-red-600 mt-6" >Usuario y Contraseña No Coinciden. Intente Nuevamente</p>                        
                         {% endif %} 
                         <p class="mt-10 text-center text-sm text-gray-500">
                           No tienes cuenta?
-                          <a href="#" class="font-semibold leading-6 text-rojo hover:text-orange">Registrate</a>
+                          <a href="{% url 'registrar_persona' %}" class="font-semibold leading-6 text-rojo hover:text-orange">Registrate</a>
                         </p>
                    <!-- <p class="mb-0">
                     <a href="{% url 'index' %}" class="card-link"> <i class="fa-solid fa-house"> </i>Inicio</a>

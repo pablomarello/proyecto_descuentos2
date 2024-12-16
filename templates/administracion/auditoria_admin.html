@@ -1,55 +1,132 @@
 {% extends "administracion/base_admin.html" %}
 
 {% block content %}
-
-<head>
-<!--tailwind-->
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
-
-
 <div class="container-fluid justify-content-center">
-  <!-- Título centrado -->
-  <h1 class="text-2xl font-bold mb-10">Auditoría</h1>
+    <h2 class="text-center text-black">AUDITORÍA</h2>
 
-  <!-- Contenedor de las tarjetas -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center">
-      <!-- Card for Usuarios -->
-      <a href="{% url 'auditoria_usuarios' %}" class="bg-white rounded-lg shadow-md hover:shadow-lg p-6 text-center transform hover:scale-105 transition">
-          <h2 class="text-xl font-semibold text-gray-800">Usuarios</h2>
-      </a>
-
-      <!-- Card for Personas -->
-      <a href="{% url 'auditoria_personas' %}" class="bg-white rounded-lg shadow-md hover:shadow-lg p-6 text-center transform hover:scale-105 transition">
-          <h2 class="text-xl font-semibold text-gray-800">Personas</h2>
-      </a>
-
-      <!-- Card for Ofertas -->
-      <a href="{% url 'auditoria_ofertas' %}" class="bg-white rounded-lg shadow-md hover:shadow-lg p-6 text-center transform hover:scale-105 transition">
-          <h2 class="text-xl font-semibold text-gray-800">Ofertas</h2>
-      </a>
-
-      <!-- Card for Comercios -->
-      <a href="{% url 'auditoria_comercios' %}" class="bg-white rounded-lg shadow-md hover:shadow-lg p-6 text-center transform hover:scale-105 transition">
-          <h2 class="text-xl font-semibold text-gray-800">Comercios</h2>
-      </a>
-
-      <!-- Card for Productos -->
-      <a href="{% url 'auditoria_productos' %}" class="bg-white rounded-lg shadow-md hover:shadow-lg p-6 text-center transform hover:scale-105 transition">
-          <h2 class="text-xl font-semibold text-gray-800">Productos</h2>
-      </a>
-
-      <!-- Card for Categorias -->
-      <a href="{% url 'auditoria_categorias' %}" class="bg-white rounded-lg shadow-md hover:shadow-lg p-6 text-center transform hover:scale-105 transition">
-          <h2 class="text-xl font-semibold text-gray-800">Categorías</h2>
-      </a>
-
-      <!-- Card for Subcategorias -->
-      <a href="{% url 'auditoria_subcategorias' %}" class="bg-white rounded-lg shadow-md hover:shadow-lg p-6 text-center transform hover:scale-105 transition">
-          <h2 class="text-xl font-semibold text-gray-800">Subcategorías</h2>
-      </a>
-  </div>
+    <div id="layoutSidenav_content">
+    
+    
+        <div class="row g-4 m-4 mx-5">
+            
+            <!-- Card 1 -->
+            <div class="col-md-4">
+                <div class="card text-white bg-secondary">
+                    <div class="card-body d-flex align-items-center">
+                        
+                        <div>
+                            <h5 class="card-title">Usuarios</h5>
+                            <i class="fa fa-user me-3"></i>
+                            
+                            <p class="card-text">1</p>
+                            <a href="{% url 'auditoria_usuarios' %}" class="text-white">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="col-md-4">
+                <div class="card text-white bg-secondary">
+                    <div class="card-body d-flex align-items-center">
+                        
+                        <div>
+                            <h5 class="card-title">Personas</h5>
+                            <i class="fa fa-users me-3"></i>
+                            <p class="card-text">1</p>
+                            <a href="{% url 'auditoria_ofertas' %}" class="text-white">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Card 3 -->
+            <div class="col-md-4">
+                <div class="card text-white bg-secondary">
+                    <div class="card-body d-flex align-items-center">
+                       
+                        <div>
+                            <h5 class="card-title">Ofertas</h5>
+                            <i class="fa fa-shopping-cart me-3"></i>
+                            <p class="card-text">0</p>
+                            <a href="{% url 'auditoria_ofertas' %}" class="text-white">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 4 -->
+            <div class="col-md-4">
+                <div class="card text-white bg-secondary">
+                    <div class="card-body d-flex align-items-center">
+                        
+                        <div>
+                            <h5 class="card-title">Comercios</h5>
+                            <i class="fa fa-briefcase me-3"></i>
+                            <p class="card-text">1</p>
+                            <a href="{% url 'auditoria_comercios' %}" class="text-white">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 5 -->
+            <div class="col-md-4">
+                <div class="card text-white bg-secondary">
+                    <div class="card-body d-flex align-items-center">
+                        
+                        <div>
+                            <h5 class="card-title">Productos</h5>
+                            <i class="fa fa-box me-3"></i>
+                            <p class="card-text">1</p>
+                            <a href="{% url 'auditoria_productos' %}" class="text-white">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 6 -->
+            <div class="col-md-4">
+                <div class="card text-white bg-secondary">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="fa fa-users me-3"></i>
+                        <div>
+                            <h5 class="card-title">Categorias</h5>
+                            <p class="card-text">2</p>
+                            <a href="{% url 'auditoria_categorias' %}" class="text-white">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card text-white bg-secondary">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="fa fa-users me-3"></i>
+                        <div>
+                            <h5 class="card-title">Subcategorias</h5>
+                            <p class="card-text">2</p>
+                            <a href="{% url 'auditoria_subcategorias' %}" class="text-white">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     
+        <footer class="py-4 bg-light mt-auto">
+            <div class="container-fluid px-4">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-muted">Copyright &copy; Descuentos Catamarca</div>
+                    
+                </div>
+            </div>
+            </footer>
+    </div>
+    
 </div>
+
+
+
+
+
+
+
 
 {% endblock %}
 
