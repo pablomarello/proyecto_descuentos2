@@ -12,7 +12,8 @@
     }
 </style>
 
-<!-- Breadcrumb -->
+<div class="min-h-screen flex flex-col bg-gray-100">
+    <!-- Breadcrumb -->
 <nav class="flex text-gray-700 text-sm" aria-label="Breadcrumb">
     <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <!-- Inicio -->
@@ -63,7 +64,9 @@
         {% endif %}
 
 
-    <h1 class="text-3xl font-bold mb-6">MIS OFERTAS</h1>
+        <h2 class="mt-2 mb-6 text-center text-3xl font-extrabold text-gray-900">
+            <span class="section-heading-upper">Mis ofertas </span>                        
+          </h2>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for oferta in ofertas %}
@@ -146,6 +149,9 @@
             {% endfor %}
         </div>
 </div>
+</div>
+
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {

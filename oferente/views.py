@@ -165,9 +165,22 @@ def lista_comercio(request):
     if request.user.is_authenticated:
         # Filtrar los comercios asociados al usuario logueado
         comercios = Oferente.objects.filter(id_usuario=request.user)
-        ubicaciones_comercios = ubicacionesComercio.objects.filter(comercio_id__id_usuario=request.user)
-        return render(request, 'oferente/lista_comercios.html', {'comercios': comercios,
-                                                                 'ubicaciones_comercios': ubicaciones_comercios})
+        
+        # Crear una lista organizada con los comercios y sus ubicaciones
+        comercios_con_ubicaciones = []
+        for comercio in comercios:
+            # Obtener las ubicaciones relacionadas con el comercio actual
+            ubicaciones = ubicacionesComercio.objects.filter(comercio_id=comercio)
+            
+            # Agregar al diccionario la información del comercio y sus ubicaciones
+            comercios_con_ubicaciones.append({
+                'comercio': comercio,
+                'ubicaciones': ubicaciones
+            })
+        
+        return render(request, 'oferente/lista_comercios.html', {
+            'comercios_con_ubicaciones': comercios_con_ubicaciones
+        })
     else:
         return redirect('login')
     
