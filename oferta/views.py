@@ -338,6 +338,7 @@ def buscar_productos(request):
 
 
 
+
 def mis_ofertas(request):
     # Obtén el usuario actual
     hoy = date.today()

@@ -7,7 +7,8 @@
 
 {% block content %}
 <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-<link href="{% static "css/styles_admin.css" %} " rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 
 .tabla-container {
@@ -78,12 +79,14 @@
 </style>
 
 
-    <h1>Estadísticas</h1>
+    <h1>Mis estadisticas</h1>
     <div class="tabla-container flex flex-wrap gap-4">
         <div class="tabla-item">
             <div id="estadisticas_por_comercio-container"></div>
         </div>
+        
     </div>
+    
     
    
 {% endblock content %}
@@ -97,45 +100,46 @@
         fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(response => response.json())
             .then(data => {
-
-                const ofertas = data.estadisticas_por_comercio.map(item => item.ofertas);
-                const promedioOfertas = data.estadisticas_por_comercio.map(item => item.promedio_ofertas);
-
-                
                 const container = document.getElementById('estadisticas_por_comercio-container');
                 const estadisticas_por_comercio = data.estadisticas_por_comercio;
     
-                estadisticas_por_comercio.forEach(comercio => {
-                    const comercioDiv = document.createElement('div');
-                    comercioDiv.innerHTML = `
-                    <div class="tabla-container flex flex-wrap gap-4">
-                        
+                console.log("Datos recibidos:", estadisticas_por_comercio); // Debug: Verificar datos
+    
+                estadisticas_por_comercio.forEach((comercio, index) => {
+                    // ID único para el gráfico
+                    const chartId = `chart-${index}`;
+                
+                    // Crear un contenedor único para este comercio
+                    const comercioContainer = document.createElement('div');
+                    comercioContainer.className = 'tabla-container flex flex-wrap gap-4';
+                    comercioContainer.innerHTML = `
                         <div class="tabla-item">
                             <h3>${comercio.comercio}</h3>
                             <h4>Ofertas más comentadas</h4>
                             ${
                                 comercio.mas_comentadas.length > 0
-                            ?`
-                            <table class="table-auto border-collapse border border-gray-300">
-                                <thead class="bg-gray-200">
-                                    <tr>
-                                        <th class="border border-gray-300 px-4 py-2 text-left">Título</th>
-                                        <th class="border border-gray-300 px-4 py-2 text-left">Comentarios</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${comercio.mas_comentadas.map(oferta => `
-                                        <tr class="hover:bg-gray-100">
-                                            <td class="border border-gray-300 px-4 py-2">${oferta.titulo}</td>
-                                            <td class="border border-gray-300 px-4 py-2">${oferta.total_comentarios}</td>
+                                    ? `
+                                <table class="table-auto border-collapse border border-gray-300">
+                                    <thead class="bg-gray-200">
+                                        <tr>
+                                            <th class="border border-gray-300 px-4 py-2 text-left">Título</th>
+                                            <th class="border border-gray-300 px-4 py-2 text-left">Comentarios</th>
+                                            <th class="border border-gray-300 px-4 py-2 text-left">Estado</th>
                                         </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>`
-                            : `<p>No hay comentarios en sus ofertas.</p>` // Mensaje si no hay comentarios
-                    }
+                                    </thead>
+                                    <tbody>
+                                        ${comercio.mas_comentadas.map(oferta => `
+                                            <tr class="hover:bg-gray-100">
+                                                <td class="border border-gray-300 px-4 py-2">${oferta.titulo}</td>
+                                                <td class="border border-gray-300 px-4 py-2">${oferta.total_comentarios}</td>
+                                                <td class="border border-gray-300 px-4 py-2"> ${oferta.activo ? '<span class="text-green-600">Vigente</span>' : '<span class="text-red-600">Vencida</span>'}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>`
+                                    : `<p>No hay comentarios en sus ofertas.</p>`
+                            }
                         </div>
-                        
                         <div class="tabla-item">
                             <h3>${comercio.comercio}</h3>
                             <h4>Ofertas mejor puntuadas</h4>
@@ -144,6 +148,7 @@
                                     <tr>
                                         <th class="border border-gray-300 px-4 py-2 text-left">Título</th>
                                         <th class="border border-gray-300 px-4 py-2 text-left">Puntuación Promedio</th>
+                                        <th class="border border-gray-300 px-4 py-2 text-left">Estado</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -151,59 +156,73 @@
                                         <tr class="hover:bg-gray-100">
                                             <td class="border border-gray-300 px-4 py-2">${oferta.titulo}</td>
                                             <td class="border border-gray-300 px-4 py-2">${oferta.promedio_puntuacion.toFixed(1)}</td>
+                                            <td class="border border-gray-300 px-4 py-2"> ${oferta.activo ? '<span class="text-green-600">Vigente</span>' : '<span class="text-red-600">Vencida</span>'}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
                             </table>
                         </div>
                         <div class="col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        Promedio de tus ofertas
-                                    </div>
-                                    <div class="card-body"> <canvas id="chart-${comercio.id}" width="130%" height="100">
-                                    </canvas></div>
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-area me-1"></i>
+                                    Promedio de tus ofertas
                                 </div>
+                                <div class="card-body"><canvas id="${chartId}"  width="130%" height="100"></canvas></div>
                             </div>
-                    </div>
+                        </div>
                     `;
-                    container.appendChild(comercioDiv);
-                });
-
-                // Crear gráfico de torta
-                new Chart(document.getElementById(`chart-${comercio.id}`), {
-                    type: 'pie',
-                    data: {
-                        labels: ofertas, // Nombres de los comercios
-                        datasets: [{
-                            label: 'Promedio de ofertas destacadas',
-                            data: promedioOfertas, // Promedio de ofertas por comercio
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.5)',
-                                'rgba(54, 162, 235, 0.5)',
-                                'rgba(255, 206, 86, 0.5)',
-                                'rgba(75, 192, 192, 0.5)',
-                                'rgba(153, 102, 255, 0.5)',
-                                'rgba(255, 159, 64, 0.5)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true
+                
+                    // Agregar al contenedor principal
+                    container.appendChild(comercioContainer);
+                
+                    // Crear gráfico de dona para este comercio
+                    const ctx = document.getElementById(chartId);
+                    if (ctx) {
+                        console.log(`Generando gráfico para: ${chartId}`); // Debug: Verificar gráfico
+                        new Chart(ctx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Mejores Puntuadas', 'Menor Puntuacion'],
+                                datasets: [{
+                                    data: [comercio.ofertas_mayor_4, comercio.ofertas_menor_4],
+                                    backgroundColor: [
+                                        'rgba(75, 192, 192, 0.6)', // Verde para > 4
+                                        'rgba(255, 99, 132, 0.6)', // Rojo para ≤ 4
+                                    ],
+                                    borderColor: [
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(255, 99, 132, 1)',
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(tooltipItem) {
+                                                const total = comercio.ofertas_mayor_4 + comercio.ofertas_menor_4;
+                                                const value = tooltipItem.raw;
+                                                const percentage = ((value / total) * 100).toFixed(1);
+                                                return `${tooltipItem.label}: ${value} (${percentage}%)`;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        console.error(`No se encontró el canvas para el gráfico con ID: ${chartId}`);
                     }
                 });
-
             })
             .catch(error => console.error('Error:', error));
     });
+    
 </script>
 {% endblock js %}

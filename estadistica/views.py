@@ -123,15 +123,13 @@ def estadisticas_oferente(request, categoria_id=None):
                 
                 "comercio": oferente.nombrecomercio,
                 "total_ofertas": ofertas.filter(oferente=oferente).count(),
-                "promedio_ofertas": round(
-                    ofertas_mas_puntuadas.filter(oferente=oferente).count() /
-                    max(1, ofertas.filter(oferente=oferente).count()), 2
-                ),
+                "ofertas_mayor_4": ofertas_mas_puntuadas.filter(oferente=oferente, promedio_puntuacion__gt=3.9).count(),
+                "ofertas_menor_4":ofertas_mas_puntuadas.filter(oferente=oferente, promedio_puntuacion__lte=3.9).count(),
                 "mas_comentadas": list(
-                    ofertas_mas_comentadas.filter(oferente=oferente).values('id', 'titulo', 'total_comentarios')
+                    ofertas_mas_comentadas.filter(oferente=oferente).values('id', 'titulo', 'total_comentarios','activo')
                 ),
                 "mejor_puntuadas": list(
-                    ofertas_mas_puntuadas.filter(oferente=oferente).values('id', 'titulo', 'promedio_puntuacion')
+                    ofertas_mas_puntuadas.filter(oferente=oferente).values('id', 'titulo', 'promedio_puntuacion','activo')
                 ),
                 
             }

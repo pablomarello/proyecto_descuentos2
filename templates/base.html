@@ -13,17 +13,160 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
     
-  <!-- Your code -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="stylesheet" href="{% static 'admin/css/styles.css' %}">
-  <link rel="stylesheet" href="{% static 'css/styles_chat.css' %}">
+    <!-- Your code -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="{% static 'admin/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles_chat.css' %}">
   
   <!--ReCaptcha-->
 </head>
 <body class="bg-white">
     <header>
+        <!-- Navbar Principal -->
+        <nav class="bg-gray-800 text-white px-4 py-2 flex items-center justify-between sticky top-0 z-50">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <a class="text-2xl font-bold" href="{% url 'index' %}">Descuentazos</a>
+            </div>
+        
+            <!-- Botón de Menú (Mobile) -->
+            <div class="md:hidden">
+                <button id="menu-toggle" class="focus:outline-none text-white">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+        
+            <!-- Buscador y enlaces (Desktop) -->
+            <div class="hidden md:flex items-center space-x-6 text-sm">
+                <!-- Buscador -->
+                <form action="{% url 'index' %}" method="get">
+                    <div class="relative flex items-center bg-white rounded-full overflow-hidden">
+                        <button type="submit" class="absolute left-3 text-red-600">
+                            <img src="{% static 'images/media/lupa.png' %}" class="h-6 w-auto">
+                        </button>
+                        <input type="text"  type="text" name="q" placeholder="Buscar..." class="pl-10 pr-4 py-2 w-72 text-black outline-none placeholder-gray-400">
+                    </div>
+                </form>
+        
+                <!-- Carrito -->
+                {% if user.is_authenticated %}
+                <a href="#" class="text-xl">🛒</a>
+                {% endif %}
+        
+                <!-- Menú Usuario -->
+                {% if user.is_authenticated %}
+                <div class="flex items-center relative">                    
+                    <!-- Notification Button -->
+                    <div class="relative mr-4">
+                        <button id="notificationButton" class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <span class="sr-only">View notifications</span>
+                            <img src="{% static 'images/svg/white/header/notificacion.svg' %}" alt="" class="h-8 w-8">
+                            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white"></span>
+                        </button>
+                        <div id="notificationPanel" class="hidden absolute border border-white right-0 mt-2 w-80 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-20" role="menu" aria-orientation="vertical" aria-labelledby="notificationButton">
+                            <div class="py-1" role="none">
+                                <div class="px-4 py-2 text-sm text-white border-b">
+                                    <h3 class="font-bold">Notificaciones</h3>
+                                    <p class="text-xs text-gray-300">Tienes 3 notificaciones no leídas</p>
+                                </div>
+                                <div class="px-4 py-2 flex items-start space-x-2 hover:bg-gray-700">
+                                    <div class="h-2 w-2 mt-2 rounded-full bg-blue-500"></div>
+                                    <div>
+                                        <p class="text-sm font-medium text-white">Nuevo mensaje recibido</p>
+                                        <p class="text-xs text-gray-300">Hace 5 minutos</p>
+                                    </div>
+                                </div>
+                                <div class="px-4 py-2 flex items-start space-x-2 hover:bg-gray-700">
+                                    <div class="h-2 w-2 mt-2 rounded-full bg-green-500"></div>
+                                    <div>
+                                        <p class="text-sm font-medium text-white">Tu pedido ha sido enviado</p>
+                                        <p class="text-xs text-gray-300">Hace 2 horas</p>
+                                    </div>
+                                </div>
+                                <div class="px-4 py-2 flex items-start space-x-2 hover:bg-gray-700">
+                                    <div class="h-2 w-2 mt-2 rounded-full bg-yellow-500"></div>
+                                    <div>
+                                        <p class="text-sm font-medium text-white">Recordatorio de cambio de contraseña</p>
+                                        <p class="text-xs text-gray-300">Hace 1 día</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- User Profile Dropdown -->
+                    <div class="relative">
+                        <button type="button" id="userMenuButton" class="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-expanded="false" aria-haspopup="true">
+                            <span class="sr-only">Abrir menú de usuario</span>
+                            <img class="h-8 w-8 rounded-full" src="" alt="">
+                        </button>
+                        <div id="userMenuDropdown" class="hidden absolute border border-white right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                            <div class="px-4 py-2 text-sm text-gray-700 border-b">
+                                <p class="font-bold text-white">{{ user.username }}</p>
+                                <p class="text-xs text-gray-300">{{ user.email }}</p>
+                            </div>
+                            <a href="{% url 'lista_comercios'%}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Mis comercios</a>
+                            <a href="{% url 'verificar_cuit' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Registrar Mi Comercio</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Perfil</a>
+                            <a href="{% url 'reset_password' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cambiar contraseña</a>
+                            <a href="{% url 'cerrar_sesion' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cerrar Sesión</a>
+                        </div>
+                    </div>
+                </div>
+                
+                {% else %}
+                  <!-- Usuario -->
+                    <a href="{% url 'login' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem">Iniciar Sesión</a>
+                    <a href="{% url 'registrar_persona' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem">Registrarse</a>
+
+                {% endif %}
+            </div>
+        </nav>
+        
+        <!-- Menú Colapsable (Mobile) -->
+        <div id="mobile-menu" class="bg-gray-900 text-white px-4 py-2 hidden md:hidden">
+            <!-- Buscador -->
+            <div class="relative flex items-center bg-white rounded-full overflow-hidden mb-4">
+                <span class="absolute left-3 text-red-600">
+                    <img src="{% static 'images/media/lupa.png' %}" class="h-6 w-auto">
+                </span>
+                <input type="text" name="q" placeholder="Buscar..." class="pl-10 pr-4 py-2 w-full text-black outline-none placeholder-gray-400">
+            </div>
+        
+            <!-- Categorías -->
+            <div class="flex flex-col space-y-2">
+                {% for categoria in categorias %}
+                <a href="{% url 'ofertas_por_categoria' categoria.id %}" class="hover:underline">{{ categoria.nombre }}</a>
+                {% endfor %}
+            </div>
+        
+            <!-- Opciones de Usuario -->
+            <div class="mt-4">
+                {% if user.is_authenticated %}
+                    <a href="#" class="block hover:underline">🛒 Carrito</a>
+                    <a href="{% url 'lista_comercios'%}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Mis comercios</a>
+                    <a href="{% url 'verificar_cuit' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Registrar Mi Comercio</a>
+                    <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Perfil</a>
+                    <a href="{% url 'reset_password' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cambiar contraseña</a>
+                    <a href="{% url 'cerrar_sesion' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cerrar Sesión</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="block hover:underline">Inicia Sesión</a>
+                    <a href="{% url 'registrar_persona' %}" class="block hover:underline">Regístrate</a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Submenú (Desktop) -->
+        <div class="bg-gray-900 text-white px-4 py-2 hidden md:flex items-center space-x-4 text-sm sticky top-0 z-40">
+            {% for categoria in categorias %}
+            <a href="{% url 'ofertas_por_categoria' categoria.id %}" class="hover:underline">{{ categoria.nombre }}</a>
+            {% endfor %}
+        </div>
+    {% comment %}
         <div class="bg-gray-800 border border-white px-4 py-4 flex items-center justify-between">
-            <!-- Logo y menú hamburguesa -->
+             <!-- Logo y menú hamburguesa -->
             <div class="flex items-center space-x-4 lg:w-1/4">
                 <!-- Menú hamburguesa (solo móvil) -->
                 <button id="menuButton" class="lg:hidden">
@@ -175,86 +318,14 @@
                         <a href="{% url 'registrar_persona' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem">Registrarse</a>
                     </div>
                 {% endif %}
-            </div>
-        </div>
+            </div> 
+        </div>{% endcomment %}
     </header>
 
     
 
   
 
-    <!-- Sidebars -->
-    <div id="menuSidebar" class="fixed inset-y-0 left-0 w-64 bg-gray-800 shadow-xl transform -translate-x-full transition-transform duration-300 ease-in-out z-50">
-        <div class="p-6">
-            <div class="flex items-center space-x-2 mb-2">
-                <button id="closeMenuButton" class="absolute top-4 right-4">
-                    <img src="{% static "images/svg/white/header/sidebars/salir.svg" %}" alt="" class="h-8 w-auto">
-                </button>
-                <img src="{% static "images/svg/logo4.svg" %}" alt="Logo" class="h-10 w-auto">
-            </div>
-            <nav class="border-t flex flex-col space-y-2">
-                <a href="#" class="text-white text-base category-link hover:bg-gray-700">Inicio</a>
-                <div class="flex items-center justify-between hover:bg-gray-700" id="openCategoriaSidebar">
-                    <a href="#" class="text-white text-base category-link">Categorías</a>
-                    <a href="#"><img src="{% static "images/svg/white/header/sidebars/derecha2.svg" %}" alt="" class="h-4 w-4"></a>
-                </div>
-                <a href="#" class="text-white text-base category-link hover:bg-gray-700">Contacto</a>
-                <a href="#" class="text-white text-base category-link hover:bg-gray-700">Ayuda</a>
-                <a href="#" class="text-white text-base category-link hover:bg-gray-700">Soporte</a>
-            </nav>
-        </div>
-        <div class="mt-48 pt-8 bg-gray-700 p-4 flex flex-col space-y-4">
-            <div class="flex items-center">
-                <img src="{% static "images/svg/white/header/sidebars/email.svg" %}" alt="" class="h-6 w-6 mr-2">
-                <span class="text-white">Contacto</span>
-            </div>
-            <div class="flex items-center">
-                <img src="{% static "images/svg/white/header/sidebars/telefono.svg" %}" alt="" class="h-6 w-6 mr-2">
-                <span class="text-white">Número de teléfono</span>
-            </div>
-            <div class="flex items-center">
-                <img src="{% static "images/svg/white/header/sidebars/whatsapp.svg" %}" alt="" class="h-6 w-6 mr-2">
-                <span class="text-white">Contacto por WhatsApp</span>
-            </div>
-            <div class="flex items-center">
-                <img src="{% static "images/svg/white/header/sidebars/reloj.svg" %}" alt="" class="h-6 w-6 mr-2">
-                <span class="text-white">Horario de atención: de 7 a 19 hs</span>
-            </div>
-        </div>
-    </div>
-
-    <div id="CategoriaSidebar" class="fixed inset-y-0 left-0 w-64 bg-gray-800 shadow-xl transform -translate-x-full transition-transform duration-300 ease-in-out z-50">
-        <div class="p-6">
-            <div class="flex items-center space-x-2 mb-2">
-                <button id="closeCategoriaSidebar">
-                    <img src="{% static "images/svg/white/header/sidebars/atras.svg" %}" alt="" class="h-6 w-6">
-                </button>
-                <h2 class="text-white text-2xl font-bold mb-0">Categorías</h2>
-            </div>
-            <nav class="border-t flex flex-col space-y-2">
-                {% for  categoria in categorias %}
-                <div class="flex flex-col">
-                    <!-- Categoría -->
-                    <div 
-                        class="flex items-center justify-between hover:bg-gray-700 cursor-pointer" 
-                        onclick="toggleSubcategorias({{ categoria.id }})" 
-                        id="openCat{{ categoria.id }}Sidebar"
-                    >                    
-                        <a href="#" class="text-white text-base category-link">{{ categoria.nombre }}</a>
-                        <img src="{% static 'images/svg/white/header/sidebars/derecha2.svg' %}" alt="" class="h-4 w-4">
-                    </div>
-                    
-                    <!-- Subcategorías -->
-                    <div id="subcategorias-{{ categoria.id }}" class="hidden flex-col pl-4 space-y-1">
-                        {% for subcategoria in categoria.subcategoria_set.all %}
-                            <a href="#" class="text-gray-300 text-sm">{{ subcategoria.nombre }}</a>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endfor %}
-            </nav>              
-        </div>
-    </div>
 
 
     <div id="searchSidebar" class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gray-800 shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out z-50">
@@ -440,9 +511,17 @@
   <script src="{% static 'js/utils/notificacionSwal.js' %}"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+<!-- Script para el menú mobile -->
+<script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
 
+    menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+</script>
 
-  <script>
+<script>
     function toggleSubcategorias(id) {
         const subcategoriaDiv = document.getElementById(`subcategorias-${id}`);
         subcategoriaDiv.classList.toggle('hidden');

@@ -242,8 +242,8 @@ def descuentos_destacados(request):
         })
 
     # Ordenar las ofertas por calificación promedio y limitar a las mejores 3
-    ofertas_con_calificaciones = sorted(ofertas_con_calificaciones, key=lambda x: x['calificacion_promedio'], reverse=True)[:3]
-
+    ofertas_con_calificaciones = sorted(ofertas_con_calificaciones, key=lambda x: x['calificacion_promedio'], reverse=True)[:5]
+    manana = hoy + datetime.timedelta(days=1)
     # Renderizado de la plantilla
     return render(request, 'usuarios/descuento.html', {
         'categorias': categorias,
@@ -255,6 +255,8 @@ def descuentos_destacados(request):
         } if request.user.is_authenticated else None,
         'comercios_en_radio': comercios_en_radio,
         'usuario_autenticado': request.user.is_authenticated,
+        'manana':manana,
+        'hoy':hoy,
     })
 
     
