@@ -181,6 +181,26 @@
         </div>
     </form>
 </div>
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+    const today = new Date();
+    today.setDate(today.getDate() - 1);  // Resta 1 día
+    const todayFormatted = today.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    
+    // Restringe las fechas máximas para inicio y fin
+    const fechaInicio = document.getElementById("fecha_inicio");
+    const fechaFin = document.getElementById("fecha_fin");
+
+    if (fechaInicio) {
+        fechaInicio.setAttribute("min", todayFormatted);
+    }
+
+    if (fechaFin) {
+        fechaFin.setAttribute("min", todayFormatted);
+    }
+});
+
+</script>
 
 <script type="text/javascript">
     $(document).ready(function () {

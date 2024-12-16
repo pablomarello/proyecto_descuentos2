@@ -1,5 +1,8 @@
 from datetime import date
+import os
 from django import forms
+
+from administracion.models import ConfiguracionSistema
 from .models import Comentario, Oferta
 from oferente.models import Oferente
 from producto.models import Producto
@@ -17,6 +20,10 @@ class OfertaForm(forms.ModelForm):
         required=True,
         label="Oferente"
     )
+    imagen = forms.ImageField(
+        required=False,  # No obligatorio, el usuario puede no subir una imagen
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+    )
 
     class Meta:
         model = Oferta
@@ -26,6 +33,8 @@ class OfertaForm(forms.ModelForm):
             'fecha_fin': forms.DateInput(attrs={'type': 'date'}),
             
         }
+    
+    
     
     def clean(self):
         cleaned_data = super().clean()
@@ -40,6 +49,31 @@ class OfertaForm(forms.ModelForm):
             # Comprobá que la fecha de inicio sea hoy o en el futuro
             if fecha_inicio < date.today():
                 raise forms.ValidationError("La fecha de inicio debe ser hoy o una fecha futura.")
+    
+       
+    def clean_imagen(self):
+        imagen = self.cleaned_data.get('imagen')
+
+        # Verifica si se ha subido una imagen
+        if imagen:
+            	
+
+            # Obtiene la extensión del archivo
+            extension = os.path.splitext(imagen.name)[1][1:].lower()  # Obtiene la extensión sin el punto
+
+            # Obtiene los formatos permitidos desde la configuración del sistema
+            configuracion = ConfiguracionSistema.objects.first()
+            if configuracion and configuracion.formatos_imagen_permitidos:
+                formatos_permitidos = configuracion.formatos_imagen_permitidos.split(",")
+            else:
+                formatos_permitidos = ['jpg', 'png', 'gif', 'bmp', 'webp']  # Valores predeterminados
+
+            # Verifica si la extensión está en los formatos permitidos
+            if extension not in formatos_permitidos:
+                raise forms.ValidationError(
+                    f"El formato de la imagen no es válido. Los formatos permitidos son: {', '.join(formatos_permitidos)}"
+                )
+        return imagen
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)  # Obtener el usuario del argumento kwargs

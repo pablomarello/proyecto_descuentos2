@@ -1,0 +1,95 @@
+{% extends 'administracion/base_admin.html' %}
+
+{% block content %}
+
+
+
+<div class="container-fluid justify-content-center jus">
+    <div class="col-md-10">
+        {% if messages %}
+        <div class="alert alert-danger" role="alert">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+<br>
+        <!-- Formulario -->
+        <div class="card ali">
+            <div class="card-header text-center">
+                <h2>Configuraciones de sistema</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <!-- Acordeón de Configuración -->
+                    <div class="accordion" id="accordionConfiguracion">
+                        <!-- Configuración de Cantidad de Ofertas -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOfertas">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOfertas" aria-expanded="false" aria-controls="collapseOfertas">
+                                    Cantidad máxima de ofertas que puede publicar un comercio por mes
+                                </button>
+                            </h2>
+                            <div id="collapseOfertas" class="accordion-collapse collapse collapse" aria-labelledby="headingOfertas">
+                                <div class="accordion-body">
+                                    <label for="id_cantidad_maxima_ofertas" class="form-label">Número máximo de ofertas permitidas:</label>
+                                    {{ form.cantidad_maxima_ofertas }}
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- Configuración de Formatos de Imagen -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFormatos">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFormatos" aria-expanded="false" aria-controls="collapseFormatos">
+                                    Formatos de imagen permitidos para las publicaciones
+                                </button>
+                            </h2>
+                            <div id="collapseFormatos" class="accordion-collapse collapse" aria-labelledby="headingFormatos">
+                                <div class="accordion-body">
+                                    <label for="id_formatos_imagen_permitidos" class="form-label">Selecciona los formatos permitidos:</label>
+                                    {{ form.formatos_imagen_permitidos }}
+                                    <small class="form-text text-muted">Selecciona uno o más formatos.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br>
+        
+                    <!-- Botón Guardar Cambios -->
+                    <div class="save-button">
+                        <button type="submit" class="btn btn-success btn-lg">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para validar las contraseñas -->
+<script>
+    const password1 = document.getElementById('password1');
+    const password2 = document.getElementById('password2');
+    const passwordError = document.getElementById('passwordError');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function checkPasswords() {
+        if (password1.value !== password2.value) {
+            passwordError.style.display = 'block';
+            submitBtn.disabled = true; // Deshabilita el botón si las contraseñas no coinciden
+        } else {
+            passwordError.style.display = 'none';
+            submitBtn.disabled = false; // Habilita el botón si las contraseñas coinciden
+        }
+    }
+
+    // Escuchar cambios en los campos de contraseña
+    password1.addEventListener('input', checkPasswords);
+    password2.addEventListener('input', checkPasswords);
+</script>
+
+
+<!-- Scripts de Bootstrap -->
+
+</html>
+{% endblock%}

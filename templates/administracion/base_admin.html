@@ -10,6 +10,7 @@
         <title>{% block title %}{% endblock title %}</title>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+        
         <link href="{% static "css/styles_admin.css" %} " rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         <link href="{% static "css/boton.css" %} " rel="stylesheet" />
@@ -55,7 +56,7 @@
                         <i class="fas fa-user fa-fw"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#!">Configuración</a></li>
+                        <li><a class="dropdown-item" href="{% url 'configurar_sistema' %}">Configuración</a></li>
                         <li><a class="dropdown-item" href="#!">Registro de Actividad</a></li>
                         <li>
                             <hr class="dropdown-divider" />
@@ -96,11 +97,11 @@
                                 </nav>
                             </div>
                             <a class="nav-link" href="{% url 'usuarios_admin' %}">
-                                <div class="sb-nav-link-icon"><i class="fa fa-users fa-shopping-cart text-white"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fa fa-user  text-white"></i></div>
                                 USUARIOS
                             </a>
                             <a class="nav-link" href="{% url 'personas_admin'%}">
-                                <div class="sb-nav-link-icon"><i class="fa fa-users fa-shopping-cart text-white"></i></div>
+                                <div class="sb-nav-link-icon"><i class="fa fa-users text-white"></i></div>
                                 PERSONAS
                             </a>
                             <a class="nav-link" href="{% url 'estadisticas'%}">
@@ -117,7 +118,7 @@
                                 AUDITORIA
                             </a>
 
-                            <a class="nav-link" href="#"">
+                            <a class="nav-link" href="{% url 'configurar_sistema' %}">
                                 <div class="sb-nav-link-icon"><i class="fa fa-cog text-white"></i></div>
                                 CONF. DE SISTEMA
                             </a>
@@ -168,7 +169,7 @@
                     <div class="col-md-4">
                         <div class="card text-white bg-primary">
                             <div class="card-body d-flex align-items-center">
-                                <i class="fa fa-truck me-3"></i>
+                                <i class="fa fa-users me-3"></i>
                                 <div>
                                     <h5 class="card-title">Usuarios</h5>
                                     <p class="card-text">0</p>
@@ -265,9 +266,9 @@
         <script src="{%static 'js/scripts.js'%}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
         <script src="{%static 'demo/chart-area-demo.js' %} "></script>
-        <script src=" {%static 'demo/chart-bar-demo.js' %}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-        <script src="{%static 'js/datatables-simple-demo.js' %}"></script>
+        <script src="{%static 'demo/chart-bar-demo.js' %}"></script>
+        <script src="{%static 'js/datatables_traduccion.js' %}""></script>
+        
 
         {% block js %}
         {% endblock js %}
