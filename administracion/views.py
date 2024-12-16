@@ -4,6 +4,10 @@ from django.views.generic import TemplateView
 from django.core.paginator import Paginator
 from django.contrib import messages
 
+from administracion.models import ConfiguracionSistema
+
+
+
 from .forms import ComercioForm, UsuarioForm, OfertaForm
 from usuario.models import Usuario
 from oferta.models import Oferta
@@ -16,12 +20,50 @@ from .forms import PersonForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib import messages
-from .forms import LoginSuperuserForm
+from .forms import LoginSuperuserForm, SuperUsuarioForm
 from django.contrib.auth.decorators import login_required
 
 
+from django.shortcuts import render, redirect
+from .forms import ConfiguracionSistemaForm
+
+def configurar_sistema(request):
+    configuracion, _ = ConfiguracionSistema.objects.get_or_create(id=1)
+
+    if request.method == 'POST':
+        form = ConfiguracionSistemaForm(request.POST, instance=configuracion)
+        if form.is_valid():
+            form.save()
+            messages.success(request,'Se guardó la configuración')
+            return redirect('index_admin')  # Redirige a una página de confirmación
+    else:
+        form = ConfiguracionSistemaForm(instance=configuracion)
+
+    return render(request, 'administracion/configurar_sistema.html', {'form': form})
 
 
+# Create your views here.
+
+def index_admin(request):
+    return render(request,'administracion/base_admin.html')
+    
+
+
+def crear_superusuario(request):
+    if request.method == 'POST':
+        form = SuperUsuarioForm(request.POST)
+        if form.is_valid():
+            usuario = form.save(commit=False)
+            usuario.set_password(form.cleaned_data['password'])
+            usuario.is_staff = True
+            usuario.is_superuser = True
+            usuario.is_active = True
+            usuario.save()
+            messages.success(request, "Creaste un nuevo usuario")
+            return redirect('index_admin')  # Cambia esta URL según tu sistema
+    else:
+        form = SuperUsuarioForm()
+    return render(request, 'administracion/crear_administrador.html', {'form': form})
 
 
 
@@ -31,6 +73,7 @@ def login_superuser(request):
         print('2')
         form = LoginSuperuserForm(request.POST)
         if form.is_valid():
+            print("Formulario válido")
             print('3')
             user = form.cleaned_data['user']
             print('4')
@@ -39,6 +82,7 @@ def login_superuser(request):
             messages.success(request, f"Bienvenido, {user.username}")
             return redirect('index_admin')  # Cambia a la vista principal del panel
     else:
+        print("Formulario no válido")
         form = LoginSuperuserForm()
     return render(request, 'administracion/login_admin.html', {'form': form})
 
@@ -52,11 +96,7 @@ def logout_superuser(request):
 
 
 
-# Create your views here.
 
-def index_admin(request):
-    return render(request,'administracion/base_admin.html')
-    
 
 #AGREGAR, EDITAR, ELIMINAR USUARIOS
 

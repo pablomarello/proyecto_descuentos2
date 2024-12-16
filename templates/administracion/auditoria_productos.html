@@ -56,16 +56,7 @@
 
     <script>
         $(document).ready(function () {
-            $('#datatablesSimple').DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/2.1.8/i18n/es-AR.json"
-                },
-                "dom": 'Bfrtip',
-                "paging": false,
-                "searching": false,
-                "ordering": false,
-                "info": false
-            });
+           
             function getCSRFToken() {
                 return $('meta[name="csrf-token"]').attr('content');
             }

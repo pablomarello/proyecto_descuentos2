@@ -15,7 +15,7 @@ afip = Afip({
     "CUIT": 23395413929,
     "cert": cert,
     "key": key,
-    "access_token": "xkGoHbluDKEPBiW9kFGqsHdwb54q2rAEUO6WCZHE8cJsYz77nF0by7Vy09WT4Ken",
+    "access_token": "xkGoHbluDKEPBiW9kFGqsHdwb54q2rAEU06WCZHE8cJsYz77nF0by7Vy09WT4Ken",
     "production": True
 })
 
@@ -27,6 +27,7 @@ def verificarCuit(request):
         login_url = f"{reverse('login')}?next={request.path}"
         return redirect(login_url)
     nombre = apellido = direccion = '-----'  # Inicializa las variables
+
     if request.method == 'POST':
         form = CuitForm(request.POST)
         if form.is_valid():

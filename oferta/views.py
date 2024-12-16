@@ -27,6 +27,7 @@ from oferente.models import ubicacionesComercio
 from geopy.distance import distance
 
 from datetime import datetime, date 
+from administracion.models import ConfiguracionSistema
 
 
 
@@ -267,20 +268,41 @@ def siguiente_oferta(request, oferta_id):
         return redirect('detalle_oferta', oferta_id=primera_oferta.id)
 
 
-
-
 def crear_oferta(request):
     if request.method == 'POST':
-        print(request.FILES)  # Añade esta línea para revisar si el archivo se está enviando correctamente
         form = OfertaForm(request.POST, request.FILES, user=request.user)
         
         # Obtener los IDs de productos seleccionados y eliminar cualquier valor vacío
         productos_ids = request.POST.get('productos_seleccionados', '').split(',')
         productos_ids = [id for id in productos_ids if id]  # Filtrar valores vacíos
+        
+        
+    # Aquí puedes agregar los mensajes de error personalizados de validación si necesitas
+        if 'imagen' in form.errors:
+            messages.error(request, form.errors['imagen'][0])  # Mostrar el error de imagen
 
         if not productos_ids:
             messages.error(request, "La oferta debe contener al menos 1 producto.")
         elif form.is_valid():
+            # Obtener el comercio seleccionado
+            oferente = form.cleaned_data['oferente']
+            
+            # Obtener el CUIT del oferente
+            cuit_oferente = oferente.cuit
+            
+            # Filtrar ofertas del mismo CUIT
+            ofertas_del_oferente = Oferta.objects.filter(oferente__cuit=cuit_oferente,activo=True,eliminado=False)
+            
+            
+            config = ConfiguracionSistema.objects.first()
+            print(config.cantidad_maxima_ofertas,'  cantidad max')
+            # Comparar la cantidad de ofertas con la máxima permitida
+            if ofertas_del_oferente.count() >= config.cantidad_maxima_ofertas:
+                print ('Entró al if xD')
+                
+                messages.warning(request, f'Alcanzaste el máximo de ofertas permitidas para tu plan')
+                return redirect('mis_ofertas')
+            
             oferta = form.save(commit=False)  # Guardamos el objeto sin guardarlo aún en la base de datos
             oferta.save()  # Guardamos la oferta en la base de datos
 
@@ -291,7 +313,6 @@ def crear_oferta(request):
             return redirect('mis_ofertas')  
     else:
         form = OfertaForm(user=request.user)
-
 
     return render(request, 'oferta/crear_oferta.html', {'form': form})
 
