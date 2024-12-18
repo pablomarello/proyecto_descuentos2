@@ -1,12 +1,15 @@
+
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, TablaProvincia
+from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, TablaProvincia, ubicaciones
 from .forms import CuitForm, OferenteForm, UbiComercio
 from .models import Oferente, ubicacionesComercio
 from afip import Afip
+from geopy.distance import geodesic
+from geopy.distance import distance
 
 cert = open('oferente/certificado.crt').read()
 key = open('oferente/private_key.key').read()
@@ -189,3 +192,54 @@ def perfil_comercio(request, comercio_id):
 
         return render(request, 'oferente/perfil_comercio.html', {'comercio': comercio})
 
+
+def comercios(request):
+    comercios_en_radio = []
+    if request.user.is_authenticated:
+        try:
+            persona = request.user.persona_id
+            ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
+
+            lat_usuario = float(ubicacion_usuario.latitud)
+            lon_usuario = float(ubicacion_usuario.longitud)
+
+            # Limita la distancia en kilómetros
+            radio_km = 100
+            ubicaciones_comercio = ubicacionesComercio.objects.filter(comercio_id__habilitado=True)
+
+            for comercio in ubicaciones_comercio:
+                if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
+                    distancia_km = distance(
+                        (lat_usuario, lon_usuario),
+                        (float(comercio.latitud), float(comercio.longitud))
+                    ).km
+                    if distancia_km <= radio_km:
+                        comercios_en_radio.append({
+                            "id": comercio.comercio_id.id,
+                            "nombre": comercio.comercio_id.nombrecomercio,
+                            "latitud": float(comercio.latitud),
+                            "longitud": float(comercio.longitud),
+                        })
+            # Verificar si el usuario tiene comercios registrados
+            tiene_comercios = Oferente.objects.filter(id_usuario=request.user).exists()
+        except ubicaciones.DoesNotExist:
+            pass
+    else:
+        ubicaciones_comercio = ubicacionesComercio.objects.filter(comercio_id__habilitado=True)
+        for comercio in ubicaciones_comercio:
+            if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
+                comercios_en_radio.append({
+                    "id": comercio.comercio_id.id,
+                    "nombre": comercio.comercio_id.nombrecomercio,
+                    "latitud": str(comercio.latitud).replace(',', '.'),
+                    "longitud": str(comercio.longitud).replace(',', '.'),
+                })
+    return render(request, 'usuarios/comercios.html', {
+        'ubicacion_usuario': {
+            'latitud': float(ubicacion_usuario.latitud) if ubicacion_usuario else None,
+            'longitud': float(ubicacion_usuario.longitud) if ubicacion_usuario else None,
+        } if request.user.is_authenticated else None,
+        'comercios_en_radio': comercios_en_radio,
+        'usuario_autenticado': request.user.is_authenticated,  # Nuevo parámetro
+        'tiene_comercios': tiene_comercios,  # Variable para mostrar botones en el nav en el template
+    })

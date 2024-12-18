@@ -9,6 +9,20 @@ Index
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'admin/css/styles.css' %}">
+<style>
+    /* Clip-path para cortar la parte inferior del fondo */
+.clip-bg {
+    clip-path: polygon(0 0, 40% 0, 50% 30%, 0 30%);
+    backgroundColor: #114172;
+    height: 300px;
+}
+.gradient-bottom {
+
+    background: linear-gradient(to bottom,rgb(255, 181, 181) 50%, rgb(231, 229, 229) 100%);
+    height: 300px;
+}
+
+</style>
 
  
 <h1 class="bg-gray-700 px-4 py-4 mt-1   text-center text-white font-bold text-2xl">MIRÁ LOS ÚLTIMOS DESCUENTOS PUBLICADOS</h1>
@@ -17,12 +31,12 @@ Index
     <div class="flex w-full max-w-7xl gap-4">
         <!-- Contenedor del mapa -->
         <div id="map" 
-             class="flex-grow basis-1/2 shadow-lg" 
+             class="flex-grow basis-3/5 shadow-lg" 
              style="position: relative; z-index: 1; margin-left: 30px; margin-top: 40px;">
         </div>
 
         <!-- Contenedor de ofertas -->
-        <div class="bg-white pb-0 flex-grow basis-1/2 max-w-2xl overflow-auto">
+        <div class="bg-white pb-0 flex-grow basis-2/5 max-w-2xl overflow-auto">
             <div class="flex items-center mb-6 m-4"></div>
             
             <div class="scroll-container-tarj flex overflow-x-auto gap-4">
@@ -164,11 +178,66 @@ Index
     </div>
 </div>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="relative bg-red-200 py-12 flex justify-center gradient-bottom">
+    <!-- Pseudoelemento para el corte -->
+    <div class="relative">
+        <h2 class="text-gray-800 text-2xl font-bold">Ofertas disponibles</h2> <br>
+        
+        <div class="before-clip">
+        </div>
+    </div>
+    
+</div>
+<div class="relative flex p-5 justify-center gap-40 -mt-40 px-4 z-10">
+    {% for oferta in ofertas_con_calificaciones %}
+    <!-- Tarjeta 1 -->
+    <a href="{% url 'detalle_oferta' oferta.oferta.id %}" class="bg-white rounded-lg shadow-2xl transform hover:-translate-y-2 transition-all duration-300 w-48">
+        {% if oferta.oferta.imagen %}
+            <img src="{{ oferta.oferta.imagen.url }}" alt="{{ oferta.titulo }}" class="w-full h-32 object-cover">
+        {% else %}
+            <img src="{{ MEDIA_URL }}default_image.png" alt="Imagen por defecto" class="w-full h-32 object-cover">
+        {% endif %}
+        <div class="p-4">
+            <p class="text-gray-700 text-sm mb-2">{{oferta.oferta.titulo}}</p>
+            <p class="text-green-600 font-bold">{{oferta.oferta.precio_oferta}}</p>
+            <div class="flex items-center mt-2">
+                <p class="text-xl font-bold mr-2">{{ oferta.calificacion_promedio|floatformat:1 }}</p>
+                {% for i in "12345" %}
+                    {% if forloop.counter <= oferta.calificacion_promedio %}
+                    <label class="text-xl text-orange-400">★</label>
+                    {% else %}
+                    <label class="text-xl text-gray-300">★</label>
+                    {% endif %}
+                {% endfor %}
+                
+            </div>
+        </div>
+        
+        {% if oferta.oferta.fecha_fin == hoy %}
+            <div class="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                Hasta hoy
+            </div>
+        {% endif %}
+        {% if oferta.oferta.fecha_fin == manana %}
+            <div class="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                Hasta mañana
+            </div>
+        {% endif %}
+    </a>
+    {%endfor%}
+</div> 
+<div class="text-center mt-8">
+    <button class="bg-red-600 transform hover:-translate-y-2 transition-all duration-300 w-48 hover:bg-red-800 text-white font-semibold py-2 px-6 rounded-full shadow-lg">
+        Quiero ver todo
+    </button>
+</div>
+<br>
+
+<div class="bg-gray-200 rounded-lg shadow-md relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
     <h1 class="text-3xl font-bold mb-6">Ofertas disponibles</h1>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
         {% for oferta in ofertas_con_calificaciones %}
         <div class="bg-white p-5 rounded-lg shadow-md relative">
             
@@ -241,33 +310,78 @@ Index
             </div>
             {% endif %}
 
-            {% comment %} <button onclick="openModal('{{oferta.oferta.id}}')" 
-                    class="bg-blue-600 text-white shadow-sm hover:bg-blue-500 rounded px-2 py-1 text-sm mt-4">
-                Ver ubicación
-            </button>
+            {% if user.is_authenticated %}
+                <button onclick="openModal('{{comercio.id}}')" 
+                        class="bg-blue-600 text-white shadow-sm hover:bg-blue-500 rounded px-2 py-1 text-sm mt-4">
+                    Ver ubicación
+                </button>
+
+                <!-- Modal para mostrar el mapa -->
+                <div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex justify-center items-center">
+                    <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-5 relative">
+                        <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">&times;</button>
+                        <h2 class="text-lg font-semibold mb-4">Ubicación de la oferta</h2>
+                        <div id="map-modal" class="w-full h-64"></div>
+                    </div>
+                </div>
+            {% else %}
+                <button onclick="showLoginPrompt()" 
+                        class="bg-blue-600 text-white shadow-sm hover:bg-blue-500 rounded px-2 py-1 text-sm mt-4">
+                    Ver ubicación
+                </button>
+
+                <!-- Modal para solicitar inicio de sesión -->
+                <div id="login-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex justify-center items-center">
+                    <div class="bg-white rounded-lg shadow-lg w-full max-w-sm p-5 relative">
+                        <button onclick="closeLoginModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">&times;</button>
+                        <h2 class="text-lg font-semibold mb-4">Inicia sesión</h2>
+                        <p>Por favor, <a href="{% url 'login' %}" class="text-blue-600 hover:text-blue-800 underline">inicia sesión</a> 
+                            o <a href="{% url 'registrar_persona' %}" class="text-blue-600 hover:text-blue-800 underline">regístrate</a> 
+                            para poder ver la ubicación de esta oferta.</p>
+                    </div>
+                </div>
+            {% endif %}
+
+
+            
 
             <!-- Modal -->
             <div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex justify-center items-center">
                 <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-5 relative">
                     <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">&times;</button>
                     <h2 class="text-lg font-semibold mb-4">Ubicación de la oferta</h2>
-                    <div id="map" class="w-full h-64"></div>
+                    <div id="map-modal" class="w-full h-64"></div>
                 </div>
             </div>
- {% endcomment %}
+            
             
         </div>
         {% endfor %}
     </div>
+</div><br>
+
+
+
+
+<div class="relative bg-red-200 py-12 flex justify-center h-40  gradient-bottom">
+    <!-- Pseudoelemento para el corte -->
+    <div class="relative  h-48">
+        <h1 class="text-gray-750 text-border text-2xl font-bold">Comercios Registrados</h1>
+        <p class="text-gray-600">Encontra todos los comercios aquí</p>
+        
+        <div class="before-clip">
+        
+        </div>
+    </div><br>
+    
+    
 </div>
 
-<h4 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Comercios Registrados</h4>
-<section  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<section  class="relative flex justify-center gap-40 -mt-40 px-4 z-10">
+    <div class=" grid grid-cols-1 md:grid-cols-3 gap-6">
         {%for comercio in comercios%}
-        <div class="bg-white shadow rounded-lg p-4 flex items-center space-x-4">
-           <div class="flex-1">
+        <div class="bg-white shadow rounded-lg p-4 flex items-center space-x-4 transform hover:-translate-y-2 transition-all duration-300">
+           <div class="flex-1 ">
                 <div class="flex justify-between items-center">
                     <h3 class="font-semibold text-gray-900">{{comercio.nombrecomercio}}</h3>
                     <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">{{comercio.categoria}}</span>
@@ -279,16 +393,40 @@ Index
                     </button>
                     <button class="text-gray-600 hover:text-blue-600 flex items-center space-x-1">
                         
-                        <span> >  </span>
                     </button>
                 </div>
             </div>
         </div>
         {%endfor%}
+        {% if user.is_authenticated %}
+        <div class="text-center mt-8">
+            <a href="{%url 'comercios' %}" class="bg-red-600 transform hover:-translate-y-2 transition-all duration-300 w-48 hover:bg-red-800 text-white font-semibold py-2 px-6 rounded-full shadow-lg">
+                Quiero ver todo
+            </a>
+        </div>
+            {% else %}
+                <button onclick="showLoginPrompt()" 
+                class="bg-red-600 transform hover:-translate-y-2 transition-all duration-300 w-48 hover:bg-red-800 text-white font-semibold py-2 px-6 rounded-full shadow-lg">
+                    Ver ubicación
+                </button>
+
+                <!-- Modal para solicitar inicio de sesión -->
+                <div id="login-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex justify-center items-center">
+                    <div class="bg-white rounded-lg shadow-lg w-full max-w-sm p-5 relative">
+                        <button onclick="closeLoginModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">&times;</button>
+                        <h2 class="text-lg font-semibold mb-4">Inicia sesión</h2>
+                        <p>Por favor, <a href="{% url 'login' %}" class="text-blue-600 hover:text-blue-800 underline">inicia sesión</a> 
+                            o <a href="{% url 'registrar_persona' %}" class="text-blue-600 hover:text-blue-800 underline">regístrate</a> 
+                            para poder ver la ubicación de los comercios.</p>
+                    </div>
+                </div>
+            {% endif %}
 
         
+        
     </div>
-</section>
+</section><br>
+
 
 {% endblock content %}
 
@@ -323,34 +461,7 @@ Index
             lat: ubicacionUsuarioDB.latitud,
             lng: ubicacionUsuarioDB.longitud
         };
-        function openModal(id) {
-            const modal = document.getElementById("modal");
-            function openModal(id) {
-                const modal = document.getElementById("modal");
-                const ubicacionOferta = comerciosEnRadio.find(comercio => comercio.id === id);
-                const mapContainer = document.getElementById("map");
-                    setTimeout(() => {
-                        const mapInstance = L.map("map");
-                        mapInstance.invalidateSize();
-                    }, 200);
-            }
-            
-            function closeModal() {
-                const modal = document.getElementById("modal");
-                if (modal) {
-                    modal.style.display = "none"; // Oculta el modal
-                }
-            }
-            
-        }
         
-        function closeModal() {
-            const modal = document.getElementById("modal");
-            if (modal) {
-                modal.style.display = "none"; // Oculta el modal
-            }
-        }
-
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function (position) {
@@ -480,7 +591,24 @@ Index
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
-
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    map.setView([userLocation.lat, userLocation.lng], 13);
+                    usuarioMarker.setLatLng([userLocation.lat, userLocation.lng])
+                        .bindPopup('¡Estás aquí!').openPopup();
+                },
+                function () {
+                    console.warn(`No se pudo obtener la ubicación actual. Usando ubicación predeterminada.`);
+                    usuarioMarker.bindPopup('Ubicación predeterminada').openPopup();
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
         // Objeto para registrar los marcadores
         const marcadores = {};
 
@@ -540,19 +668,134 @@ Index
     }, 3000);
 </script>
 <script>
+    function showLoginPrompt() {
+        document.getElementById('login-modal').classList.remove('hidden');
+    }
+    
+    function closeLoginModal() {
+        document.getElementById('login-modal').classList.add('hidden');
+    }
+</script>
+<script>
 
     let modal = document.getElementById('modal');
+    const ubicacionUsuarioDB = {{ ubicacion_usuario|safe }};
+    const comerciosEnRadio = {{ comercios_en_radio|safe }};
 
-    function openModal(lat, lng) {
+    function openModal(lng) {
         modal.classList.remove('hidden');
-
-        // Inicializar el mapa con Leaflet.js o Google Maps
         
+        
+        // Inicializar el mapa con Leaflet.js o Google Maps
+        const map = L.map('map-modal').setView([ubicacionUsuarioDB.latitud, ubicacionUsuarioDB.longitud], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        const pulsingIcon = L.icon.pulse({ iconSize: [20, 20], color: 'red' });
+
+        const usuarioMarker = L.marker([ubicacionUsuarioDB.latitud, ubicacionUsuarioDB.longitud], { icon: pulsingIcon })
+            .addTo(map);
+
+        let userLocation = {
+            lat: ubicacionUsuarioDB.latitud,
+            lng: ubicacionUsuarioDB.longitud
+        };
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    map.setView([userLocation.lat, userLocation.lng], 13);
+                    usuarioMarker.setLatLng([userLocation.lat, userLocation.lng]);
+                },
+                function () {
+                    console.warn(`No se pudo obtener la ubicación actual. Usando ubicación predeterminada.`);
+                    usuarioMarker.bindPopup('Ubicación predeterminada').openPopup();
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
+        comerciosEnRadio.forEach(comercio => {
+            
+            const comercioMarker = L.marker([comercio.latitud, comercio.longitud], { id: comercio.id })
+                .addTo(map)
+                .bindPopup(`
+                    <div>
+                        <h3>${comercio.nombre}</h3>
+                        <br>
+                        <button class="btn-ruta bg-red-600 text-white shadow-sm hover:bg-red-500 rounded px-1 py-1 cursor-pointer" data-id="${comercio.id}">¿CÓMO LLEGO?</button>
+                    </div>
+                `);
+
+            marcadores[comercio.id] = comercioMarker;
+
+            comercioMarker.on('click', function () {
+                trazarRuta(userLocation, { lat: comercio.latitud, lng: comercio.longitud });
+            });
+        });
+        let currentRoute = null;
+
+        function trazarRuta(origen, destino) {
+            if (currentRoute) {
+                map.removeControl(currentRoute);
+            }
+
+            currentRoute = L.Routing.control({
+                waypoints: [
+                    L.latLng(origen.lat, origen.lng),
+                    L.latLng(destino.lat, destino.lng)
+                ],
+                routeWhileDragging: true,
+                geocoder: L.Control.Geocoder.nominatim(),
+                language: 'es',
+                lineOptions: {
+                    styles: [{ color: 'red', opacity: 0.7, weight: 10 }]
+                },
+                createMarker: function (i, waypoint, n) {
+                    if (i === n - 1) {
+                        return L.marker(waypoint.latLng).bindPopup('Destino');
+                    }
+                    return null;
+                }
+            }).addTo(map);
+        }
+        console.log(lng);
     }
 
     function closeModal() {
         modal.classList.add('hidden');
     }
+</script>
+<script>
+    {% comment %} function openModal(id) {
+        console.log(id);
+        const comerciosEnRadio = {{ comercios_en_radio|safe }};
+        const modal = document.getElementById("modal");
+        function openModal(id) {
+            const modal = document.getElementById("modal");
+            const ubicacionOferta = comerciosEnRadio.find(comercio => comercio.id === id);
+            const mapContainer = document.getElementById("map-modal");
+                setTimeout(() => {
+                    const mapInstance = L.map("map-modal");
+                    mapInstance.invalidateSize();
+                }, 200);
+        }
+        console.log(':', comerciosEnRadio);
+        
+        
+    }
+    
+    function closeModal() {
+        const modal = document.getElementById("modal");
+        if (modal) {
+            modal.style.display = "none"; // Oculta el modal
+        }
+    }
+ {% endcomment %}
 </script>
 <script>
     const scrollContainer = document.getElementById('scroll-container');

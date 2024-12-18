@@ -17,10 +17,25 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{% static 'admin/css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles_chat.css' %}">
+    <style>
+        #resultados {
+            max-height: 200px; /* Altura máxima del contenedor */
+            overflow-y: auto; /* Habilitar scroll si hay muchos resultados */
+            z-index: 1000; /* Asegurarse de que el contenedor esté sobre otros elementos */
+        }
+        #resultados div {
+            padding: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        #resultados div:hover {
+            background-color: #f8f8f8;
+            cursor: pointer;
+        }
+    </style>
   
   <!--ReCaptcha-->
 </head>
-<body class="bg-white">
+<body class="bg-gray-200">
     <header>
         <!-- Navbar Principal -->
         <nav class="bg-gray-800 text-white px-4 py-2 flex items-center justify-between sticky top-0 z-50">
@@ -41,14 +56,17 @@
             <!-- Buscador y enlaces (Desktop) -->
             <div class="hidden md:flex items-center space-x-6 text-sm">
                 <!-- Buscador -->
-                <form action="{% url 'index' %}" method="get">
-                    <div class="relative flex items-center bg-white rounded-full overflow-hidden">
-                        <button type="submit" class="absolute left-3 text-red-600">
-                            <img src="{% static 'images/media/lupa.png' %}" class="h-6 w-auto">
-                        </button>
-                        <input type="text"  type="text" name="q" placeholder="Buscar..." class="pl-10 pr-4 py-2 w-72 text-black outline-none placeholder-gray-400">
+                <div class="relative flex items-center bg-white rounded-full overflow-hidden mb-4">
+                    <span class="absolute left-3 text-red-600">
+                        <img src="{% static 'images/media/lupa.png' %}" class="h-6 w-auto">
+                    </span>
+                    <input type="text" id="buscador" name="q" placeholder="Buscar..." 
+                           class="pl-10 pr-4 py-2 w-full text-black outline-none placeholder-gray-400">
+                    <!-- Contenedor de resultados -->
+                    <div id="resultados" class="absolute top-full left-0 w-full bg-white rounded-lg shadow-md hidden">
+                        <!-- Resultados predictivos aparecerán aquí -->
                     </div>
-                </form>
+                </div>
         
                 <!-- Carrito -->
                 {% if user.is_authenticated %}
@@ -100,7 +118,12 @@
                     <div class="relative">
                         <button type="button" id="userMenuButton" class="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-expanded="false" aria-haspopup="true">
                             <span class="sr-only">Abrir menú de usuario</span>
-                            <img class="h-8 w-8 rounded-full" src="{{user.foto}}" alt="">
+                            {% if user.foto %}
+                                <img src="{{ user.foto.url }}" alt="" class="h-8 w-8 rounded-full">
+                            {% else %}
+                                <img src="{{ MEDIA_URL }}avatar_default.png" alt="Imagen por defecto" class="h-8 w-8 rounded-full">
+                            {% endif %}
+                            
                         </button>
                         <div id="userMenuDropdown" class="hidden absolute border border-white right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
                             <div class="px-4 py-2 text-sm text-gray-700 border-b">
@@ -109,7 +132,7 @@
                             </div>
                             <a href="{% url 'lista_comercios'%}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Mis comercios</a>
                             <a href="{% url 'verificar_cuit' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Registrar Mi Comercio</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Perfil</a>
+                            <a href="{% url 'estadisticas_oferente' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Mis estadisticas</a>
                             <a href="{% url 'reset_password' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cambiar contraseña</a>
                             <a href="{% url 'cerrar_sesion' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cerrar Sesión</a>
                         </div>
@@ -574,6 +597,61 @@
       document.getElementById("demo-form").submit();
     }
   </script>
+
+  <script>
+    const input = document.getElementById('buscador');
+    const resultados = document.getElementById('resultados');
+
+    input.addEventListener('input', async function () {
+        const query = this.value.trim(); // Elimina espacios en blanco
+
+        if (query.length > 2) {
+            try {
+                // Solicitud al servidor con la consulta
+                const response = await fetch(`/buscar/?q=${query}`);
+                const data = await response.json();
+
+                // Limpiar resultados previos
+                resultados.innerHTML = '';
+                resultados.classList.remove('hidden');
+
+                // Mostrar resultados de Oferentes
+                if (data.oferentes.length > 0) {
+                    resultados.innerHTML += '<h3 class="font-bold text-lg">Oferentes</h3>';
+                    data.oferentes.forEach(oferente => {
+                        const div = document.createElement('div');
+                        div.classList.add('p-2', 'hover:bg-gray-100', 'cursor-pointer');
+                        div.textContent = oferente.nombrecomercio;
+                        resultados.appendChild(div);
+                    });
+                }
+
+                // Mostrar resultados de Ofertas
+                if (data.ofertas.length > 0) {
+                    resultados.innerHTML += '<h3 class="font-bold text-lg mt-4">Ofertas</h3>';
+                    data.ofertas.forEach(oferta => {
+                        const div = document.createElement('div');
+                        div.classList.add('p-2', 'hover:bg-gray-100', 'cursor-pointer');
+                        div.textContent = `${oferta.titulo} - $${oferta.precio_oferta}`;
+                        resultados.appendChild(div);
+                    });
+                }
+
+                // Si no hay resultados
+                if (data.oferentes.length === 0 && data.ofertas.length === 0) {
+                    resultados.innerHTML = '<p class="p-2 text-gray-500">No se encontraron resultados</p>';
+                }
+
+            } catch (error) {
+                console.error('Error al buscar:', error);
+                resultados.classList.add('hidden'); // Ocultar en caso de error
+            }
+        } else {
+            resultados.classList.add('hidden'); // Ocultar si la consulta es corta
+        }
+    });
+
+</script>
   {% block js %}
   {% endblock %}
    

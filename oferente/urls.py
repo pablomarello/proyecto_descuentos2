@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import verificarCuit, registrarComercio,ubicacion_comercio, lista_comercio, perfil_comercio
+from .views import comercios, verificarCuit, registrarComercio,ubicacion_comercio, lista_comercio, perfil_comercio
 
 urlpatterns = [
     path('verificar_cuit/', verificarCuit, name='verificar_cuit'),
@@ -7,4 +7,5 @@ urlpatterns = [
     path('ubicacion_comercio/<int:comercio_id>', ubicacion_comercio, name= 'ubicacion_comercio'),
     path('lista_comercios/', lista_comercio, name= 'lista_comercios'),
     path('perfil_comercio/<int:comercio_id>/', perfil_comercio, name= 'perfil_comercio'),
+    path('comercios/', comercios, name='comercios'),
 ]

@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<link rel="stylesheet" href="{% static 'css/L.Icon.Pulse.css' %}">
+
+<!-- Scripts de Leaflet -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.animatedmarker/src/AnimatedMarker.js"></script>
+<script src="{% static 'js/L.Icon.Pulse.js' %}"></script>
+
+<h2 class="text-red-700 text-2xl font-bold">Comercios Registrados</h2>
+<section class="flex flex-row bg-gray-200 rounded-lg shadow-md relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-4">
+    
+    <!-- Tabla de comercios -->
+    <div class="w-1/3 overflow-y-auto bg-white shadow-md rounded-lg p-4">
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Comercios
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for comercio in comercios_en_radio %}
+                <tr class="hover:bg-gray-100 cursor-pointer" 
+                    onclick="centrarMapa('{{ comercio.latitud|floatformat:6 }}'.replace(',', '.'), '{{ comercio.longitud|floatformat:6 }}'.replace(',', '.'),'{{comercio.nombre}}')">
+                    <td class="px-4 py-2 border-b">{{ comercio.nombre }}</td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Contenedor del mapa -->
+    <div id="map" class="w-2/3 h-[500px] shadow-lg rounded-lg"></div>
+</section>
+
+{% endblock content %}
+{% block js %}
+<script>
+
+    const usuarioAutenticado = {{ usuario_autenticado|yesno:"true,false" }};
+    console.log("¿El usuario está autenticado?", usuarioAutenticado);
+
+    if (usuarioAutenticado===true){
+
+        
+        const ubicacionUsuarioDB = {{ ubicacion_usuario|safe }};
+        const comerciosEnRadio = {{ comercios_en_radio|safe }};
+        const map = L.map('map').setView([ubicacionUsuarioDB.latitud, ubicacionUsuarioDB.longitud], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+
+        const pulsingIcon = L.icon.pulse({ iconSize: [20, 20], color: 'red' });
+
+        const usuarioMarker = L.marker([ubicacionUsuarioDB.latitud, ubicacionUsuarioDB.longitud], { icon: pulsingIcon })
+            .addTo(map)
+            .bindPopup('¡Estás aquí!').openPopup();
+
+        let userLocation = {
+            lat: ubicacionUsuarioDB.latitud,
+            lng: ubicacionUsuarioDB.longitud
+        };
+        
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    map.setView([userLocation.lat, userLocation.lng], 13);
+                    usuarioMarker.setLatLng([userLocation.lat, userLocation.lng])
+                        .bindPopup('¡Estás aquí!').openPopup();
+                },
+                function () {
+                    console.warn(`No se pudo obtener la ubicación actual. Usando ubicación predeterminada.`);
+                    usuarioMarker.bindPopup('Ubicación predeterminada').openPopup();
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
+
+        let currentRoute = null;
+
+        function trazarRuta(origen, destino) {
+            if (currentRoute) {
+                map.removeControl(currentRoute);
+            }
+
+            currentRoute = L.Routing.control({
+                waypoints: [
+                    L.latLng(origen.lat, origen.lng),
+                    L.latLng(destino.lat, destino.lng)
+                ],
+                routeWhileDragging: true,
+                geocoder: L.Control.Geocoder.nominatim(),
+                language: 'es',
+                lineOptions: {
+                    styles: [{ color: 'red', opacity: 0.7, weight: 10 }]
+                },
+                createMarker: function (i, waypoint, n) {
+                    if (i === n - 1) {
+                        return L.marker(waypoint.latLng).bindPopup('Destino');
+                    }
+                    return null;
+                }
+            }).addTo(map);
+        }
+        const marcadores = {};
+        comerciosEnRadio.forEach(comercio => {
+            console.log("Latitud válida:", comercio.latitud, "Longitud válida:", comercio.longitud);
+            const marker = L.marker([comercio.latitud, comercio.longitud]).addTo(map)
+                .bindPopup(`<strong>${comercio.nombre}</strong>`);
+            marcadores[comercio.id] = marker;
+        });
+
+        // Centrar mapa y mostrar popup al seleccionar comercio en la tabla
+        function centrarMapa(lat, lng, nombre) {
+            console.log("Latitud recibida (string):", lat, "Longitud recibida (string):", lng, "Nombre", nombre);
+
+            // Convertir a números flotantes
+            lat = parseFloat(lat);
+            lng = parseFloat(lng);
+        
+            console.log("Latitud válida:", lat, "Longitud válida:", lng);
+            // Validar que las coordenadas existan
+            if (lat && lng) {
+                map.setView([lat, lng], 15);
+                 // Centra el mapa en el comercio
+                
+                L.popup()
+                    .setLatLng([lat, lng])
+                    .setContent(`<strong>${nombre}</strong>`) // Muestra el nombre del comercio
+                    .openOn(map);
+            } else {
+                console.error("Coordenadas inválidas:", lat, lng);
+            }
+        }
+        
+
+        document.addEventListener('click', function (event) {
+            if (event.target.classList.contains('btn-ruta')) {
+                const comercioId = event.target.getAttribute('data-id');
+                const comercio = comerciosEnRadio.find(c => c.id == comercioId);
+
+                if (comercio) {
+                    trazarRuta(userLocation, { lat: comercio.latitud, lng: comercio.longitud });
+                } else {
+                    console.warn('No se encontró el comercio con ID:', comercioId);
+                }
+            }
+        });
+
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function () {
+                const comercioId = this.getAttribute('data-id');
+                if (marcadores[comercioId]) {
+                    const marcador = marcadores[comercioId];
+                    map.setView(marcador.getLatLng(), 15);
+                    marcador.openPopup();
+                } else {
+                    console.warn('No se encontró marcador para el ID:', comercioId);
+                }
+            });
+        });
+
+        // Botón para limpiar el mapa
+        const limpiarMapaBtn = L.control({ position: 'topright' });
+
+        limpiarMapaBtn.onAdd = function () {
+            const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+            div.innerHTML = '<button class="bg-blue-600 text-white px-3 py-2 rounded ">LIMPIAR MAPA</button>';
+            div.style.cursor = 'pointer';
+            div.style.textAlign = 'center';
+            div.title = 'Limpiar el mapa';
+            return div;
+        };
+
+        limpiarMapaBtn.addTo(map);
+
+        // Función para restablecer el mapa
+        document.querySelector('.leaflet-control-custom button').addEventListener('click', function () {
+            if (currentRoute) {
+                map.removeControl(currentRoute);
+                currentRoute = null;
+            }
+            map.setView([userLocation.lat, userLocation.lng], 15);
+            usuarioMarker.setLatLng([userLocation.lat, userLocation.lng]).bindPopup('¡Estás aquí!').openPopup();
+
+            console.log("El mapa ha sido limpiado.");
+        });
+        
+    }
+
+
+    else {
+        // Código para usuarios no autenticados
+        const comerciosEnRadio = {{ comercios_en_radio|safe }};
+        const map = L.map('map').setView([comerciosEnRadio[0].latitud, comerciosEnRadio[0].longitud], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    map.setView([userLocation.lat, userLocation.lng], 13);
+                    usuarioMarker.setLatLng([userLocation.lat, userLocation.lng])
+                        .bindPopup('¡Estás aquí!').openPopup();
+                },
+                function () {
+                    console.warn(`No se pudo obtener la ubicación actual. Usando ubicación predeterminada.`);
+                    usuarioMarker.bindPopup('Ubicación predeterminada').openPopup();
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        }
+        // Objeto para registrar los marcadores
+        const marcadores = {};
+
+        // Agregar marcadores al mapa
+        comerciosEnRadio.forEach(comercio => {
+            const marker = L.marker([comercio.latitud, comercio.longitud], { id: comercio.id })
+                .addTo(map)
+                .bindPopup(`
+                    <div>
+                        <h3>${comercio.nombre}</h3>
+                        <br>
+                        <button class="btn2 bg-red-600 text-white shadow-sm hover:bg-red-500 rounded px-1 py-1 cursor-pointer" data-id="${comercio.id}">¿CÓMO LLEGO?</button>
+                    </div>
+                `);
+
+            marcadores[comercio.id] = marker;
+        });
+
+        // Manejo del clic en las tarjetas
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function () {
+                const comercioId = this.getAttribute('data-id');
+                if (marcadores[comercioId]) {
+                    const marcador = marcadores[comercioId];
+                    map.setView(marcador.getLatLng(), 15);
+                    marcador.openPopup();
+                } else {
+                    console.warn('No se encontró marcador para el ID:', comercioId);
+                }
+            });
+        });
+
+        
+        // Manejo del clic en "¿CÓMO LLEGO?"
+        document.addEventListener('click', function (event) {
+            if (event.target.classList.contains('btn2')) {
+                const mapCenter = map.getCenter();
+                const popup = L.popup()
+                    .setLatLng(mapCenter)
+                    .setContent(`
+                        <div style="text-align: center;">
+                            <p><a href="{% url 'login' %}" class="text-blue">Inicia sesión</a> o <a href="{% url 'registrar_persona' %}" class="text-blue">Regístrate</a> para ver más información.</p>
+                        </div>
+                    `)
+                    .openOn(map);
+            }
+        });
+    }
+    
+    
+</script>
+
+{% endblock js %}

@@ -1,5 +1,6 @@
 import datetime
 from importlib import simple
+from venv import logger
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
@@ -118,13 +119,17 @@ def index(request):
             'calificacion_promedio': calificacion_promedio,
             'cantidad_calificaciones': cantidad_calificaciones,
         })
+        
+    
     comercios = Oferente.objects.all()
+    manana = hoy + datetime.timedelta(days=1)
     # Renderizado de la plantilla
     return render(request, 'usuarios/ind.html', {
         'categorias': categorias,
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
         'query': query,
-       
+        'hoy':hoy,
+        'manana':manana,
         'vencen_hoy': vencen_hoy,
         'ubicacion_usuario': {
             'latitud': float(ubicacion_usuario.latitud) if ubicacion_usuario else None,
@@ -136,7 +141,31 @@ def index(request):
         'comercios':comercios,
     })
 
+def buscar(request):
+    query = request.GET.get('q', '')
+    if query:
+        # Buscar en Oferentes
+        oferentes_resultados = Oferente.objects.filter(
+            Q(nombrecomercio__icontains=query)  # Buscar por nombre del comercio
+        ).values('id', 'nombrecomercio')
 
+        # Buscar en Ofertas
+        ofertas_resultados = Oferta.objects.filter(
+            Q(titulo__icontains=query) |
+            Q(descripcion__icontains=query) |
+            Q(productos__nombre__icontains=query) |
+            Q(productos__categoria__nombre__icontains=query)
+        ).distinct().values('id', 'titulo', 'descripcion', 'precio_oferta')
+
+        # Combinar resultados en un solo JSON
+        response_data = {
+            'oferentes': list(oferentes_resultados),
+            'ofertas': list(ofertas_resultados),
+        }
+        return JsonResponse(response_data, safe=False)
+
+    # Si no hay consulta, devolver lista vacía
+    return JsonResponse({'oferentes': [], 'ofertas': []}, safe=False)
 
 def descuentos_destacados(request):
     # Consultas de ofertas y categorías

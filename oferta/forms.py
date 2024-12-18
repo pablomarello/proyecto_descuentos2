@@ -35,9 +35,16 @@ class OfertaForm(forms.ModelForm):
         }
     
     
-    
     def clean(self):
         cleaned_data = super().clean()
+        # Validación de precios
+        precio_normal = cleaned_data.get('precio_normal')
+        precio_oferta = cleaned_data.get('precio_oferta')
+        if precio_normal is not None and precio_oferta is not None:
+            # Comprobar que precio_normal es estrictamente mayor que precio_oferta
+            if precio_normal <= precio_oferta:
+                self.add_error('precio_normal', "El precio normal debe ser mayor al precio de la oferta.")
+        
         fecha_inicio = cleaned_data.get("fecha_inicio")
         fecha_fin = cleaned_data.get("fecha_fin")
 
