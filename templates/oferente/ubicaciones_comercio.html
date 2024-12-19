@@ -1,22 +1,13 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Registro Persona
+Registro Ubicacíon Comercio
 {% endblock title %}
 
 <head>
  
   <script src="https://www.google.com/recaptcha/api.js?render={{site_key}}"></script>
 
-  <!-- Select 
-    <link  href= "static/admin/css/vendor/select2/select2.css" rel="stylesheet">
-    <link  href="static/admin/css/autocomplete.css" rel="stylesheet">-->
-  <style>
-    input,
-    select {
-      width:max-content;
-    }
-  </style>
 
 </head>
 
@@ -25,9 +16,10 @@ Registro Persona
 {% block content %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
 
-  <h2 class="mt-10 text-center text-2x1 font-bold leading-9 tracking-tight text-gray-900">Ingresa tu ubicacion</h2>
+<div class="min-h-screen flex flex-col bg-gray-100">
+
+  <h2 class="t-2 mb-6 text-center text-3xl font-extrabold text-gray-900 m-4">Ingresá la ubicación del comercio</h2>
 
   <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
 
@@ -76,7 +68,7 @@ Registro Persona
 
     
     <input type="submit" value="Siguiente"
-      class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
+    class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none m-4">
     </form>
 
 
@@ -84,8 +76,7 @@ Registro Persona
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 
 <script type="text/javascript">
   $(document).ready(function () {

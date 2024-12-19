@@ -111,9 +111,9 @@ class Formubi(forms.ModelForm):
             field.label_suffix = ""
             
             if isinstance(field.widget, forms.Select):
-                field.widget.attrs.update({'class': 'form-control select2'})
+                field.widget.attrs.update({'class': 'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 select2'})
             else:
-                field.widget.attrs.update({'class': 'form-control'})
+                field.widget.attrs.update({'class': 'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400'})
         
         # Cargar dinámicamente las provincias, departamentos, etc.
         if 'pais' in self.data:
@@ -153,17 +153,31 @@ class Formubi(forms.ModelForm):
             'barrio', 'calle', 'altura','latitud','longitud'
         ]
         widgets = {
-            'pais': forms.Select(attrs={'class': 'form-control select2'}),
-            'provincia': forms.Select(attrs={'class': 'form-control select2'}),
-            'departamento': forms.Select(attrs={'class': 'form-control select2'}),
-            'municipio': forms.Select(attrs={'class': 'form-control select2'}),
-            'localidad': forms.Select(attrs={'class': 'form-control select2'}),
-            'barrio': forms.TextInput(attrs={'class':'block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
-                                              'placeholder': 'Ingrese el barrio','autocomplete': 'off'}),
-            'calle': forms.TextInput(attrs={'class':'block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
-                                                'placeholder': 'Ingrese la calle','autocomplete': 'off'}),
-            'altura': forms.TextInput(attrs={'class':'block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
-                                              'placeholder': 'Ingrese la altura','autocomplete': 'off'}),
+            'pais': forms.Select(attrs={
+                'class': 'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400'
+            }),
+            'provincia': forms.Select(attrs={
+                'class': 'form-control select2'
+            }),
+            'departamento': forms.Select(attrs={
+                'class': 'form-control select2'
+            }),
+            'municipio': forms.Select(attrs={
+                'class': 'form-control select2'}),
+            'localidad': forms.Select(attrs={'class': 'form-control select2'
+            }),
+            'barrio': forms.TextInput(attrs={
+                'class': 'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400',
+                'placeholder': 'Ingrese el barrio','autocomplete': 'off'
+            }),
+            'calle': forms.TextInput(attrs={
+                'class':'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400',
+                                                'placeholder': 'Ingrese la calle','autocomplete': 'off'
+            }),
+            'altura': forms.TextInput(attrs={
+                'class':'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400',
+                                              'placeholder': 'Ingrese la altura','autocomplete': 'off'
+            }),
             'latitud': forms.HiddenInput(),
             'longitud': forms.HiddenInput(),
         }
@@ -171,9 +185,9 @@ class Formubi(forms.ModelForm):
             # Agrega más widgets si es necesario
         
 
-    pais = forms.ModelChoiceField(queryset=TablaPais.objects.all(), widget=forms.Select(attrs={'class': 'form-control select2'}))
-    provincia = forms.ModelChoiceField(queryset=TablaProvincia.objects.none(), widget=forms.Select(attrs={'class': 'form-control select2'}))
-    departamento = forms.ModelChoiceField(queryset=TablaDepartamento.objects.none(), widget=forms.Select(attrs={'class': 'form-control select2'}))
-    municipio = forms.ModelChoiceField(queryset=TablaMunicipio.objects.none(), widget=forms.Select(attrs={'class': 'form-control select2'}))
-    localidad = forms.ModelChoiceField(queryset=TablaLocalidad.objects.none(), widget=forms.Select(attrs={'class': 'form-control select2'}))
+    pais = forms.ModelChoiceField(queryset=TablaPais.objects.all(), widget=forms.Select(attrs={'class': 'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400'}))
+    provincia = forms.ModelChoiceField(queryset=TablaProvincia.objects.none(), widget=forms.Select(attrs={'class': 'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400'}))
+    departamento = forms.ModelChoiceField(queryset=TablaDepartamento.objects.none(), widget=forms.Select(attrs={'class': 'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400'}))
+    municipio = forms.ModelChoiceField(queryset=TablaMunicipio.objects.none(), widget=forms.Select(attrs={'class': 'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400'}))
+    localidad = forms.ModelChoiceField(queryset=TablaLocalidad.objects.none(), widget=forms.Select(attrs={'class': 'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400'}))
     

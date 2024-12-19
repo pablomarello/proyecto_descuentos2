@@ -25,7 +25,7 @@ class CuitForm(forms.Form):
         max_length=11, 
         min_length=11,
         widget=forms.TextInput(attrs={
-            'class': 'form-control',       # Clases de Bootstrap o Tailwind para estilos
+            'class': 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400',       # Clases de Bootstrap o Tailwind para estilos
             'placeholder': 'Ingresa el CUIT',
             'autocomplete': 'off',         # Evita el autocompletado
             'pattern': '[0-9]{11}',        # Asegura que solo se permitan 11 dígitos
@@ -63,16 +63,20 @@ class OferenteForm(forms.ModelForm):
     class Meta:
         model = Oferente
         fields = ('nombrecomercio', 'categoria',) # Personaliza los campos según tus necesidades
+        labels = {
+            'nombrecomercio': 'Nombre del Comercio',  # Nuevo label personalizado
+            'categoria': 'Categoría del Comercio',   # Nuevo label personalizado
+        }
         widgets = {
             'nombrecomercio': forms.TextInput(attrs={
-                'class': "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6",
-                'placeholder': 'Ingrese NOMBRE DE COMERCIO',
+                'class': "form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-500",
+                'placeholder': 'Ingrese el nombre del comercio',
                 'autocomplete': 'off'
             }),
             
             'categoria': forms.TextInput(attrs={
-                'class': 'block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
-                'placeholder': 'Ingrese la categoria a la que pertenece su comercio',
+                'class': 'form-control w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-500',
+                'placeholder': 'Ingrese la categoría para su comercio',
                 'autocomplete': 'off'
             }),
            
@@ -99,9 +103,9 @@ class UbiComercio(forms.ModelForm):
             field.label_suffix = ""
             
             if isinstance(field.widget, forms.Select):
-                field.widget.attrs.update({'class': 'form-control select2'})
+                field.widget.attrs.update({'class': 'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 select2'})
             else:
-                field.widget.attrs.update({'class': 'form-control'})
+                field.widget.attrs.update({'class': 'mt-1 p-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400'})
         
         # Cargar dinámicamente las provincias, departamentos, etc.
         if 'pais' in self.data:
@@ -142,11 +146,11 @@ class UbiComercio(forms.ModelForm):
         ]
         widgets = {
             'pais': forms.Select(attrs={'class': 'form-control select2'}),
-            'provincia': forms.Select(attrs={'class': 'form-control select2'}),
+            'provincia': forms.Select(attrs={'class': 'block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'}),
             'departamento': forms.Select(attrs={'class': 'form-control select2'}),
             'municipio': forms.Select(attrs={'class': 'form-control select2'}),
             'localidad': forms.Select(attrs={'class': 'form-control select2'}),
-            'barrio': forms.TextInput(attrs={'class':'block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
+            'barrio': forms.TextInput(attrs={'class':'block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
                                               'placeholder': 'Ingrese el barrio','autocomplete': 'off'}),
             'calle': forms.TextInput(attrs={'class':'block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6',
                                                 'placeholder': 'Ingrese la calle','autocomplete': 'off'}),

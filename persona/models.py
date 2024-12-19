@@ -163,6 +163,9 @@ class ubicaciones(models.Model):
     longitud = models.DecimalField(max_digits=11, decimal_places=6, null=True, blank=True)
     #lat
     #long
+    def __str__(self):
+        return f"Persona: {self.persona_id}. Dirección: {self.calle} {self.altura}"
+    
     class Meta:
         verbose_name='Ubicacion'
         verbose_name_plural= 'Ubicaciones'

@@ -6,8 +6,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<!-- Breadcrumb -->
-<nav class="flex text-gray-700 text-sm" aria-label="Breadcrumb">
+
+<div class="min-h-screen flex flex-col bg-gray-100">
+    <!-- Breadcrumb -->
+<nav class="flex text-gray-700 text-sm m-2" aria-label="Breadcrumb">
     <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <!-- Inicio -->
         <li class="inline-flex items-center">
@@ -26,7 +28,7 @@
                 </svg>
             </div>
         </li>
-        <!-- Productos -->
+        <!-- comercios -->
         <li class="inline-flex items-center">
             <a href="{% url 'lista_comercios' %}" class="text-gray-500 hover:text-blue-600">
                 Mis comercios
@@ -40,14 +42,28 @@
                 </svg>
             </div>
         </li>
+        <!-- mis ofertas -->
+        <li class="inline-flex items-center">
+            <a href="{% url 'mis_ofertas' %}" class="text-gray-500 hover:text-blue-600">
+                Mis ofertas
+            </a>
+        </li>
+        <!-- Separador -->
+        <li>
+            <div class="flex items-center">
+                <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </div>
+        </li>
         <!-- Página actual (sin enlace) -->
         <li class="inline-flex items-center">
-            <span class="text-gray-400">Publicar nueva oferta</span>
-        </li>
+            <span class="text-gray-400">Publicar oferta</span>
+          </li>
     </ol>
 </nav>
 
-<div class="max-w-2xl mx-auto bg-white p-5 rounded-md shadow-md">
+<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-3xl m-4">
     {% if messages %}
     <div id="messages" style="display: none;">
         {% for message in messages %}
@@ -63,11 +79,12 @@
         {% endfor %}
     </div>
     {% endif %}
-    <h1 class="mt-2 mb-6 text-center text-3xl font-extrabold text-gray-900">Publicar oferta</h1>
+    <!-- <h1 class="mt-2 mb-6 text-center text-3xl font-extrabold text-gray-900">Publicar oferta</h1> -->
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl space-y-4 mx-auto">
         {% csrf_token %}
-
+        
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Publicar oferta</h2>
         <!-- Campo para el título -->
         <div class="mb-4">
             <label for="titulo" class="block text-sm font-medium text-gray-700">Título de la oferta</label>
@@ -181,6 +198,8 @@
         </div>
     </form>
 </div>
+</div>
+
 <script>
    document.addEventListener("DOMContentLoaded", function () {
     const today = new Date();

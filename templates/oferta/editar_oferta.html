@@ -7,8 +7,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
+<div class="min-h-screen flex flex-col bg-gray-100">
 <!-- Breadcrumb -->
-<nav class="flex text-gray-700 text-sm" aria-label="Breadcrumb">
+<nav class="flex text-gray-700 text-sm m-2" aria-label="Breadcrumb">
     <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <!-- Inicio -->
         <li class="inline-flex items-center">
@@ -63,7 +64,7 @@
 </nav>
 
 
-<div class="max-w-2xl mx-auto bg-white p-5 rounded-md shadow-md">
+<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-3xl m-4">
     {% if messages %}
     <div id="messages" style="display: none;">
         {% for message in messages %}
@@ -79,28 +80,27 @@
         {% endfor %}
     </div>
     {% endif %}
-    <div class="max-w-4xl mx-auto px-4 py-6 bg-white shadow-md rounded-lg">
-        <h1 class="text-2xl font-bold mb-4">Editar Oferta</h1>
         
-        <form action="" method="POST" enctype="multipart/form-data">
+        
+        <form action="" method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl space-y-4 mx-auto">
             {% csrf_token %}
-            
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Editar Oferta</h2>
             <!-- Campo para el título de la oferta -->
             <div class="mb-4">
                 <label for="titulo" class="block text-gray-700 font-bold mb-2">Título de la Oferta:</label>
-                <input type="text" name="titulo" id="titulo" value="{{ oferta.titulo }}" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" name="titulo" id="titulo" value="{{ oferta.titulo }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
             </div>
             
             <!-- Campo para la descripción -->
             <div class="mb-4">
                 <label for="descripcion" class="block text-gray-700 font-bold mb-2">Descripción:</label>
-                <textarea name="descripcion" id="descripcion" rows="4" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">{{ oferta.descripcion }}</textarea>
+                <textarea name="descripcion" id="descripcion" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">{{ oferta.descripcion }}</textarea>
             </div>
             
             <!-- Campo para la imagen -->
             <div class="mb-4">
                 <label for="imagen" class="block text-gray-700 font-bold mb-2">Imagen:</label>
-                <input type="file" name="imagen" id="imagen" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="file" name="imagen" id="imagen" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
                 {% if oferta.imagen %}
                 <img src="{{ oferta.imagen.url }}" alt="{{ oferta.titulo }}" class="w-32 h-32 object-cover mt-4">
                 {% endif %}
@@ -109,35 +109,36 @@
             <!-- Campo para el precio normal -->
             <div class="mb-4">
                 <label for="precio_normal" class="block text-gray-700 font-bold mb-2">Precio Normal:</label>
-                <input type="number" name="precio_normal" id="precio_normal" value="{{ oferta.precio_normal }}" step="0.01" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="number" name="precio_normal" id="precio_normal" value="{{ oferta.precio_normal }}" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
             </div>
             
             <!-- Campo para el precio en oferta -->
             <div class="mb-4">
                 <label for="precio_oferta" class="block text-gray-700 font-bold mb-2">Precio en Oferta:</label>
-                <input type="number" name="precio_oferta" id="precio_oferta" value="{{ oferta.precio_oferta }}" step="0.01" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="number" name="precio_oferta" id="precio_oferta" value="{{ oferta.precio_oferta }}" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
             </div>
             
             <!-- Campo para la fecha de inicio -->
             <div class="mb-4">
                 <label for="fecha_inicio" class="block text-gray-700 font-bold mb-2">Fecha de Inicio:</label>
-                <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ oferta.fecha_inicio|date:'Y-m-d' }}" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ oferta.fecha_inicio|date:'Y-m-d' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
             </div>
             
             <!-- Campo para la fecha de fin -->
             <div class="mb-4">
                 <label for="fecha_fin" class="block text-gray-700 font-bold mb-2">Fecha de Fin:</label>
-                <input type="date" name="fecha_fin" id="fecha_fin" value="{{ oferta.fecha_fin|date:'Y-m-d' }}" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="date" name="fecha_fin" id="fecha_fin" value="{{ oferta.fecha_fin|date:'Y-m-d' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
             </div>
             
             <!-- Botones para guardar o cancelar -->
             <div class="flex justify-end gap-4">
-                <button type="submit" class="px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600">Guardar Cambios</button>
+                <button type="submit" class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none">Guardar Cambios</button>
                 <a href="{% url 'mis_ofertas' %}" class="px-4 py-2 bg-gray-300 text-gray-700 font-bold rounded-md hover:bg-gray-400">Cancelar</a>
             </div>
         </form>
-    </div>
     
+    
+</div>
 </div>
 
 <script type="text/javascript">

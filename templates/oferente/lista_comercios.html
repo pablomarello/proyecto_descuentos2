@@ -8,7 +8,7 @@
 
 <div class="min-h-screen flex flex-col bg-gray-100">
   <!-- Breadcrumb -->
-  <nav class="flex text-gray-700 text-sm px-6 py-4" aria-label="Breadcrumb">
+  <nav class="flex text-gray-700 text-sm m-2" aria-label="Breadcrumb">
     <ol class="inline-flex items-center space-x-1 md:space-x-3">
       <!-- Inicio -->
       <li class="inline-flex items-center">
@@ -41,9 +41,8 @@
 
   <!-- Botones -->
   <div class="flex justify-start mb-6 space-x-4 px-6">
-    <a href="{% url 'crear_oferta' %}" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600">Crear una oferta</a>
     <a href="{% url 'mis_ofertas' %}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600">Mis ofertas</a>
-    <a href="{% url 'verificar_cuit' %}" class="bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-600">Añadir otro comercio</a>
+    <a href="{% url 'verificar_cuit' %}" class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600">Añadir comercio</a>
   </div>
 
   <!-- Tabla de comercios -->
@@ -51,7 +50,7 @@
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre comercio</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comercio</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CUIT</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dirección</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Habilitado</th>

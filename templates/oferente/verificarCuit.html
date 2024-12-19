@@ -9,9 +9,9 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
-
-<!-- Breadcrumb -->
-<nav class="flex text-gray-700 text-sm" aria-label="Breadcrumb">
+<div class="min-h-screen flex flex-col bg-gray-100">
+    <!-- Breadcrumb -->
+<nav class="flex text-gray-700 text-sm m-2" aria-label="Breadcrumb">
     <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <!-- Inicio -->
         <li class="inline-flex items-center">
@@ -93,7 +93,7 @@
         </script>
 
         <form class="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl space-y-4 mx-auto" method="POST">
-            <h2 class="mt-6 mb-6 text-center text-3xl font-bold text-gray-900">Ingresa el CUIT de tu comercio para que podamos verificarlo</h2>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Ingresa el CUIT de tu comercio para que podamos verificarlo</h2>
             {% csrf_token %}
             {{ form.as_p }}
             <div class="flex justify-between mt-4">
@@ -105,5 +105,7 @@
         </form>
     </div>
 </div>
+</div>
+
 
 {% endblock content %}

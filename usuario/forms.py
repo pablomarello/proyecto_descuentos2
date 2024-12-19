@@ -6,6 +6,7 @@ from django_recaptcha.fields import ReCaptchaField
 from django_recaptcha.fields import ReCaptchaField
 from django.contrib.auth import authenticate
 from proyecto_descuentos2.settings import RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY
+from django.contrib.auth.forms import PasswordResetForm
 
 
 """    captcha  =  ReCaptchaField ( 
@@ -84,6 +85,8 @@ class LogeoForm(forms.Form):
     class Meta():
         model = Usuario
         fields = ('usuario', 'contraseña','captcha')
+    
+    
 
     #VALIDACIONES
 
