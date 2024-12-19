@@ -4,7 +4,7 @@
 
 
 
-<div class="container-fluid justify-content-center jus">
+<div class="container-fluid align-items-center justify-content-center ">
     <div class="col-md-10">
         {% if messages %}
         <div class="alert alert-danger" role="alert">
@@ -13,11 +13,11 @@
             {% endfor %}
         </div>
         {% endif %}
-<br>
+        <br>
         <!-- Formulario -->
         <div class="card ali">
             <div class="card-header text-center">
-                <h2>Configuraciones de sistema</h2>
+                <h2>CONFIGURACIONES DE SISTEMA<h2>
             </div>
             <div class="card-body">
                 <form method="post">
@@ -27,43 +27,58 @@
                         <!-- Configuración de Cantidad de Ofertas -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingOfertas">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOfertas" aria-expanded="false" aria-controls="collapseOfertas">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseOfertas" aria-expanded="false"
+                                    aria-controls="collapseOfertas">
                                     Cantidad máxima de ofertas que puede publicar un comercio por mes
                                 </button>
                             </h2>
-                            <div id="collapseOfertas" class="accordion-collapse collapse collapse" aria-labelledby="headingOfertas">
+                            <div id="collapseOfertas" class="accordion-collapse collapse collapse"
+                                aria-labelledby="headingOfertas">
                                 <div class="accordion-body">
-                                    <label for="id_cantidad_maxima_ofertas" class="form-label">Número máximo de ofertas permitidas:</label>
+                                    <label for="id_cantidad_maxima_ofertas" class="form-label">Número máximo de ofertas
+                                        permitidas:</label>
                                     {{ form.cantidad_maxima_ofertas }}
                                 </div>
                             </div>
                         </div>
-        
+
                         <!-- Configuración de Formatos de Imagen -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingFormatos">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFormatos" aria-expanded="false" aria-controls="collapseFormatos">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseFormatos" aria-expanded="false"
+                                    aria-controls="collapseFormatos">
                                     Formatos de imagen permitidos para las publicaciones
                                 </button>
                             </h2>
-                            <div id="collapseFormatos" class="accordion-collapse collapse" aria-labelledby="headingFormatos">
+                            <div id="collapseFormatos" class="accordion-collapse collapse"
+                                aria-labelledby="headingFormatos">
                                 <div class="accordion-body">
-                                    <label for="id_formatos_imagen_permitidos" class="form-label">Selecciona los formatos permitidos:</label>
+                                    <label for="id_formatos_imagen_permitidos" class="form-label">Selecciona los
+                                        formatos permitidos:</label>
                                     {{ form.formatos_imagen_permitidos }}
                                     <small class="form-text text-muted">Selecciona uno o más formatos.</small>
                                 </div>
                             </div>
                         </div>
                     </div><br>
-        
-                    <!-- Botón Guardar Cambios -->
-                    <div class="save-button">
-                        <button type="submit" class="btn btn-success btn-lg">Guardar Cambios</button>
+
+                    <!-- Botones -->
+                <div class="d-flex justify-content-between">
+                    <button type="button" onclick="window.history.back()" class="btn btn-outline-secondary">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success">Guardar cambios
+                        
+
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <!-- Script para validar las contraseñas -->

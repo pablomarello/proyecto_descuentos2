@@ -20,7 +20,7 @@ cert_alias = "certifica"
 # Creamos una instancia de la libreria
 afip = Afip({
     "CUIT": tax_id,
-    "access_token": "m3xSl53ql9BT13vaBkkkwq2adIBsiAc2FO30Ggv7EkBR1P6xx39e6N7A9DM5xff8",
+    "access_token": "xkGoHbluDKEPBiW9kFGqsHdwb54q2rAEU06WCZHE8cJsYz77nF0by7Vy09WT4Ken",
     "production": True
 })
 

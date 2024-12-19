@@ -113,6 +113,7 @@ def index(request):
         calificaciones = Puntuacion.objects.filter(oferta=oferta)
         cantidad_calificaciones = calificaciones.count()
         calificacion_promedio = calificaciones.aggregate(Avg('calificacion'))['calificacion__avg'] or 0
+        
 
         ofertas_con_calificaciones.append({
             'oferta': oferta,

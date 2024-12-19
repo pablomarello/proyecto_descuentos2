@@ -26,6 +26,11 @@
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+
+        <style>
+            h1,h2,h3,h4,a,label{font-family: 'Times New Roman', Times, serif;}
+        </style>
+
         {% block style %}
         {% endblock style %}
     </head>
@@ -37,7 +42,7 @@
         {% endfor %}
     </div>
     {% endif %}
-        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark" style="background-color: #1f2937;">
             <!-- Navbar Brand-->
             <!-- Navbar Brand-->
             <a class="navbar-brand ps-3 text-white" href="#">Administración</a>
@@ -56,10 +61,7 @@
                         <i class="fas fa-user fa-fw"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{% url 'configurar_sistema' %}">Configuración</a></li>
-                        <li><a class="dropdown-item" href="#!">Registro de Actividad</a></li>
-                        <li>
-                            <hr class="dropdown-divider" />
+                       
                         </li>
                         <li><a class="dropdown-item" href="{% url 'logout_superuser' %}">Cerrar Sesión</a></li>
                     </ul>
@@ -70,7 +72,7 @@
         <div id="layoutSidenav">
             <div id="layoutSidenav_nav">
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-                    <div class="sb-sidenav-menu">
+                    <div class="sb-sidenav-menu" style="background-color: #1f2937;">
                         <div class="nav">
                             
                             <a class="nav-link" href="{% url 'index_admin' %}">
@@ -135,88 +137,316 @@
             </div>
             <div id="layoutSidenav_content">
                 {% block content %}
+                <style>
+                    /* From Uiverse.io by Prince4fff */ 
+.card h4 {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #666;
+}
+h4{
+    color: #000000;
+}
+
+.card h4.small {
+  font-size: 14px;
+}
+
+.go-corner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  top: 0;
+  right: 0;
+  
+  background-color:  #ff0000ad;
+  
+  
+  border-radius: 0 4px 0 32px;
+}
+
+.go-arrow {
+  margin-top: -4px;
+  margin-right: -4px;
+  color: white;
+  font-family: courier, sans;
+}
+
+.card1 {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: center;
+  max-width: 262px;
+  background-color: #f2f8f9;
+  border-radius: 4px;
+  padding: 32px 24px;
+  margin: 12px;
+  text-decoration: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.card1:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -16px;
+  right: -16px;
+  background:  #ff0000ad;
+  height: 32px;
+  width: 32px;
+  border-radius: 32px;
+  transform: scale(1);
+  transform-origin: 50% 50%;
+  transition: transform 0.25s ease-out;
+}
+
+.card1:hover:before {
+  transform: scale(21);
+}
+
+
+
+.card1:hover h4 {
+  transition: all 0.3s ease-out;
+  color: #fff;
+}
+
+.card2 {
+  display: block;
+  top: 0px;
+  position: relative;
+  max-width: 262px;
+  background-color: #f2f8f9;
+  border-radius: 4px;
+  padding: 32px 24px;
+  margin: 12px;
+  text-decoration: none;
+  z-index: 0;
+  overflow: hidden;
+  border: 1px solid #f2f8f9;
+}
+
+.card2:hover {
+  transition: all 0.2s ease-out;
+  box-shadow: 0px 4px 8px rgba(38, 38, 38, 0.2);
+  top: -4px;
+  border: 1px solid #ccc;
+  background-color: white;
+}
+
+.card2:before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -16px;
+  right: -16px;
+  background:  #ff0000ad;
+  height: 32px;
+  width: 32px;
+  border-radius: 32px;
+  transform: scale(2);
+  transform-origin: 50% 50%;
+  transition: transform 0.15s ease-out;
+}
+
+.card2:hover:before {
+  transform: scale(2.15);
+}
+
+.card3 {
+  display: block;
+  top: 0px;
+  position: relative;
+  max-width: 262px;
+  background-color: #f2f8f9;
+  border-radius: 4px;
+  padding: 32px 24px;
+  margin: 12px;
+  text-decoration: none;
+  overflow: hidden;
+  border: 1px solid #f2f8f9;
+}
+
+.card3 .go-corner {
+  opacity: 0.7;
+}
+
+.card3:hover {
+  border: 1px solid #ffffff;
+  box-shadow: 0px 0px 999px 999px rgba(255, 255, 255, 0.5);
+  z-index: 500;
+}
+
+.card3:hover p {
+  color:  #ff0000ad;
+}
+
+.card3:hover .go-corner {
+  transition: opactiy 0.3s linear;
+  opacity: 1;
+}
+
+.card4 {
+  display: block;
+  top: 0px;
+  position: relative;
+  max-width: 262px;
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 32px 24px;
+  margin: 12px;
+  text-decoration: none;
+  overflow: hidden;
+  border: 1px solid #ccc;
+}
+
+.card4 .go-corner {
+  background-color:  #ff0000ad;
+  height: 100%;
+  width: 16px;
+  padding-right: 9px;
+  border-radius: 0;
+  transform: skew(6deg);
+  margin-right: -36px;
+  align-items: start;
+  background-image: linear-gradient(-45deg, #8f479a 1%, #dc2a74 100%);
+}
+
+.card4 .go-arrow {
+  transform: skew(-6deg);
+  margin-left: -2px;
+  margin-top: 9px;
+  opacity: 0;
+}
+
+
+
+.card4 h4 {
+  margin-top: 8px;
+}
+
+.card4:hover .go-corner {
+  margin-right: -12px;
+}
+
+.card4:hover .go-arrow {
+  opacity: 1;
+}
+
+
+.card1 img{
+    width: 40px; /* Ajusta el tamaño de la imagen */
+    height: 40px;
+    transition: filter 0.3s ease-out;
+}
+
+/* Cuando pasas el mouse, cambia el color de la imagen */
+.card1:hover img{
+    filter: brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(100%) hue-rotate(180deg);
+    /* Esta regla aplica un filtro para modificar el color */
+}
+                </style>
                 
-                <div class="row g-4 m-4 mx-5">
+                <div class="row g-4 m-2 mx-5 align-items-center">
                     
-                    <!-- Card 1 -->
-                    <div class="col-md-4">
-                        <div class="card text-white bg-danger">
-                            <div class="card-body d-flex align-items-center">
-                                <i class="fa fa-box me-3"></i>
-                                <div>
-                                    <h5 class="card-title">Comercios</h5>
-                                    <p class="card-text">1</p>
-                                    <a href="#" class="text-white">Ver más</a>
+                    
+                        <a class="card1" href="{% url 'comercios_admin' %}">
+                            <h4>COMERCIOS</h4>
+                            <img src="/static/images/png/tienda.png" alt="" width="100">
+                            <div class="go-corner" href="#">
+                                <div class="go-arrow">
+                                    →
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <!-- Card 2 -->
-                    <div class="col-md-4">
-                        <div class="card text-white bg-success">
-                            <div class="card-body d-flex align-items-center">
-                                <i class="fa fa-shopping-cart me-3"></i>
-                                <div>
-                                    <h5 class="card-title">Ofertas</h5>
-                                    <p class="card-text">1</p>
-                                    <a href="{% url 'comercios_admin' %}" class="text-white">Ver más</a>
+                        </a>
+
+                        <a class="card1" href="{% url 'ofertas_admin' %}">
+                            <h4>OFERTAS</h4>            
+                            <img src="/static/images/png/oferta.png" alt="" width="100">
+                            <div class="go-corner" href="#">
+                                <div class="go-arrow">
+                                    →
                                 </div>
                             </div>
-                        </div>
-                    </div>
-    
-                    <!-- Card 3 -->
-                    <div class="col-md-4">
-                        <div class="card text-white bg-primary">
-                            <div class="card-body d-flex align-items-center">
-                                <i class="fa fa-users me-3"></i>
-                                <div>
-                                    <h5 class="card-title">Usuarios</h5>
-                                    <p class="card-text">0</p>
-                                    <a href="#" class="text-white">Ver más</a>
+                        </a>
+
+                        <a class="card1" href="{% url 'productos_admin' %}">
+                            <h4>PRODUCTOS</h4>            
+                            <img src="/static/images/png/producto.png" alt="" width="100">
+                            <div class="go-corner" href="#">
+                                <div class="go-arrow">
+                                    →
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <!-- Card 4 -->
-                    <div class="col-md-4">
-                        <div class="card text-white bg-warning">
-                            <div class="card-body d-flex align-items-center">
-                                <i class="fa fa-user me-3"></i>
-                                <div>
-                                    <h5 class="card-title">Estadísticas</h5>
-                                    <p class="card-text">1</p>
-                                    <a href="#" class="text-white">Ver más</a>
+                        </a>
+
+                        <a class="card1" href="{% url 'usuarios_admin' %}">
+                            <h4>USUARIOS</h4>
+                            <img src="/static/images/png/usuario.png" alt="" width="100">
+                            <div class="go-corner" href="#">
+                                <div class="go-arrow">
+                                    →
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <!-- Card 5 -->
-                    <div class="col-md-4">
-                        <div class="card text-white bg-info">
-                            <div class="card-body d-flex align-items-center">
-                                <i class="fa fa-briefcase me-3"></i>
-                                <div>
-                                    <h5 class="card-title">Auditoria</h5>
-                                    <p class="card-text">1</p>
-                                    <a href="#" class="text-white">Ver más</a>
+                        </a>
+
+                        <a class="card1" href="{% url 'personas_admin' %}">
+                            <h4>PERSONAS</h4>
+                            <img src="/static/images/png/personas.png" alt="" width="100">
+                            <div class="go-corner" href="#">
+                                <div class="go-arrow">
+                                    →
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <!-- Card 6 -->
-                    <div class="col-md-4">
-                        <div class="card text-white bg-secondary">
-                            <div class="card-body d-flex align-items-center">
-                                <i class="fa fa-users me-3"></i>
-                                <div>
-                                    <h5 class="card-title">Conf. de sistema</h5>
-                                    <p class="card-text">2</p>
-                                    <a href="{% url 'usuarios_admin' %}" class="text-white">Ver más</a>
+                        </a>
+
+                        <a class="card1" href="{% url 'estadisticas' %}">
+                            <h4>ESTADISTICAS</h4>
+                            <img src="/static/images/png/estadisticas.png" alt="" width="100">
+                            <div class="go-corner" href="#">
+                                <div class="go-arrow">
+                                    →
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </a>
+
+                        <a class="card1" href="{% url 'mapa_calor' %}">
+                            <h4>MAPAS DE CALOR</h4>
+                            <img src="/static/images/png/mapa.png" alt="" width="100">
+                            <div class="go-corner" href="#">
+                                <div class="go-arrow">
+                                    →
+                                </div>
+                            </div>
+                        </a>
+                        <a class="card1" href="{% url 'auditoria_admin' %}">
+                            <h4>AUDITORIA</h4>
+                            <img src="/static/images/png/portapapeles.png" alt="" width="100">
+                            <div class="go-corner" href="#">
+                                <div class="go-arrow">
+                                    →
+                                </div>
+                            </div>
+                        </a>
+
+                        
+                        
+                        <a class="card1" href="{% url 'configurar_sistema' %}">
+                            <h4>CONFIGURACIONES</h4>            
+                            <img src="/static/images/png/configuracion.png" alt="" width="100">
+                            <div class="go-corner" href="#">
+                                <div class="go-arrow">
+                                    →
+                                </div>
+                            </div>
+                        </a>
                     
                 </div>
                 {% endblock content %}

@@ -10,13 +10,15 @@
 
     <div class="table-responsive">
         <table id="datatablesSimple" class="table table-bordered table-hover">
+            
             <thead>
+                 
                 <tr>
                     <th>Comercio</th>
                     <th>CUIT</th>
                     <th>Dirección</th>
-                    <th>oferente</th>
-                    <th>CATEGORÍA</th>
+                    <th>Oferente</th>
+                    <th>Categoria</th>
                     <th>Eliminado</th>
                     <th>Activo</th>
                     <th>Acciones</th>
@@ -81,21 +83,7 @@
 
     <script>
         $(document).ready(function () {
-<<<<<<< Updated upstream
-            $('#datatablesSimple').DataTable({
-                "language": {
-                    "url": "//cdn.datatables.net/plug-ins/2.1.8/i18n/es-AR.json"
-                },
-                "dom": 'Bfrtip',
-                "paging": false,
-                "searching": false,
-                "ordering": false,
-                "info": false
-            });
-
-=======
             
->>>>>>> Stashed changes
             function getCSRFToken() {
                 return $('meta[name="csrf-token"]').attr('content');
             }

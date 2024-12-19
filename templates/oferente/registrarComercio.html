@@ -1,76 +1,108 @@
 {% extends 'base.html' %}
 
 
-  {% block title %}
-    Login
-  {% endblock title %}
-  
-  
-  
+{% block title %}
+Login
+{% endblock title %}
 
-  {% block content %}
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-        <h1>Registrar comercio</h1>
-        <h2>DATOS DEL CONTRIBUYENTE</h2>
-        <p>CUIT:{{ cuit }}</p>
-        <p>Nombre: {{ nombre }}</p>
-        <p>Apellido: {{ apellido }}</p>
-        <p>Direccion: {{ direccion }}</p>
+
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <h1>Registrar comercio</h1>
+
+    {% if cuit %}
+    <h2>DATOS DEL CONTRIBUYENTE</h2>
+
+    <p>CUIT: {{ cuit }}</p>
+
+    {% if nombre %}
+    <p>Nombre: {{ nombre }}</p>
+    {% endif %}
+    
+    {% if apellido %}
+    <p>Apellido: {{ apellido }}</p>
+    {% endif %}
+
+    {% if razon_social %}
+    <p>Razón social: {{ razon_social }}</p>
+    {% endif %}
+    
+    {% if direccion %}
+    <p>Dirección: {{ direccion }}</p>
+    {% endif %}
+    {% endif %}
+    
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
 
-      {% if messages %}
-            <div id="messages" style="display: none;">
-                {% for message in messages %}
-                    <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
-                {% endfor %}
+
+        <form method="POST" class="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl space-y-4 mx-auto">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <!-- Botones de Navegación -->
+            <div class="flex justify-between mt-4">
+                <button type="button" onclick="window.history.back()"
+                    class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none">
+                    Anterior
+                </button>
+
+                <button type="submit" id=""
+                    class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none">
+                    Siguiente
+                </button>
             </div>
+        </form>
+
+        {% if messages %}
+        <div id="messages" style="display: none;">
+            {% for message in messages %}
+            <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+            {% endfor %}
+        </div>
         {% endif %}
 
 
-    {% if messages %}
+        {% if messages %}
         <div id="messages" style="display: none;">
             {% for message in messages %}
-                <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+            <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
             {% endfor %}
         </div>
-    {% endif %}
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var messageContainer = document.getElementById('messages');
-            if (messageContainer) {
-                var messages = messageContainer.children;
-                for (var i = 0; i < messages.length; i++) {
-                    var message = messages[i].dataset.message;
-                    var tags = messages[i].dataset.tags;
-                    var icon = 'info'; // Default icon
-                    
-                    if (tags.includes('danger')) {
-                        icon = 'error'; // Error icon
-                    } else if (tags.includes('success')) {
-                        icon = 'success'; // Success icon
-                    } else if (tags.includes('warning')) {
-                        icon = 'warning'; // Warning icon
-                    } else if (tags.includes('info')) {
-                        icon = 'info'; // Info icon
-                    }
-                    
-                    Swal.fire({
-                        text: message,
-                        icon: icon,
-                        confirmButtonText: 'OK'
-                    });
-                }
-            }
-        });
-    </script>
+        {% endif %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">Registrar comercio</button>
-    </form>
-    {% endblock %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var messageContainer = document.getElementById('messages');
+                if (messageContainer) {
+                    var messages = messageContainer.children;
+                    for (var i = 0; i < messages.length; i++) {
+                        var message = messages[i].dataset.message;
+                        var tags = messages[i].dataset.tags;
+                        var icon = 'info'; // Default icon
+
+                        if (tags.includes('danger')) {
+                            icon = 'error'; // Error icon
+                        } else if (tags.includes('success')) {
+                            icon = 'success'; // Success icon
+                        } else if (tags.includes('warning')) {
+                            icon = 'warning'; // Warning icon
+                        } else if (tags.includes('info')) {
+                            icon = 'info'; // Info icon
+                        }
+
+                        Swal.fire({
+                            text: message,
+                            icon: icon,
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                }
+            });
+        </script>
+
+
+        {% endblock %}

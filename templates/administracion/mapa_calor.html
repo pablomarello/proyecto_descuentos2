@@ -20,8 +20,8 @@
 
 {% block content %}
 <div class="container-fluid px-4">
-    <h1>Inicios de sesion por zona</h1>
-    <div id="map" style="height: 500px; width:90%; z-index: 1; margin-left: 15px; margin-top: 75px;"></div>
+    <h2 class="text-center text-black">INICIOS DE SESION POR ZONA</h2>
+    <div id="map" style="height: 500px; width:90%; z-index: 1; margin-left: 30px; margin-top: 75px;"></div>
 </div>
 {% endblock content %}
 
@@ -57,5 +57,24 @@
             maxZoom: 17 }).addTo(map);
     })
     .catch(error => console.error('Error al cargar los datos del mapa:', error));
+    // Agregar la leyenda de referencia de colores
+    var legend = L.control({ position: 'bottomright' });
+
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info legend'),
+            grades = [0, 5, 10, 20, 40, 50], // Valores de referencia (ajustar a tus datos)
+            colors = ['#6800ff','#00FF00' ,'#FFFF00', '#FFA500', '#FF4500', '#bd0000']; // Colores de calor
+
+        // Crear el HTML de la leyenda
+        div.innerHTML += '<strong>Referencias</strong><br>';
+        for (var i = 0; i < grades.length; i++) {
+            div.innerHTML +=
+                '<i style="background:' + colors[i] + '; text-shadow:1px 1px 1px 2px black ; width: 18px; height: 18px; display: inline-block; margin-right: 5px;"></i> ' +
+                grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        }
+        return div;
+    };
+
+    legend.addTo(map);
 </script>
 {% endblock js %}

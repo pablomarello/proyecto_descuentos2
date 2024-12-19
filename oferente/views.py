@@ -18,7 +18,7 @@ afip = Afip({
     "CUIT": 23395413929,
     "cert": cert,
     "key": key,
-    "access_token": "xkGoHbluDKEPBiW9kFGqsHdwb54q2rAEU06WCZHE8cJsYz77nF0by7Vy09WT4Ken",
+    "access_token": "fzYREafr0vZ20SpT2KY9xWr5qATHt1aGL7es02QrID5HUxZO4jhrvEaQ5EKFlWck",
     "production": True
 })
 
@@ -26,68 +26,87 @@ afip = Afip({
 def verificarCuit(request):
     if not request.user.is_authenticated:
         messages.error(request, 'Para registrar tu comercio primero debes iniciar sesión')
-        # Redirige al usuario a la página de inicio de sesión, pasando la URL actual como `next`
         login_url = f"{reverse('login')}?next={request.path}"
         return redirect(login_url)
-    nombre = apellido = direccion = '-----'  # Inicializa las variables
 
     if request.method == 'POST':
         form = CuitForm(request.POST)
         if form.is_valid():
             cuit = form.cleaned_data['cuit']
-            # Verificar si el CUIT ya está registrado en la base de datos
+
+            # Validar que el CUIT comience con "30"
+            if not cuit.startswith('30'):
+                messages.error(request, f"El CUIT {cuit} no es válido. Solo se permiten CUITs de personas jurídicas que comiencen con '30'.")
+                return render(request, 'oferente/verificarCuit.html', {'form': form})
+
+            # Verificar si el CUIT ya está registrado
             if Oferente.objects.filter(cuit=cuit).exists():
                 messages.error(request, f"El CUIT {cuit} ya está registrado.")
                 return render(request, 'oferente/verificarCuit.html', {'form': form})
+
             try:
-                
-                # Verificar si el CUIT está inscrito en el padrón de AFIP
+                # Lógica de integración con AFIP
                 res = afip.RegisterInscriptionProof.getTaxpayerDetails(cuit)
                 print(res)
                 datos_generales = res.get('datosGenerales', {})
                 error_constancia = res.get('errorConstancia', {})
-                
-                if datos_generales:             
-                    nombre = datos_generales.get('razonSocial', '---')
-                    apellido = datos_generales.get('apellido', '--')
+
+                if datos_generales or error_constancia:
+                    nombre = datos_generales.get('nombre', '').strip()
+                    apellido = datos_generales.get('apellido', '').strip()
+                    razon_social = datos_generales.get('razonSocial', '').strip()
+                    direccion = datos_generales.get('domicilioFiscal', {}).get('direccion', '').strip()
+
+                    if not razon_social and not apellido:
+                        razon_social = error_constancia.get('razonSocial', '').strip()
+                        apellido = error_constancia.get('apellido', '').strip()
+                        direccion = error_constancia.get('domicilioFiscal', {}).get('direccion', '').strip()
+
+                    # Construir el mensaje solo con datos válidos
+                    mensaje = f"TU COMERCIO ESTÁ REGISTRADO EN AFIP."
                     
-                    domicilio_fiscal = datos_generales.get('domicilioFiscal', {})
-                    direccion = domicilio_fiscal.get('direccion', '----')
+                    if nombre:
+                        mensaje += f" Nombre: {nombre}."
+                        
+                    if apellido:
+                        mensaje += f" Apellido: {apellido}."
+                        
+                    if razon_social:
+                        mensaje += f" Razón Social: {razon_social}."
                     
-                    messages.success(request, f"ESTÁS INSCRIPTO EN AFIP. El CUIT {cuit} pertenece a {nombre} {apellido} con dirección {direccion}. Puedes continuar")
+                    if direccion:
+                        mensaje += f" Dirección: {direccion}."
+
+                    # Si no hay datos válidos
+                    if mensaje == f"U COMERCIO ESTÁ REGISTRADO EN AFIP. El CUIT {cuit} pertenece a":
+                        mensaje += " información no disponible."
+
+                    messages.success(request, mensaje)
                     request.session['cuit_validado'] = cuit
-                    request.session['nombre']=nombre
-                    request.session['apellido']=apellido
-                    request.session['direccion']=direccion
+                    request.session['nombre'] = nombre 
+                    request.session['apellido'] = apellido 
+                    request.session['razon_social'] = razon_social 
+                    request.session['direccion'] = direccion
                     return redirect('registrar_comercio')
-                
-                elif error_constancia:
-                    nombre = error_constancia.get('razonSocial', '--')
-                    apellido = error_constancia.get('apellido', '---')
-                    
-                    domicilio_fiscal = error_constancia.get('domicilioFiscal', {})
-                    direccion = error_constancia.get('direccion', '----')
-                    
-                    messages.success(request, f"ESTÁS INSCRIPTO EN AFIP. El CUIT {cuit} pertenece a {nombre} {apellido} con dirección {direccion}. Puedes continuar")
-                    request.session['cuit_validado'] = cuit
-                    request.session['nombre']=nombre
-                    request.session['apellido']=apellido
-                    request.session['direccion']=direccion
-                    return redirect('registrar_comercio')
-                
+
             except Exception as e:
+                import traceback
+                error_message = traceback.format_exc()
+                print(error_message)
                 messages.error(request, f"No se encontró el CUIT ingresado: {cuit}. Error")
         else:
             messages.error(request, "Formulario no válido")
     else:
         form = CuitForm()
-    
+
     return render(request, 'oferente/verificarCuit.html', {'form': form})
+
 
 
 def registrarComercio(request):
     nombre = request.session.get('nombre', '-----')
     apellido = request.session.get('apellido', '-----')
+    razon_social = request.session.get('razon_social', '-----')
     direccion = request.session.get('direccion', '-----')
     cuit=request.session.get('cuit_validado')
     if request.method == 'POST':
@@ -108,7 +127,7 @@ def registrarComercio(request):
     else:
         form = OferenteForm()
     
-    return render(request, 'oferente/registrarComercio.html', {'form': form,'cuit':cuit, 'nombre':nombre,'apellido':apellido,'direccion':direccion,})
+    return render(request, 'oferente/registrarComercio.html', {'form': form,'cuit':cuit, 'nombre':nombre,'apellido':apellido,'razon_social':razon_social ,'direccion':direccion,})
 
 
 
