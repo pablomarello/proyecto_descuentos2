@@ -18,7 +18,7 @@ afip = Afip({
     "CUIT": 23395413929,
     "cert": cert,
     "key": key,
-    "access_token": "fzYREafr0vZ20SpT2KY9xWr5qATHt1aGL7es02QrID5HUxZO4jhrvEaQ5EKFlWck",
+    "access_token": "4Sk8rHhwxLroYbGwKakZZiiJUlNUiWMYfxOrkkUIzsfaHWjBsbHHKo4ka0Crp7aV",
     "production": True
 })
 

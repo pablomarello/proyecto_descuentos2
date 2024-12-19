@@ -418,22 +418,24 @@ def editar_oferta(request,id_oferta):
         oferta.activo = True
         oferta.save()
         
-        messages.success(request, "La oferta ha sido actualizada correctamente.")
+        messages.success(request, f'La oferta "{oferta.titulo}" ha sido actualizada exitosamente.')
         return redirect('mis_ofertas')
     
     return render(request, 'oferta/editar_oferta.html', {'oferta': oferta})
 
 def eliminar_oferta(request,id_oferta):
+    # Obtiene la oferta o muestra un error 404 si no existe
+    oferta = get_object_or_404(Oferta, id= id_oferta)
+
     if request.method == "POST":
-        # Obtiene la oferta o muestra un error 404 si no existe
-        oferta = get_object_or_404(Oferta, pk = id_oferta)
-        
-        # Elimina la oferta
+       
+        # Elimina la oferta logicamente
+        oferta.activo = False
         oferta.eliminado=True
         oferta.save()
         
         # Agrega un mensaje de éxito (opcional)
-        messages.success(request, "La oferta ha sido eliminada exitosamente.")
+        messages.success(request, f'La oferta "{oferta.titulo}" ha sido eliminada exitosamente.')
         
         # Redirige a la página de las ofertas
         return redirect('mis_ofertas')

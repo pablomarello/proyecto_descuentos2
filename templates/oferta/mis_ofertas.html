@@ -14,60 +14,68 @@
 
 <div class="min-h-screen flex flex-col bg-gray-100">
     <!-- Breadcrumb -->
-<nav class="flex text-gray-700 text-sm" aria-label="Breadcrumb">
-    <ol class="inline-flex items-center space-x-1 md:space-x-3">
-        <!-- Inicio -->
-        <li class="inline-flex items-center">
-            <a href="{% url 'index' %}" class="inline-flex items-center text-gray-500 hover:text-blue-600">
-                <svg class="w-4 h-4 mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M10 20a1 1 0 01-1-1V8.414L2.293 14.293a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0l8 8a1 1 0 01-1.414 1.414L11 8.414V19a1 1 0 01-1 1z"/>
-                </svg>
-                Inicio
-            </a>
-        </li>
-        <!-- Separador -->
-        <li>
-            <div class="flex items-center">
-                <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M9 18l6-6-6-6"></path>
-                </svg>
-            </div>
-        </li>
-        <!-- Productos -->
-        <li class="inline-flex items-center">
-            <a href="{% url 'lista_comercios' %}" class="text-gray-500 hover:text-blue-600">
-                Mis comercios
-            </a>
-        </li>
-        <!-- Separador -->
-        <li>
-            <div class="flex items-center">
-                <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M9 18l6-6-6-6"></path>
-                </svg>
-            </div>
-        </li>
-        <!-- Página actual (sin enlace) -->
-        <li class="inline-flex items-center">
-            <span class="text-gray-400">Mis ofertas</span>
-        </li>
-    </ol>
-</nav>
+    <nav class="flex text-gray-700 text-sm m-2" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <!-- Inicio -->
+            <li class="inline-flex items-center">
+                <a href="{% url 'index' %}" class="inline-flex items-center text-gray-500 hover:text-blue-600">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M10 20a1 1 0 01-1-1V8.414L2.293 14.293a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0l8 8a1 1 0 01-1.414 1.414L11 8.414V19a1 1 0 01-1 1z"/>
+                    </svg>
+                    Inicio
+                </a>
+            </li>
+            <!-- Separador -->
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </div>
+            </li>
+            <!-- Productos -->
+            <li class="inline-flex items-center">
+                <a href="{% url 'lista_comercios' %}" class="text-gray-500 hover:text-blue-600">
+                    Mis comercios
+                </a>
+            </li>
+            <!-- Separador -->
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </div>
+            </li>
+            <!-- Página actual (sin enlace) -->
+            <li class="inline-flex items-center">
+                <span class="text-gray-400">Mis ofertas</span>
+            </li>
+        </ol>
+    </nav>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    {% if messages %}
-            <div id="messages" style="display: none;">
-                {% for message in messages %}
-                    <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
-                {% endfor %}
-            </div>
+    <div class="max-w-7xl mx-4 px-2 sm:px-6 lg:px-6 py-2">
+        {% if messages %}
+        <div id="messages" style="display: none;">
+            {% for message in messages %}
+                <div data-message="{{ message }}" data-tags="{{ message.tags }}"></div>
+            {% endfor %}
+        </div>
         {% endif %}
 
-
         <h2 class="mt-2 mb-6 text-center text-3xl font-extrabold text-gray-900">
-            <span class="section-heading-upper">Mis ofertas </span>                        
-          </h2>
-        
+            <span class="section-heading-upper">Mis ofertas</span>
+        </h2>
+
+        <!-- Botón Crear una oferta alineado a la izquierda -->
+        <div class="mb-6">
+            <a href="{% url 'crear_oferta' %}" 
+            class="bg-red-500 text-white font-semibold py-2 px-4 rounded hover:bg-red-600">
+                Crear una oferta
+            </a>
+        </div>
+
+        <!-- Contenedor de ofertas -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for oferta in ofertas %}
             <div class="bg-white p-5 rounded-lg shadow-md relative">
@@ -76,7 +84,7 @@
                 {% else %}
                 <img src="{{ MEDIA_URL }}default_image.png" alt="Imagen por defecto" class="w-full h-32 object-cover mb-4 rounded-lg">
                 {% endif %}
-    
+
                 <!-- Título de la oferta -->
                 <h2 class="text-xl font-semibold mb-2">{{ oferta.titulo }}</h2>
                 
@@ -98,58 +106,50 @@
                     <p class="font-bold text-gray-700">Comercio:</p>
                     <p>{{ oferta.oferente.nombrecomercio }}</p>
                 </div>
-    
+
                 <!-- Mostrar precios -->
                 <div class="flex justify-between items-center mb-4">
                     <p class="text-gray-600 line-through">Precio normal: ${{ oferta.precio_normal }}</p>
                     <p class="text-red-500 font-bold">Oferta: ${{ oferta.precio_oferta }}</p>
                 </div>
-    
+
                 <!-- Mostrar fechas de la oferta -->
                 <div class="text-sm text-gray-500">
                     <p>Desde: {{ oferta.fecha_inicio|date:"d/m/Y"}}</p>
                     <p>Hasta: {{ oferta.fecha_fin|date:"d/m/Y"}}</p>
                 </div>
-    
+
                 <!-- Mostrar si la oferta está vencida -->
                 {% if oferta.fecha_fin < hoy %}
                 <div class="absolute top-4 right-4 bg-red-500 text-white text-xs px-2 py-1 rounded">
                     Oferta vencida
                 </div>
                 {% endif %}
-                <div class="flex justify-around items-center mt-4">
-                    <!-- Botón Editar -->
-                    <a href="{%url 'editar_oferta' oferta.id %}" class="flex gap-1 text-green-700 hover:text-green-800 hover:scale-105 transition">
-                        <svg class="w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                        <span>Editar</span>
+                <div class="flex justify-between mt-4">
+                    <a href="{% url 'editar_oferta' oferta.id %}"
+                        class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none">
+                        Editar
                     </a>
-    
-                    <!-- Botón Eliminar (con Formulario) -->
-                    <form action="{%url 'eliminar_oferta' oferta.id %}" method="post" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta oferta?');">
-                        {% csrf_token %}
-                        <button type="submit" class="flex gap-1 text-red-700 hover:text-red-800 hover:scale-105 transition">
-                            <svg class="w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                <line x1="10" y1="11" x2="10" y2="17"></line>
-                                <line x1="14" y1="11" x2="14" y2="17"></line>
-                            </svg>
-                            <span>Eliminar</span>
-                        </button>
-                    </form>
-                </div>
+
+                   <!-- Formulario para eliminar la oferta -->
+                <form action="{% url 'eliminar_oferta' oferta.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none">
+                        Eliminar
+                    </button>
+                </form>
+                    
+                  </div>
             </div>
             {% empty %}
-      <tr>
-        <td colspan="4" class="px-6 py-4 text-center">No tienes ofertas registradas.</td>
-      </tr>
+            <div class="ml-16 text-center mx-auto text-gray-500 font-medium text-xl">
+                No tienes ofertas registradas.
+            </div>
             {% endfor %}
         </div>
+    </div>
 </div>
-</div>
+
 
 
 

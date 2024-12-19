@@ -130,9 +130,15 @@
                                 <p class="font-bold text-white">{{ user.username }}</p>
                                 <p class="text-xs text-gray-300">{{ user.email }}</p>
                             </div>
-                            <a href="{% url 'lista_comercios'%}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Mis comercios</a>
-                            <a href="{% url 'verificar_cuit' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Registrar Mi Comercio</a>
-                            <a href="{% url 'estadisticas_oferente' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Mis estadisticas</a>
+                            {% if tiene_comercio %}
+                                <a href="{% url 'lista_comercios'%}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Mis comercios</a>
+                                <a href="{% url 'estadisticas_oferente' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Mis estadisticas</a>
+                            {% else %}
+                                <a href="{% url 'verificar_cuit' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Registrar Mi Comercio</a>
+                            {% endif %}
+                            
+                            
+                            <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Perfil</a>
                             <a href="{% url 'reset_password' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cambiar contraseña</a>
                             <a href="{% url 'cerrar_sesion' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cerrar Sesión</a>
                         </div>
@@ -149,7 +155,7 @@
         </nav>
         
         <!-- Menú Colapsable (Mobile) -->
-        <div id="mobile-menu" class="bg-gray-900 text-white px-4 py-2 hidden md:hidden">
+        <div id="mobile-menu" class="bg-gray-900 text-white px-4 py-2 hidden md:hidden ">
             <!-- Buscador -->
             <div class="relative flex items-center bg-white rounded-full overflow-hidden mb-4">
                 <span class="absolute left-3 text-red-600">
@@ -159,9 +165,9 @@
             </div>
         
             <!-- Categorías -->
-            <div class="flex flex-col space-y-2">
+            <div class="flex flex-col space-y-2 ">
                 {% for categoria in categorias %}
-                <a href="{% url 'ofertas_por_categoria' categoria.id %}" class="hover:underline">{{ categoria.nombre }}</a>
+                <a href="{% url 'ofertas_por_categoria' categoria.id %}" class="hover: decoration-none">{{ categoria.nombre }}</a>
                 {% endfor %}
             </div>
         
@@ -169,14 +175,19 @@
             <div class="mt-4">
                 {% if user.is_authenticated %}
                     <a href="#" class="block hover:underline">🛒 Carrito</a>
-                    <a href="{% url 'lista_comercios'%}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Mis comercios</a>
-                    <a href="{% url 'verificar_cuit' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Registrar Mi Comercio</a>
+                    
+                    
                     <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Perfil</a>
                     <a href="{% url 'reset_password' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cambiar contraseña</a>
                     <a href="{% url 'cerrar_sesion' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cerrar Sesión</a>
+                    {% if tiene_comercio %}
+                        <a href="{% url 'lista_comercios'%}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Mis comercios</a>
+                    {% else %}
+                        <a href="{% url 'verificar_cuit' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Registrar un Comercio</a>
+                    {% endif %}
                 {% else %}
-                    <a href="{% url 'login' %}" class="block hover:underline">Inicia Sesión</a>
-                    <a href="{% url 'registrar_persona' %}" class="block hover:underline">Regístrate</a>
+                    <a href="{% url 'login' %}" class="block px-4 py-2 hover:no-underline hover:bg-gray-700">Inicia Sesión</a>
+                    <a href="{% url 'registrar_persona' %}" class="block px-4 py-2 hover:no-underline hover:bg-gray-700">Regístrate</a>
                 {% endif %}
             </div>
         </div>
@@ -184,7 +195,7 @@
         <!-- Submenú (Desktop) -->
         <div class="bg-gray-900 text-white px-4 py-2 hidden md:flex items-center space-x-4 text-sm sticky top-0 z-40">
             {% for categoria in categorias %}
-            <a href="{% url 'ofertas_por_categoria' categoria.id %}" class="hover:underline">{{ categoria.nombre }}</a>
+            <a href="{% url 'ofertas_por_categoria' categoria.id %}" class="hover:decoration-none">{{ categoria.nombre }}</a>
             {% endfor %}
         </div>
     {% comment %}
@@ -320,11 +331,16 @@
                                 <p class="font-bold text-white">{{ user.username }}</p>
                                 <p class="text-xs text-gray-300">{{ user.email }}</p>
                             </div>
-                            <a href="{% url 'lista_comercios'%}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Mis comercios</a>
-                            <a href="{% url 'verificar_cuit' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Registrar Mi Comercio</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Perfil</a>
-                            <a href="{% url 'reset_password' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cambiar contraseña</a>
-                            <a href="{% url 'cerrar_sesion' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cerrar Sesión</a>
+                            {% if user.is_authenticated %}
+                                {% if tiene_comercio %}
+                                    <a href="{% url 'lista_comercios' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Mis comercios</a>
+                                {% else %}
+                                    <a href="{% url 'verificar_cuit' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Registrar un Comercio</a>
+                                {% endif %}
+                                <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Perfil</a>
+                                <a href="{% url 'reset_password' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cambiar contraseña</a>
+                                <a href="{% url 'cerrar_sesion' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cerrar Sesión</a>
+                            {% else %}
                         </div>
                     </div>
                 </div>

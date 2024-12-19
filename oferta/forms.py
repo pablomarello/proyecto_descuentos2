@@ -86,9 +86,13 @@ class OfertaForm(forms.ModelForm):
         user = kwargs.pop('user', None)  # Obtener el usuario del argumento kwargs
         super().__init__(*args, **kwargs)
 
-        # Filtrar los comercios asociados al usuario
+        # Filtrar los comercios asociados al usuario pero que esten habilitados y no esten eliminados
         if user is not None:
-            self.fields['oferente'].queryset = Oferente.objects.filter(id_usuario=user)
+            self.fields['oferente'].queryset = Oferente.objects.filter(
+                id_usuario=user,
+                habilitado=True,
+                eliminado=False
+                )
 
 
         

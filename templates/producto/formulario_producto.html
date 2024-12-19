@@ -9,8 +9,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
-  <!-- Breadcrumb -->
-<nav class="flex text-gray-700 text-sm" aria-label="Breadcrumb">
+
+  <div class="min-h-screen flex flex-col bg-gray-100">
+    <!-- Breadcrumb -->
+<nav class="flex text-gray-700 text-sm m-2" aria-label="Breadcrumb">
     <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <!-- Inicio -->
         <li class="inline-flex items-center">
@@ -43,10 +45,24 @@
                 </svg>
             </div>
         </li>
-        <!-- Publicar nueva oferta -->
+        <!-- Mis ofertas -->
+        <li class="inline-flex items-center">
+            <a href="{% url 'mis_ofertas' %}" class="text-gray-500 hover:text-blue-600">
+                Mis ofertas
+            </a>
+        </li>
+        <!-- Separador -->
+        <li>
+            <div class="flex items-center">
+                <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+            </div>
+        </li>
+        <!-- Publicar oferta -->
         <li class="inline-flex items-center">
             <a href="{% url 'crear_oferta' %}" class="text-gray-500 hover:text-blue-600">
-                Publicar nueva oferta
+                Publicar oferta
             </a>
         </li>
         <!-- Separador -->
@@ -64,7 +80,7 @@
     </ol>
 </nav>
 
-  <div class="max-w-2xl mx-auto bg-white p-5 rounded-md shadow-md">
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-3xl m-4">
     {% if messages %}
     <div id="messages" style="display: none;">
         {% for message in messages %}
@@ -80,16 +96,16 @@
         {% endfor %}
     </div>
     {% endif %}
-    <h1 class="text-2xl font-bold mb-4">Agregar un nuevo producto</h1>
+    
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl space-y-4 mx-auto">
         {% csrf_token %}
-
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Agregar un nuevo producto</h1>
         <!-- Campo para el nombre -->
         <div class="mb-4">
             <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
             <input type="text" name="nombre" id="nombre" value="{{ form.nombre.value|default_if_none:'' }}"
-                class="mt-1 p-2 block w-full border rounded-md" placeholder="Nombre del producto">
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400" placeholder="Nombre del producto">
                 {% for error in form.nombre.errors %}
                     <p class="text-red-500">{{ error }}</p>
                 {% endfor %}
@@ -99,7 +115,7 @@
         <!-- Campo para la descripción -->
         <div class="mb-4">
             <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
-            <textarea name="descripcion" id="descripcion" class="mt-1 p-2 block w-full border rounded-md"
+            <textarea name="descripcion" id="descripcion" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400"
                 placeholder="Descripción del producto">{{ form.descripcion.value|default_if_none:'' }}</textarea>
             {% for error in form.descripcion.errors %}
                 <p class="text-red-500">{{ error }}</p>
@@ -110,7 +126,7 @@
         <div class="mb-4">
             <label for="imagen" class="block text-sm font-medium text-gray-700">Imagen del producto</label>
             <input type="file" name="imagen" id="imagen"
-                class="mt-1 block w-full text-sm text-gray-900 border rounded-md cursor-pointer focus:outline-none">
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
             {% for error in form.imagen.errors %}
                 <p class="text-red-500">{{ error }}</p>
             {% endfor %}
@@ -121,7 +137,7 @@
             <label for="marca" class="block text-sm font-medium text-gray-700">Marca</label>
             <input type="text" name="marca" id="marca"
                 value="{{ form.marca.value|default_if_none:'' }}"
-                class="mt-1 p-2 block w-full border rounded-md" placeholder="Ingrese la marca del producto">
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400" placeholder="Ingrese la marca del producto">
             {% for error in form.marca.errors %}
                 <p class="text-red-500">{{ error }}</p>
             {% endfor %}
@@ -131,7 +147,7 @@
         <!-- Campo para la categoria -->
         <div class="mb-4">
             <label for="categoria" class="block text-sm font-medium text-gray-700">Selecciona la categoría del producto</label>
-            <select name="categoria" id="categoria" class="mt-1 block w-full p-2 border rounded-md">
+            <select name="categoria" id="categoria" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400">
               <option value="">-- Selecciona una categoría --</option>
               {% for subcategoria in subcategorias %}
                   <option value="{{ subcategoria.id }}">{{ subcategoria.nombre }}</option>
@@ -154,16 +170,18 @@
         <!-- Botón de envío -->
         <div class="flex justify-end space-x-4">
             <a type="button" href="{% url 'crear_oferta' %}" 
-               class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none btn btn-primary">
+               class="px-4 py-2 bg-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-400">
                Cancelar
             </a>
             <button type="submit" 
-                    class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none btn btn-primary">
+                    class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none">
                Agregar producto
             </button>
         </div>
         
     </form>
 </div>
+  </div>
+  
   
   {% endblock %}
