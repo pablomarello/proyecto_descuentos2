@@ -5,7 +5,7 @@
     <h2 class="text-center text-black">PERSONAS</h2>
 
     <div class="d-flex justify-content-end">
-        <a href="{% url 'comercios_admin' %}" class="btn btn-link">Mostrar todo el listado</a>
+        <a href="{% url 'personas_admin' %}" class="btn btn-link">Mostrar todo el listado</a>
     </div>
 
     <div class="table-responsive">
@@ -18,7 +18,7 @@
                     <th>Género</th>
                     <th>Foto</th>
                     <th>Eliminado</th>
-                    <th>Activo</th>
+                    
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -31,23 +31,7 @@
                     <td>{{ persona.genero|default:"-" }}</td>
                     <td>{{ persona.foto|default:"Sin foto/imagen" }}</td>
                     <td>{{ persona.eliminado|yesno:"Sí,No" }}</td>
-                    <td>
-                      <div class="container">
-                        <label class="switch">
-                            <input type="checkbox" class="input toggle-active" 
-                                   data-id="{{ persona.identificacion }}" 
-                                   {% if persona.eliminado %}disabled{% endif %} 
-                                   {% if persona.habilitado %}checked{% endif %}>
-                            <div class="rail {% if persona.habilitado %}bg-success{% else %}bg-danger{% endif %}">
-                                <span class="circle"></span>
-                            </div>
-                        </label>
-                        {% if persona.eliminado %}
-                            <small class="text-danger">No se puede activar a una persona eliminada</small>
-                        {% endif %}
-                        
-                    </div>
-                    </td>
+                    
                     <td>
                       <div class="btn-group" role="group">
                         <!-- Botón de editar -->

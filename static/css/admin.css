@@ -3,6 +3,8 @@
 /* CSS DEL BASE ---------------------------------------------------------------*/
 body {
     transition: margin-left 0.3s;
+    background-color: rgb(31 41 55 / var(--tw-bg-opacity, 1));
+    ;
 }
 
 /* Barra superior (navbar) */
@@ -252,3 +254,37 @@ body {
     }
     
 }
+
+
+/* ESTILOS PARA EL LOGIN*/
+.login_administrador .card-header {
+    background-color: #1f2937;
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.login_administrador .btn-primary {
+    background-color: #1f2937;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 10px;
+    border:none;
+}
+
+.login_administrador .btn-primary:hover{
+    background-color: #203c63;
+}
+
+
+.bg-dark {
+    
+    background-color: #1f2937;
+}
+
+.container-fluid{
+    box-shadow: 1px 1px 1px px rgb(255, 255, 255);
+}
+
+
+

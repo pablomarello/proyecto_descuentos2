@@ -6,8 +6,8 @@ from oferente.models import Oferente
 from persona.models import Persona
 from django import forms
 from django.contrib.auth import authenticate
-
-from django.contrib.auth import authenticate
+from django_recaptcha.fields import ReCaptchaField
+from proyecto_descuentos2.settings import RECAPTCHA_PUBLIC_KEY, RECAPTCHA_PRIVATE_KEY
 from django import forms
 
 from django import forms
@@ -108,6 +108,13 @@ class LoginSuperuserForm(forms.Form):
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Contraseña'}),
     )
 
+
+    captcha  =  ReCaptchaField ( 
+        label='',
+        public_key =RECAPTCHA_PUBLIC_KEY, 
+        private_key = RECAPTCHA_PRIVATE_KEY,
+    )
+
     def clean(self):
         cleaned_data = super().clean()
         username = cleaned_data.get('username')
@@ -138,7 +145,7 @@ class UsuarioForm(forms.ModelForm):
     )
     class Meta:
         model = Usuario
-        fields = ['username', 'email', 'is_active','persona']
+        fields = ['username', 'email', 'is_active','persona',]
         labels = {
             'username': 'Nombre de usuario',
             'email': 'Correo Electrónico',
