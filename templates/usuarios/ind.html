@@ -52,18 +52,35 @@ Descuentos Catamarca
 <h1 class="bg-gray-700 px-4 py-4 mt-1   text-center text-white font-bold text-2xl">MIRÁ LOS ÚLTIMOS DESCUENTOS PUBLICADOS</h1>
 
 <!-- LOGICA PARA VERIFICAR SI HAY BUSQUEDAS Y SI LA BUSQUEDA TIENE RESULTADOS-->
+
+
+
+
+
+
+
+
     
 {% if cantidad_resultados == 0 %}
-    <p class="text-3xl mt-4 mb-6 font-bold">No se encontraron resultados para "{{query}}"</p>
+    <p class="text-3xl mt-4 mb-6 font-bold">No se encontraron resultados</p>
+
 {% else %}
-    {% if query %}
-    <p class="text-2xl font-bold">Resultados de "{{ query }}"</p>
-    <p class="text-2xl font-bold">Ofertas encontradas: {{cantidad_resultados}}</p>
+    {% if query or categoria %}
+        {% if query %}
+        <p class="text-2xl font-bold">Resultados de "{{ query }}"</p>
+        <p class="text-2xl font-bold">Ofertas encontradas: {{cantidad_resultados}}</p>
+        {% endif %}
+
+        {% if categoria %}
+        <p class="text-2xl font-bold">Resultados de "{{ categoria }}"</p>
+        
+        {% endif %}
+
     {% endif %}
     <section class="w-full flex flex-col lg:flex-row justify-center mt-4 mb-8 shadow-xl max-w-7xl mx-auto">
         <!-- Contenedor del mapa -->
         <div id="map" 
-             class="w-full lg:basis-3/5 h-64 lg:h-auto shadow-lg"
+             class="w-full lg:basis-3/5 h-64 lg:h-auto shadow-lg "
              style="position: relative; z-index: 1;">
         </div>
     
