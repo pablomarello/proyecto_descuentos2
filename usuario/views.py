@@ -49,20 +49,25 @@ def index(request):
 
     baratos = Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
     ofertas = Oferta.objects.filter(activo=True)
+    ofertas_busqueda=Oferta.objects.filter(activo=True)
     categorias = Categoria.objects.filter(eliminado=False)
     vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
-
+    
     # Funcionalidad de búsqueda
+    cantidad_resultados=1
     query = request.GET.get('q', '').strip()
     if query:
-        ofertas = ofertas.filter(
+        ofertas_busqueda = ofertas_busqueda.filter(
             Q(titulo__icontains=query) |
             Q(descripcion__icontains=query) |
             Q(productos__nombre__icontains=query) |
             Q(productos__categoria__nombre__icontains=query) |
             Q(productos__categoria__categoria__nombre__icontains=query)
         ).distinct()
-
+        cantidad_resultados = ofertas_busqueda.count()
+    else:
+        ofertas_busqueda=Oferta.objects.filter(activo=True)
+    
     # Variables para ubicación y comercios
     ubicacion_usuario = None
     comercios_en_radio = []
@@ -121,6 +126,19 @@ def index(request):
             'calificacion_promedio': calificacion_promedio,
             'cantidad_calificaciones': cantidad_calificaciones,
         })
+    
+    ofertas_con_calificaciones_busqueda = []
+    for oferta in ofertas_busqueda:
+        calificaciones = Puntuacion.objects.filter(oferta=oferta)
+        cantidad_calificaciones = calificaciones.count()
+        calificacion_promedio = calificaciones.aggregate(Avg('calificacion'))['calificacion__avg'] or 0
+        
+
+        ofertas_con_calificaciones_busqueda.append({
+            'oferta': oferta,
+            'calificacion_promedio': calificacion_promedio,
+            'cantidad_calificaciones': cantidad_calificaciones,
+        })
         
     
     comercios = Oferente.objects.all()
@@ -129,7 +147,9 @@ def index(request):
     return render(request, 'usuarios/ind.html', {
         'categorias': categorias,
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
+        'ofertas_con_calificaciones_busqueda':ofertas_con_calificaciones_busqueda,
         'query': query,
+        'cantidad_resultados':cantidad_resultados,
         'hoy':hoy,
         'manana':manana,
         'vencen_hoy': vencen_hoy,
@@ -142,6 +162,163 @@ def index(request):
         'tiene_comercios': tiene_comercios,  # Variable para mostrar botones en el nav en el template
         'comercios':comercios,
     })
+    
+    
+    
+def ofertas_por_categoria(request, categoria_id):
+    categoria = get_object_or_404(Categoria, id=categoria_id)
+    ofertas=Oferta.objects.filter(activo=True, eliminado=False)
+    ofertas_filtradas = Oferta.objects.filter(productos__categoria__categoria=categoria,activo=True,eliminado=False).distinct()
+    categoria_nombre=categoria.nombre
+    
+    
+     # Consultas generales de ofertas y categorías
+    ofertas_vencidas = Oferta.objects.filter(activo=True)
+    hoy = datetime.date.today()
+    for oferta in ofertas_vencidas:
+        if oferta.fecha_fin < hoy:
+            oferta.activo = False
+            oferta.save()
+
+    baratos = Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
+    vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
+    
+    #
+    
+    # Variables para ubicación y comercios
+    ubicacion_usuario = None
+    comercios_en_radio = []
+    tiene_comercios = False  # Inicialización predeterminada
+
+    if request.user.is_authenticated:
+        try:
+            persona = request.user.persona_id
+            ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
+
+            lat_usuario = float(ubicacion_usuario.latitud)
+            lon_usuario = float(ubicacion_usuario.longitud)
+
+            # Limita la distancia en kilómetros
+            radio_km = 100
+            ubicaciones_comercio = ubicacionesComercio.objects.filter(comercio_id__habilitado=True)
+
+            for comercio in ubicaciones_comercio:
+                if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
+                    distancia_km = distance(
+                        (lat_usuario, lon_usuario),
+                        (float(comercio.latitud), float(comercio.longitud))
+                    ).km
+                    if distancia_km <= radio_km:
+                        comercios_en_radio.append({
+                            "id": comercio.comercio_id.id,
+                            "nombre": comercio.comercio_id.nombrecomercio,
+                            "latitud": float(comercio.latitud),
+                            "longitud": float(comercio.longitud),
+                        })
+            # Verificar si el usuario tiene comercios registrados
+            tiene_comercios = Oferente.objects.filter(id_usuario=request.user).exists()
+        except ubicaciones.DoesNotExist:
+            pass
+    else:
+        ubicaciones_comercio = ubicacionesComercio.objects.filter(comercio_id__habilitado=True)
+        for comercio in ubicaciones_comercio:
+            if comercio.comercio_id and comercio.comercio_id.nombrecomercio:
+                comercios_en_radio.append({
+                    "id": comercio.comercio_id.id,
+                    "nombre": comercio.comercio_id.nombrecomercio,
+                    "latitud": float(comercio.latitud),
+                    "longitud": float(comercio.longitud),
+                })
+
+    
+    # Crear lista de ofertas con sus calificaciones
+    ofertas_con_calificaciones = []
+    for oferta in ofertas:
+       
+        calificaciones = Puntuacion.objects.filter(oferta=oferta)
+        cantidad_calificaciones = calificaciones.count()
+        calificacion_promedio = calificaciones.aggregate(Avg('calificacion'))['calificacion__avg'] or 0
+        
+
+        ofertas_con_calificaciones.append({
+            'oferta': oferta,
+            'calificacion_promedio': calificacion_promedio,
+            'cantidad_calificaciones': cantidad_calificaciones,
+        })
+    
+     # Crear lista de ofertas con sus calificaciones
+    ofertas_con_calificaciones_busqueda=[]
+    
+    cantidad_resultados=0
+    
+    for oferta in ofertas_filtradas:
+        calificaciones = Puntuacion.objects.filter(oferta=oferta)
+        cantidad_calificaciones = calificaciones.count()
+        calificacion_promedio = calificaciones.aggregate(Avg('calificacion'))['calificacion__avg'] or 0
+        cantidad_resultados=cantidad_resultados+1
+
+        ofertas_con_calificaciones_busqueda.append({
+            'oferta': oferta,
+            'calificacion_promedio': calificacion_promedio,
+            'cantidad_calificaciones': cantidad_calificaciones,
+            
+        })
+        
+        
+    
+    comercios = Oferente.objects.all()
+    manana = hoy + datetime.timedelta(days=1)
+    # Renderizado de la plantilla
+    return render(request, 'usuarios/ind.html', {
+        'cantidad_resultados':cantidad_resultados,
+        'ofertas_con_calificaciones_busqueda':ofertas_con_calificaciones_busqueda,
+        'ofertas_con_calificaciones':ofertas_con_calificaciones,
+        'categoria':categoria_nombre,
+        'hoy':hoy,
+        'manana':manana,
+        'vencen_hoy': vencen_hoy,
+        'ubicacion_usuario': {
+            'latitud': float(ubicacion_usuario.latitud) if ubicacion_usuario else None,
+            'longitud': float(ubicacion_usuario.longitud) if ubicacion_usuario else None,
+        } if request.user.is_authenticated else None,
+        'comercios_en_radio': comercios_en_radio,
+        'usuario_autenticado': request.user.is_authenticated,  # Nuevo parámetro
+        'tiene_comercios': tiene_comercios,  # Variable para mostrar botones en el nav en el template
+        'comercios':comercios,
+    })
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 def buscar(request):
     query = request.GET.get('q', '')
@@ -317,6 +494,7 @@ def descuentos_destacados(request):
     # Ordenar las ofertas por calificación promedio y limitar a las mejores 3
     ofertas_con_calificaciones = sorted(ofertas_con_calificaciones, key=lambda x: x['calificacion_promedio'], reverse=True)[:5]
     manana = hoy + datetime.timedelta(days=1)
+    
     # Renderizado de la plantilla
     return render(request, 'usuarios/descuento.html', {
         'categorias': categorias,
@@ -368,30 +546,9 @@ def descuentos_destacados(request):
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
     }) """
 
-def ofertas_por_categoria(request, categoria_id):
-    categoria = get_object_or_404(Categoria, id=categoria_id)
-    ofertas = Oferta.objects.filter(productos__categoria__categoria=categoria,activo=True,eliminado=False).distinct()
-
-    # Crear lista de ofertas con sus calificaciones
-    ofertas_con_calificaciones = []
-    for oferta in ofertas:
-        calificaciones = Puntuacion.objects.filter(oferta=oferta)
-        cantidad_calificaciones = calificaciones.count()
-        calificacion_promedio = calificaciones.aggregate(Avg('calificacion'))['calificacion__avg'] or 0
-
-        ofertas_con_calificaciones.append({
-            'oferta': oferta,
-            'calificacion_promedio': calificacion_promedio,
-            'cantidad_calificaciones': cantidad_calificaciones,
-        })
-
-    return render(request, 'usuarios/ind.html', {
-        'categoria': categoria,
-        'ofertas_con_calificaciones': ofertas_con_calificaciones,
-    })
 
 
-    """ if query:  # Verificar que la consulta no esté vacía
+""" if query:  # Verificar que la consulta no esté vacía
         ofertas = Oferta.objects.filter(activo=True, eliminado= False and
             Q(titulo__icontains=query) |
             Q(descripcion__icontains=query) |
@@ -565,7 +722,13 @@ def iniciar_sesion(request):
 def cerrar_sesion(request):
     logout(request)
     messages.success(request, 'Cerraste la sesión')
-    return redirect('login') 
+    return redirect('login')
+
+def perfil_usuario(request, usuario_id):
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    persona = usuario.persona_id
+
+    return render(request, 'usuarios/perfil_usuario.html', {'usuario': usuario, 'persona':persona})
 
 #cambiar contraseña
 

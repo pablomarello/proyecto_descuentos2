@@ -47,94 +47,136 @@ Descuentos Catamarca
     </div>
 
 
-<br>
+
 
 
  
-<h1 class="bg-gray-700 px-4 py-4 mt-1   text-center text-white font-bold text-2xl">MIRÁ LOS ÚLTIMOS DESCUENTOS PUBLICADOS</h1>
+<h1 class="px-4 py-4 mt-4 text-center text-black font-sans text-2xl">
+    Conocé los últimos <span class="font-bold">descuentos publicados</span>
+</h1>
+  
 
-<section class="w-full flex flex-col lg:flex-row justify-center mt-4 mb-8 shadow-xl max-w-7xl mx-auto">
-    <!-- Contenedor del mapa -->
-    <div id="map" 
-         class="w-full lg:basis-3/5 h-64 lg:h-auto shadow-lg"
-         style="position: relative; z-index: 1;">
-    </div>
+<!-- LOGICA PARA VERIFICAR SI HAY BUSQUEDAS Y SI LA BUSQUEDA TIENE RESULTADOS-->
 
-    <!-- Contenedor de ofertas -->
-    <div class="bg-white w-full lg:basis-2/5 max-w-full lg:overflow-x-auto overflow-y-auto shadow-lg h-[calc(100vh-300px)] lg:h-auto">
-        <div class="flex lg:flex-row flex-col lg:gap-4 gap-2 p-4">
-            {% for item in ofertas_con_calificaciones %}
-            <div class="card shadow cursor-pointer transition-all duration-300 ease-in-out bg-white hover:bg-red-300 rounded-lg w-full lg:w-64 flex-shrink-0" 
-                 data-id="{{ item.oferta.oferente_id }}">
-                <div class="bg-gray-50 p-3 flex flex-col justify-between gap-1 rounded-xl overflow-hidden">
-                    <div class="h-40 bg-gray-700 rounded-xl overflow-hidden flex items-center justify-center">
-                        {% if item.oferta.imagen %}
-                            <img src="{{ item.oferta.imagen.url }}" alt="{{ item.oferta.titulo }}" class="w-full h-32 object-cover mb-4 rounded-lg">
-                        {% else %}
-                            <img src="{{ MEDIA_URL }}default_image.png" alt="Imagen por defecto" class="w-full h-32 object-cover mb-4 rounded-lg">
-                        {% endif %}
-                    </div>
-                    <div class="flex flex-col gap-2 w-full flex-grow">
-                        <span class="text-lg font-bold w-full">{{ item.oferta.titulo }}</span>
-                        <p class="text-xs text-gray-700 w-full">{{ item.oferta.descripcion }}</p>
-                        <h3 class="font-bold text-gray-700">Productos:</h3>
-                        <ul class="flex flex-row gap-1 flex-wrap list-none w-full">
-                            {% for producto in item.oferta.productos.all %}
-                                <li class="whitespace-nowrap">{{ producto.nombre }}</li>
-                            {% endfor %}
-                        </ul>
-                        <div class="mb-2 w-full">
-                            <p class="font-bold text-gray-700">Comercio:</p>
-                            <p>{{ item.oferta.oferente.nombrecomercio }}</p>
+
+
+
+
+
+
+
+    
+{% if cantidad_resultados == 0 %}
+    <p class="text-3xl mt-4 mb-6 font-bold">No se encontraron resultados</p>
+
+{% else %}
+    {% if query or categoria %}
+        {% if query %}
+        <p class="text-2xl font-bold">Resultados de "{{ query }}"</p>
+        <p class="text-2xl font-bold">Ofertas encontradas: {{cantidad_resultados}}</p>
+        {% endif %}
+
+        {% if categoria %}
+        <p class="text-2xl font-bold">Resultados de "{{ categoria }}"</p>
+        
+        {% endif %}
+
+    {% endif %}
+    <section class="w-full flex flex-col lg:flex-row justify-center mb-8 shadow-xl mx-auto">
+        <!-- Contenedor del mapa -->
+        <div id="map" 
+             class="w-full lg:basis-3/5 h-64 lg:h-auto shadow-lg "
+             style="position: relative; z-index: 1;">
+        </div>
+    
+        <!-- Contenedor de ofertas -->
+        <div class="bg-white w-full lg:basis-2/5 max-w-full lg:overflow-x-auto overflow-y-auto shadow-lg h-[calc(100vh-300px)] lg:h-auto">
+            <div class="flex lg:flex-row flex-col lg:gap-4 gap-2 p-2">
+                {% for item in ofertas_con_calificaciones_busqueda %}
+                <div class="card shadow border cursor-pointer transition-all duration-300 ease-in-out bg-white hover:bg-red-300 rounded-lg w-full lg:w-64 flex-shrink-0" 
+                     data-id="{{ item.oferta.oferente_id }}">
+                    <div class="bg-gray-50 p-3 flex flex-col justify-between gap-1 rounded-xl overflow-hidden">
+                        <div class="h-40 bg-gray-700 rounded-xl overflow-hidden flex items-center justify-center">
+                            {% if item.oferta.imagen %}
+                                <img src="{{ item.oferta.imagen.url }}" alt="{{ item.oferta.titulo }}" class="w-full h-32 object-cover mb-4 rounded-lg">
+                            {% else %}
+                                <img src="{{ MEDIA_URL }}default_image.png" alt="Imagen por defecto" class="w-full h-32 object-cover mb-4 rounded-lg">
+                            {% endif %}
                         </div>
-                        <div class="flex items-center">
-                            <p class="text-xl font-bold">{{ item.calificacion_promedio|floatformat:1 }}</p>
-                            {% for i in "12345" %}
-                                {% if forloop.counter <= item.calificacion_promedio %}
-                                    <label class="text-xl text-orange-500">★</label>
-                                {% else %}
-                                    <label class="text-xl text-gray-400">★</label>
-                                {% endif %}
-                            {% endfor %}
+                        <div class="flex flex-col gap-2 w-full flex-grow">
+                            <span class="text-lg font-bold w-full">{{ item.oferta.titulo }}</span>
+                            <p class="text-xs text-gray-700 w-full">{{ item.oferta.descripcion }}</p>
+                            <h3 class="font-bold text-gray-700">Productos:</h3>
+                            <ul class="flex flex-row gap-1 flex-wrap list-none w-full">
+                                {% for producto in item.oferta.productos.all %}
+                                    <li class="whitespace-nowrap">{{ producto.nombre }}</li>
+                                {% endfor %}
+                            </ul>
+                            <div class="mb-2 w-full">
+                                <p class="font-bold text-gray-700">Comercio:</p>
+                                <p>{{ item.oferta.oferente.nombrecomercio }}</p>
+                            </div>
+                            <div class="flex items-center">
+                                <p class="text-xl font-bold">{{ item.calificacion_promedio|floatformat:1 }}</p>
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= item.calificacion_promedio %}
+                                        <label class="text-xl text-orange-500">★</label>
+                                    {% else %}
+                                        <label class="text-xl text-gray-400">★</label>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p>({{ item.cantidad_calificaciones }}) Calificaciones</p>
+                            <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                <p>Desde: {{ item.oferta.fecha_inicio }}</p>
+                                <p>Hasta: {{ item.oferta.fecha_fin }}</p>
+                            </div>
                         </div>
-                        <p>({{ item.cantidad_calificaciones }}) Calificaciones</p>
-                        <div class="flex justify-between mt-2 text-xs text-gray-500">
-                            <p>Desde: {{ item.oferta.fecha_inicio }}</p>
-                            <p>Hasta: {{ item.oferta.fecha_fin }}</p>
+                        <div class="flex justify-between items-center mt-4">
+                            <div>
+                                <p class="text-gray-600 line-through">${{ item.oferta.precio_normal }}</p>
+                                <span class="font-bold text-red-600">${{ item.oferta.precio_oferta }}</span>
+                            </div>
+                            <a href="{% url 'detalle_oferta' item.oferta.id %}" class="bg-red-600 text-white shadow-sm hover:bg-red-500 rounded px-1 py-1">Ver más</a>
                         </div>
-                    </div>
-                    <div class="flex justify-between items-center mt-4">
-                        <div>
-                            <p class="text-gray-600 line-through">${{ item.oferta.precio_normal }}</p>
-                            <span class="font-bold text-red-600">${{ item.oferta.precio_oferta }}</span>
-                        </div>
-                        <a href="{% url 'detalle_oferta' item.oferta.id %}" class="bg-red-600 text-white shadow-sm hover:bg-red-500 rounded px-1 py-1">Ver más</a>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
-    </div>
+    
+        <!-- Estilos de Leaflet -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+        <link rel="stylesheet" href="{% static 'css/L.Icon.Pulse.css' %}">
+    
+        <!-- Scripts de Leaflet -->
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+        <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/leaflet.animatedmarker/src/AnimatedMarker.js"></script>
+        <script src="{% static 'js/L.Icon.Pulse.js' %}"></script>
+    </section>
+    
 
-    <!-- Estilos de Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-    <link rel="stylesheet" href="{% static 'css/L.Icon.Pulse.css' %}">
 
-    <!-- Scripts de Leaflet -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet.animatedmarker/src/AnimatedMarker.js"></script>
-    <script src="{% static 'js/L.Icon.Pulse.js' %}"></script>
-</section>
+
+{% endif %}
+
+
 
 
 {% if user.is_authenticated %}
-<h1 class="bg-gray-700 px-4 py-4 mb-6  text-center text-white font-bold text-2xl">ENCONTRÁ LOS MEJORES DESCUENTOS EN NUESTRA SECCION DE PRODUCTOS DESTACADOS</h1>
+<h1 class="px-4 py-4 mt-2 text-center text-black font-sans text-2xl">
+    Encontrá los mejores descuentos en nuestra sección de <span class="font-bold">productos destacados</span>
+</h1>
+<!-- <h1 class="bg-gray-700 px-4 py-4 mb-6  text-center text-white font-bold text-2xl">ENCONTRÁ LOS MEJORES DESCUENTOS EN NUESTRA SECCION DE PRODUCTOS DESTACADOS</h1> -->
 {% else %}
-<h1 class="bg-gray-700 px-4 py-4 mb-6  text-center text-white font-bold text-2xl">INICIA SESION Y ENCONTRÁ LOS MEJORES DESCUENTOS EN NUESTRA SECCION DE PRODUCTOS DESTACADOS</h1>
+<h1 class="px-4 py-4 mt-2 text-center text-black font-sans text-2xl">
+    Encontrá los mejores descuentos en nuestra sección de <span class="font-bold">productos destacados</span>
+</h1>
+<!-- <h1 class="bg-gray-700 px-4 py-4 mb-6  text-center text-white font-bold text-2xl">INICIA SESION Y ENCONTRÁ LOS MEJORES DESCUENTOS EN NUESTRA SECCION DE PRODUCTOS DESTACADOS</h1> -->
 
 {% endif %}
 
@@ -144,7 +186,7 @@ Descuentos Catamarca
       <div class="relative mx-auto max-w-7xl px-4 sm:static sm:px-6 lg:px-8">
         <div class="sm:max-w-lg">
           <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Descuentos Destacados</h1>
-          <p class="mt-4 text-xl text-gray-500">Descubrí los descuentos que a los usuarios les encataron</p>
+          <p class="mt-4 text-xl text-gray-500">Descubrí los descuentos más elegidos</p>
         </div>
         <div>
           <div class="mt-10">
@@ -214,7 +256,7 @@ Descuentos Catamarca
 </div>
 <div id="botones-container" class="flex justify-center mt-8">
     <button id="load-more-btn" class="bg-red-600 transform hover:-translate-y-2 transition-all duration-300 w-48 hover:bg-red-800 text-white font-semibold py-2 px-6 rounded-full shadow-lg">
-        Ver más
+        Ver más ofertas
     </button>
     <button id="show-less-btn" class="bg-gray-600 transform hover:-translate-y-2 transition-all duration-300 w-48 hover:bg-gray-800 text-white font-semibold py-2 px-6 rounded-full shadow-lg hidden">
         Ver menos
@@ -223,8 +265,8 @@ Descuentos Catamarca
 
 <div class="bg-gray-200 rounded-lg shadow-md relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-    <h1 class="text-3xl font-bold mb-6">Ofertas disponibles</h1>
-
+    <!-- <h1 class="text-3xl font-sans mb-6">Ofertas disponibles</h1>-->
+     <h1 class="px-4 py-4 mt-4 text-black font-sans text-2xl">Ofertas disponibles</h1>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
         {% for oferta in ofertas_con_calificaciones %}
         <div class="bg-white p-5 rounded-lg shadow-md relative">
@@ -356,8 +398,11 @@ Descuentos Catamarca
 <div class="relative bg-red-200 py-12 flex justify-center h-40  gradient-bottom">
     <!-- Pseudoelemento para el corte -->
     <div class="relative  h-48">
-        <h1 class="text-gray-750 text-border text-2xl font-bold">Comercios Registrados</h1>
-        <p class="text-gray-600">Encontra todos los comercios aquí</p>
+        <h1 class="px-4 py-4 mt-2 text-center text-black font-sans text-2xl">
+            Descubrí todos los <span class="font-bold">comercios registrados</span>
+        </h1>
+        <!-- <h1 class="text-gray-750 text-border text-2xl font-bold">Comercios Registrados</h1>
+        <p class="text-gray-600">Encontra todos los comercios aquí</p> -->
         
         <div class="before-clip">
         
@@ -397,7 +442,7 @@ Descuentos Catamarca
             {% else %}
                 <button onclick="showLoginPrompt()" 
                 class="bg-red-600 transform hover:-translate-y-2 transition-all duration-300 w-48 hover:bg-red-800 text-white font-semibold py-2 px-6 rounded-full shadow-lg">
-                    Ver ubicación
+                    Ver ubicaciónes
                 </button>
 
                 <!-- Modal para solicitar inicio de sesión -->
