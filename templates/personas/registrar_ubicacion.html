@@ -44,7 +44,7 @@ Registro Persona
     </div>
       {% csrf_token %}
       <!-- Campo País -->
-    <div class="mb-4">
+    {% comment %} <div class="mb-4">
         <label for="id_pais" class="block text-sm font-medium text-gray-700">País</label>
         {{ form.pais }}
     </div>
@@ -89,7 +89,9 @@ Registro Persona
     <div class="mb-4">
         <label for="id_altura" class="block text-sm font-medium text-gray-700">Altura</label>
         {{ form.altura }}
-    </div>
+    </div> {% endcomment %}
+    {% csrf_token %}
+    {{form.as_p}}
 
       <div id="map" style="height: 400px; width: 620px;"></div>
       <script>

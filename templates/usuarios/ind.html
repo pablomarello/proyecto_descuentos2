@@ -23,6 +23,12 @@ Descuentos Catamarca
 }
 
 </style>
+
+
+
+
+
+
 <div class="h-[1px]"></div>
 
     <div class="relative w-full overflow-hidden h-full">
@@ -45,25 +51,12 @@ Descuentos Catamarca
             ❯
         </button>
     </div>
+<!-- LOGICA PARA VERIFICAR SI HAY BUSQUEDAS Y SI LA BUSQUEDA TIENE RESULTADOS-->
 
-
-
-
-
- 
 <h1 class="px-4 py-4 mt-4 text-center text-black font-sans text-2xl">
     Conocé los últimos <span class="font-bold">descuentos publicados</span>
 </h1>
   
-
-<!-- LOGICA PARA VERIFICAR SI HAY BUSQUEDAS Y SI LA BUSQUEDA TIENE RESULTADOS-->
-
-
-
-
-
-
-
 
     
 {% if cantidad_resultados == 0 %}
@@ -82,18 +75,23 @@ Descuentos Catamarca
         {% endif %}
 
     {% endif %}
-    <section class="w-full flex flex-col lg:flex-row justify-center mb-8 shadow-xl mx-auto">
+
+    
+
+ 
+    
+    <section class="w-full flex flex-col lg:flex-row mb-8 shadow-xl mx-auto">
         <!-- Contenedor del mapa -->
         <div id="map" 
-             class="w-full lg:basis-3/5 h-64 lg:h-auto shadow-lg "
+             class="w-full mr-4  lg:basis-3/6 h-64 lg:h-auto shadow-lg "
              style="position: relative; z-index: 1;">
         </div>
     
         <!-- Contenedor de ofertas -->
-        <div class="bg-white w-full lg:basis-2/5 max-w-full lg:overflow-x-auto overflow-y-auto shadow-lg h-[calc(100vh-300px)] lg:h-auto">
+        <div class="bg-white mr-4 w-full lg:basis-3/6 max-w-full lg:overflow-x-auto overflow-y-auto shadow-lg h-[calc(100vh-300px)] lg:h-auto">
             <div class="flex lg:flex-row flex-col lg:gap-4 gap-2 p-2">
                 {% for item in ofertas_con_calificaciones_busqueda %}
-                <div class="card shadow border cursor-pointer transition-all duration-300 ease-in-out bg-white hover:bg-red-300 rounded-lg w-full lg:w-64 flex-shrink-0" 
+                <div class="card mr-2 ml-2 shadow border cursor-pointer transition-all duration-300 ease-in-out bg-white hover:bg-red-300 rounded-lg w-full lg:w-64 flex-shrink-0" 
                      data-id="{{ item.oferta.oferente_id }}">
                     <div class="bg-gray-50 p-3 flex flex-col justify-between gap-1 rounded-xl overflow-hidden">
                         <div class="h-40 bg-gray-700 rounded-xl overflow-hidden flex items-center justify-center">

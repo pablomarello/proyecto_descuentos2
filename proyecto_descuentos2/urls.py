@@ -36,6 +36,7 @@ urlpatterns = [
     path('oferta/',include('oferta.urls')),
     path('estadisticas/',include('estadistica.urls')),
     path('administracion/',include('administracion.urls')),
+    path('chatbot/',include('chatbot.urls')),
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

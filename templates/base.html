@@ -48,7 +48,7 @@
         <nav class="bg-gray-800 text-white px-4 py-2 flex items-center justify-between sticky top-0 z-50">
             <!-- Logo -->
             <div class="flex items-center space-x-2">
-                <a class="text-2xl font-bold" href="{% url 'index' %}">Descuentazos</a>
+                <a class="text-2xl font-bold" href="{% url 'index' %}">Descuentos Catamarca</a>
             </div>
 
             <!-- Botón de Menú (Mobile) -->
@@ -337,11 +337,30 @@
             </div>
         </div>
     </div>
+     <!-- Botón del icono del chatbot -->
+<div id="chatbot-icon" class="fixed bg-white bottom-2 right-2 text-white rounded-full p-2 shadow-xl cursor-pointer z-10">
+    <img src="{% static "images/png/chatbot.png" %}" alt="" class="" width="50">
+</div>
 
-
-
-
-
+<!-- Modal del chatbot -->
+<div id="chatbot-modal" class="fixed bottom-20 p-0 pb-1  right-4 bg-white rounded-lg shadow-lg max-w-lg w-80 max-h-400 z-20 hidden">
+    <div id="chatbot" class="chat- p-0 rounded-lg ">
+        <div class="chat-header p-1 pr-2 bg-red-600 rounded-lg ">ChatBot 
+            <button id="close-modal" class="absolute font-bold top-1 right-4 text-white-500">&times;</button>
+        </div>
+        <div id="chatMessages" class="chat-messages p-0"></div>
+        <form id="chatForm" class="chat-input p-0">
+            <input type="text" id="userInput" placeholder="Escribe tu mensaje..." required autocomplete="off">
+            <button type="submit" class="bg-red-700 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 rounded p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                <span class="sr-only">Enviar mensaje</span>
+            </button>
+        </form>
+    </div>
+</div>
 
     <main>
         {% block content %}
@@ -392,16 +411,16 @@
                 </div>
 
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-200 mb-4">Contaco</h3>
+                    <h3 class="text-sm font-semibold text-gray-200 mb-4">Contacto</h3>
                     <ul class="space-y-2">
                         <div class="flex items-center">
-                            <img src="{% static " images/svg/white/header/sidebars/email.svg" %}" alt=""
-                                class="h-6 w-6 mr-2">
+                            {% comment %} <img src="{% static " images/svg/white/header/sidebars/email.svg" %}" alt=""
+                                class="h-6 w-6 mr-2"> {% endcomment %}
                             <li><a class="text-sm text-gray-300">descuentoscatamarca@gmail.com</a></li>
                         </div>
                         <div class="flex items-center">
-                            <img src="{% static " images/svg/white/header/sidebars/telefono.svg" %}" alt=""
-                                class="h-6 w-6 mr-2">
+                            {% comment %} <img src="{% static " images/svg/white/header/sidebars/telefono.svg" %}" alt=""
+                                class="h-6 w-6 mr-2"> {% endcomment %}
                             <li><a class="text-sm text-gray-300">(3834) 95-4106</a></li>
                         </div>
 
@@ -447,6 +466,112 @@
         </div>
         </div>
     </footer>
+   
+<script>
+    const chatMessages = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    const userInput = document.getElementById('userInput');
+    const chatbotModal = document.getElementById('chatbot-modal');
+    const closeModal = document.getElementById('close-modal');
+    const chatIcon = document.getElementById('chatbot-icon');
+
+    // Mostrar el modal al hacer clic en el icono
+    chatIcon.addEventListener('click', () => {
+        chatbotModal.classList.remove('hidden');
+        loadMessages(); // Cargar los mensajes guardados en sessionStorage
+    });
+
+    // Ocultar el modal al hacer clic en el botón de cerrar
+    closeModal.addEventListener('click', () => {
+        chatbotModal.classList.add('hidden');
+    });
+
+    // Función para añadir un mensaje al chat y guardarlo en sessionStorage
+    function addMessage(content, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', sender);
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        if (sender === 'bot') {
+            messageDiv.innerHTML = `
+                <div class="user-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="message-content">${content}</div>
+            `;
+        } else {
+            messageDiv.innerHTML = `
+                <div class="message-content">${content}</div>
+                <div class="user-circle">Yo</div>
+            `;
+        }
+
+        // Guardar mensaje en sessionStorage
+        const messages = JSON.parse(sessionStorage.getItem('chatMessages') || '[]');
+        messages.push({ content, sender });
+        sessionStorage.setItem('chatMessages', JSON.stringify(messages));
+    }
+
+    // Función para cargar los mensajes desde sessionStorage
+    function loadMessages() {
+        chatMessages.innerHTML = ''; // Limpiar mensajes anteriores
+        const messages = JSON.parse(sessionStorage.getItem('chatMessages') || '[]');
+        messages.forEach(({ content, sender }) => {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender);
+            chatMessages.appendChild(messageDiv);
+
+            if (sender === 'bot') {
+                messageDiv.innerHTML = `
+                    <div class="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="message-content">${content}</div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="message-content">${content}</div>
+                    <div class="user-circle">Yo</div>
+                `;
+            }
+        });
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const userMessage = userInput.value.trim();
+        if (userMessage) {
+            addMessage(userMessage, 'user');
+            userInput.value = '';
+
+            fetch('{% url "chat_view" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: 'message=' + encodeURIComponent(userMessage)
+            })
+            .then(response => response.json())
+            .then(data => {
+                addMessage(data.response, 'bot');
+            });
+        }
+    });
+
+    // Mensaje inicial del bot, solo si no hay mensajes guardados
+    if (!sessionStorage.getItem('chatMessages')) {
+        addMessage('¡Hola! Soy el asistente de Descuentos Catamarca. ¿En qué puedo ayudarte hoy?', 'bot');
+    }
+</script>
     <!--<script src="jquery.js"></script>
   <script src="{% static "js/utils/jquery_chained.js" %}%}"></script>-->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>

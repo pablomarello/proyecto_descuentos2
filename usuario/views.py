@@ -141,7 +141,7 @@ def index(request):
         })
         
     
-    comercios = Oferente.objects.all()
+    comercios = Oferente.objects.filter(habilitado=True)
     manana = hoy + datetime.timedelta(days=1)
     # Renderizado de la plantilla
     return render(request, 'usuarios/ind.html', {

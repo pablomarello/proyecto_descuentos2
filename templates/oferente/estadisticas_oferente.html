@@ -91,7 +91,7 @@
 {% block js %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const url = "{% url 'estadisticas_oferente' %}";
+        const url = "{% url 'mis_estadisticas' %}";
     
         fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(response => response.json())

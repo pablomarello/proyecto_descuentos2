@@ -3,13 +3,22 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-
+from oferente.models import Oferente
+from oferta.models import Comentario, Oferta, Puntuacion
+from persona.models import ubicaciones
+from producto.models import Producto, Subcategoria
+from usuario.models import ActividadUsuario, Usuario
+from django.db.models import Avg, Count, F, Q
+from oferta.models import Oferta
 from persona.models import TablaDepartamento, TablaLocalidad, TablaMunicipio, TablaProvincia, ubicaciones
 from .forms import CuitForm, OferenteForm, UbiComercio
 from .models import Oferente, ubicacionesComercio
 from afip import Afip
 from geopy.distance import geodesic
 from geopy.distance import distance
+from rest_framework.decorators import api_view,permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 cert = open('oferente/certificado.crt').read()
 key = open('oferente/private_key.key').read()
@@ -18,7 +27,7 @@ afip = Afip({
     "CUIT": 23395413929,
     "cert": cert,
     "key": key,
-    "access_token": "4Sk8rHhwxLroYbGwKakZZiiJUlNUiWMYfxOrkkUIzsfaHWjBsbHHKo4ka0Crp7aV",
+    "access_token": "r97LQ4E4yCH3X29nKt1j0Lu8eYW2cZOHL6qTOQbxDA1FhqRVncc74IsPKN9DCdAo",
     "production": True
 })
 
@@ -262,3 +271,48 @@ def comercios(request):
         'usuario_autenticado': request.user.is_authenticated,  # Nuevo parámetro
         'tiene_comercios': tiene_comercios,  # Variable para mostrar botones en el nav en el template
     })
+    
+def estadisticas_oferente(request, categoria_id=None):
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        oferentes = request.user.comercios.all()
+        filtros = {'oferente__in': oferentes}
+        
+        if categoria_id:
+            filtros['productos__categoria__id'] = categoria_id
+
+        # Filtrar ofertas relevantes
+        
+        ofertas_mas_puntuadas = Oferta.objects.filter(**filtros).annotate(
+            promedio_puntuacion=Avg('puntuacion__calificacion')
+        )
+
+        ofertas_mas_comentadas = Oferta.objects.filter(**filtros).annotate(
+            total_comentarios=Count('comentario')
+        )
+        
+        ofertas= Oferta.objects.filter(**filtros)
+
+        estadisticas_por_comercio = [
+            
+            {
+                "comercio": oferente.nombrecomercio,
+                "total_ofertas": ofertas.filter(oferente=oferente).count(),
+                "ofertas_mayor_4": ofertas_mas_puntuadas.filter(oferente=oferente, promedio_puntuacion__gt=3.9).count(),
+                "ofertas_menor_4":ofertas_mas_puntuadas.filter(oferente=oferente, promedio_puntuacion__lte=3.9).count(),
+                "mas_comentadas": list(
+                    ofertas_mas_comentadas.filter(oferente=oferente).values('id', 'titulo', 'total_comentarios','activo')
+                ),
+                "mejor_puntuadas": list(
+                    ofertas_mas_puntuadas.filter(oferente=oferente).values('id', 'titulo', 'promedio_puntuacion','activo')
+                ),
+                
+            }
+            for oferente in oferentes
+        ]
+
+        return JsonResponse({'estadisticas_por_comercio': estadisticas_por_comercio})
+    else:
+        return render(request, 'oferente/estadisticas.html')
+    
+    
