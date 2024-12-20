@@ -341,15 +341,15 @@ Descuentos Catamarca
 
 
             {% if user.is_authenticated %}
-                <button onclick="openModal('{{comercio.id}}')" 
+                <button onclick="openModalcomercio('{{comercio.id}}')" 
                         class="bg-blue-600 text-white shadow-sm hover:bg-blue-500 rounded px-2 py-1 text-sm mt-4">
                     Ver ubicación
                 </button>
 
                 <!-- Modal para mostrar el mapa -->
-                <div id="modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex justify-center items-center">
+                <div id="modalcomercio" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50 flex justify-center items-center">
                     <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-5 relative">
-                        <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">&times;</button>
+                        <button onclick="closeModalcomercio()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">&times;</button>
                         <h2 class="text-lg font-semibold mb-4">Ubicación de la oferta</h2>
                         <div id="map-modal" class="w-full h-64"></div>
                     </div>
@@ -711,11 +711,11 @@ Descuentos Catamarca
 </script>
 <script>
 
-    let modal = document.getElementById('modal');
+    let modal = document.getElementById('modalcomercio');
     const ubicacionUsuarioDB = {{ ubicacion_usuario|safe }};
     const comerciosEnRadio = {{ comercios_en_radio|safe }};
 
-    function openModal(lng) {
+    function openModalcomercio(lng) {
         modal.classList.remove('hidden');
         
         
@@ -799,7 +799,7 @@ Descuentos Catamarca
         console.log(lng);
     }
 
-    function closeModal() {
+    function closeModalcomercio() {
         modal.classList.add('hidden');
     }
 </script>

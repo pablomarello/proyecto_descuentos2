@@ -89,9 +89,9 @@
                 </div>
 
                 <!-- Carrito -->
-                {% if user.is_authenticated %}
+                {% comment %} {% if user.is_authenticated %}
                 <a href="#" class="text-xl">🛒</a>
-                {% endif %}
+                {% endif %} {% endcomment %}
 
                 <!-- Menú Usuario -->
                 {% if user.is_authenticated %}
@@ -242,12 +242,6 @@
     <section>
 
     </section>
-
-
-
-
-
-
 
     <div id="searchSidebar"
         class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gray-800 shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out z-50">

@@ -12,7 +12,7 @@ def send_sms(numero, texto):
     base_url = "http://servicio.smsmasivos.com.ar/enviar_sms.asp"
     params = {
         "api": 1,
-        "apikey": apikey,
+        "apikey": 'byi9arl2pnhjkquzsx3187zycni2bzthomj9qgbho6sp40w8u60ryikdli55cpvobtferlqqnmobds779rsmm4698t9mjl30m3i6',
         "tos": numero,
         "texto": texto
     }
