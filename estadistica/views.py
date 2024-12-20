@@ -142,39 +142,68 @@ def estadisticas_oferente(request, categoria_id=None):
     
 
 @csrf_exempt
-def mapa_calor_inicio_sesion(request):
+def mapa_calor_inicio_sesion(request, categoria_id=None):
     if request.method == "GET":
         # Verificar si la solicitud es AJAX
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             # Proceso para devolver JSON
-            inicios_por_ubicacion = (
-                ActividadUsuario.objects
-                .filter(
-                    usuario__persona_id__ubicacion__latitud__isnull=False,
-                    usuario__persona_id__ubicacion__longitud__isnull=False
+                # Obtener ofertas más puntuadas
+                if categoria_id:
+                    ofertas_mas_puntuadas = Oferta.objects.annotate(
+                        promedio_puntuacion=Avg('puntuacion__calificacion')
+                    ).filter(productos__categoria__categoria=categoria_id).order_by('-promedio_puntuacion')[:5]
+                else:
+                    ofertas_mas_puntuadas = Oferta.objects.annotate(
+                        promedio_puntuacion=Avg('puntuacion__calificacion')
+                    ).order_by('-promedio_puntuacion')[:5]
+
+                # Validar ofertas
+                ofertas_data = [
+                    {
+                        'id': oferta.id,
+                        'nombre': oferta.titulo,
+                        'promedio_puntuacion': oferta.promedio_puntuacion,
+                        'lat': oferta.comercio.ubicacion.latitud if oferta.comercio and oferta.comercio.ubicacion else None,
+                        'lng': oferta.comercio.ubicacion.longitud if oferta.comercio and oferta.comercio.ubicacion else None
+                    }
+                    for oferta in ofertas_mas_puntuadas
+                ]
+
+                # Obtener inicios por ubicación
+                inicios_por_ubicacion = (
+                    ActividadUsuario.objects
+                    .filter(
+                        usuario__persona_id__ubicacion__latitud__isnull=False,
+                        usuario__persona_id__ubicacion__longitud__isnull=False
+                    )
+                    .values('usuario__persona_id__ubicacion__latitud', 'usuario__persona_id__ubicacion__longitud')
+                    .annotate(total=Count('id'))
                 )
-                .values('usuario__persona_id__ubicacion__latitud', 'usuario__persona_id__ubicacion__longitud')
-                .annotate(total=Count('id'))
-            )
-            
-            persona = request.user.persona_id
-            ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
 
-            lat_usuario = float(ubicacion_usuario.latitud)
-            lon_usuario = float(ubicacion_usuario.longitud)
+                # Ubicación del usuario
+                try:
+                    persona = request.user.persona_id
+                    ubicacion_usuario = get_object_or_404(ubicaciones, persona_id=persona)
+                    lat_usuario = float(ubicacion_usuario.latitud)
+                    lon_usuario = float(ubicacion_usuario.longitud)
+                except Exception as e:
+                    lat_usuario, lon_usuario = None, None
+                    print(f"Error obteniendo la ubicación del usuario: {e}")
 
-            data = [
-                {
-                    
-                    'lat': ubicacion['usuario__persona_id__ubicacion__latitud'],
-                    'lng': ubicacion['usuario__persona_id__ubicacion__longitud'],
-                    'count': ubicacion['total'],
+                # Preparar datos para JSON
+                data = {
+                    'ubicaciones_inicios': [
+                        {
+                            'lat': ubicacion['usuario__persona_id__ubicacion__latitud'],
+                            'lng': ubicacion['usuario__persona_id__ubicacion__longitud'],
+                            'count': ubicacion['total']
+                        }
+                        for ubicacion in inicios_por_ubicacion
+                    ],
                     'ubicacion_usuario': {'latitud': lat_usuario, 'longitud': lon_usuario},
-                    
+                    'ofertas_mas_puntuadas': ofertas_data
                 }
-                for ubicacion in inicios_por_ubicacion
-            ]
-            return JsonResponse({'data': data})
+                return JsonResponse(data)
 
         # Si no es una solicitud AJAX, renderiza la página
         return render(request, "admin/mapa_calor.html")

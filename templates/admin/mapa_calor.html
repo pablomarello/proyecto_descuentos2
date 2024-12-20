@@ -6,6 +6,10 @@
         height: 500px;
         width: 100%;
     }
+    #mapa {
+        height: 500px;
+        width: 100%;
+    }
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
@@ -23,39 +27,65 @@
     <h1>Inicios de sesion por zona</h1>
     <div id="map" style="height: 500px; width:90%; z-index: 1; margin-left: 15px; margin-top: 75px;"></div>
 </div>
+
+<div class="container-fluid px-4">
+    <h1>Inicios de sesion por zona</h1>
+    <div id="mapa" style="height: 500px; width:90%; z-index: 1; margin-left: 15px; margin-top: 75px;"></div>
+</div>
 {% endblock content %}
 
 {% block js %}
 <script>
     const map = L.map('map').setView([-28.4654203,-65.7787809], 14); // Coordenadas centradas en Argentina
+   
 
     // Cargar mapa base
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
+    const mapa = L.map('mapa').setView([-28.4654203,-65.7787809], 14); // Coordenadas centradas en Argentina
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(mapa);
+
 
 </script>
 
 <script>
+    // Cargar datos de inicios de sesión y renderizar mapa de calor
     fetch("{% url 'mapa_calor' %}", { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-    .then(response => {
-        if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
-        return response.json();
-    })
-    .then(data => {
-        console.log(data); // Para depurar los datos obtenidos
+        .then(response => {
+            if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Datos de inicios de sesión:', data);
 
-        const heatData = data.data.map(point => [
-            parseFloat(point.lat),
-            parseFloat(point.lng),
-            point.count
-        ]);
+            // Mapa de calor para inicios de sesión
+            const heatData = data.data.map(point => [
+                parseFloat(point.lat),
+                parseFloat(point.lng),
+                point.count
+            ]);
 
-        // Agregar la capa de calor al mapa
-        L.heatLayer(heatData, { radius: 30,blur: 15,   // Suavizado de los bordes de calor
-            maxZoom: 17 }).addTo(map);
-    })
-    .catch(error => console.error('Error al cargar los datos del mapa:', error));
+            L.heatLayer(heatData, {
+                radius: 30,
+                blur: 15,
+                maxZoom: 17
+            }).addTo(map);
+
+            // Marcadores para ofertas más puntuadas
+            data.ofertas_mas_puntuadas.forEach(oferta => {
+                L.marker([oferta.lat, oferta.lng])
+                    .addTo(mapa)
+                    .bindPopup(`
+                        <strong>${oferta.nombre}</strong><br>
+                        Promedio de puntuación: ${oferta.promedio_puntuacion}
+                    `);
+            });
+        })
+        .catch(error => console.error('Error al cargar los datos:', error));
 </script>
 {% endblock js %}

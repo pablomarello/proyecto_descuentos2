@@ -20,61 +20,90 @@
 
 {% block content %}
 <div class="container-fluid px-4">
-    <h2 class="text-center text-black">INICIOS DE SESION POR ZONA</h2>
-    <div id="map" style="height: 500px; width:90%; z-index: 1; margin-left: 30px; margin-top: 75px;"></div>
+    <h2 class="text-center text-black"> Inicios de Sesión</h2>
+    <div id="map_inicios" style="height: 500px; width: 90%; z-index: 1; margin: 30px auto;"></div>
+</div>
+
+<div class="container-fluid px-4">
+    <h2 class="text-center text-black"> Ofertas Más Puntuadas</h2>
+    <div id="map_ofertas" style="height: 500px; width: 90%; z-index: 1; margin: 30px auto;"></div>
 </div>
 {% endblock content %}
 
 {% block js %}
 <script>
-    const map = L.map('map').setView([-28.4654203,-65.7787809], 14); // Coordenadas centradas en Argentina
+    document.addEventListener('DOMContentLoaded', function () {
+        // Configuración del primer mapa (Inicios de sesión)
+        const mapInicios = L.map('map_inicios').setView([-28.4654203, -65.7787809], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(mapInicios);
+    
+        // Configuración del segundo mapa (Ofertas más puntuadas)
+        const mapOfertas = L.map('map_ofertas').setView([-28.4654203, -65.7787809], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(mapOfertas);
+    
+        // Obtener los datos desde la API
+        fetch("{% url 'mapa_calor' %}", { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Datos obtenidos:', data);
+    
+                // Mapa de calor: Inicios de sesión
+                const heatDataInicios = data.ubicaciones_inicios.map(point => [
+                    parseFloat(point.lat),
+                    parseFloat(point.lng),
+                    point.count
+                ]);
+                L.heatLayer(heatDataInicios, {
+                    radius: 30,
+                    blur: 15,
+                    maxZoom: 17
+                }).addTo(mapInicios);
+    
+                // Mapa de calor: Ofertas más puntuadas
+                const heatDataOfertas = data.ofertas_mas_puntuadas
+                    .filter(oferta => oferta.lat && oferta.lng) // Filtra las ofertas sin coordenadas
+                    .map(oferta => [
+                        parseFloat(oferta.lat),
+                        parseFloat(oferta.lng),
+                        oferta.promedio_puntuacion // Usa el promedio como intensidad de calor
+                    ]);
+                L.heatLayer(heatDataOfertas, {
+                    radius: 30,
+                    blur: 15,
+                    maxZoom: 17
+                }).addTo(mapOfertas);
 
-    // Cargar mapa base
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+                function createLegend(grades, colors, title) {
+                    const legend = L.control({ position: 'bottomright' });
+                
+                    legend.onAdd = function () {
+                        const div = L.DomUtil.create('div', 'info legend');
+                        div.innerHTML += `<strong>${title}</strong><br>`;
+                        for (let i = 0; i < grades.length; i++) {
+                            div.innerHTML +=
+                                `<i style="background: ${colors[i]}; width: 18px; height: 18px; display: inline-block; margin-right: 5px;"></i> ` +
+                                `${grades[i]}${(grades[i + 1] ? `&ndash;${grades[i + 1]}<br>` : '+')}`;
+                        }
+                        return div;
+                    };
+                
+                    return legend;
+                }
+                const gradesInicios = [0, 5, 10, 20, 40, 50]; // Valores de referencia
+                const colorsInicios =['#00f', '#0f0', '#ff0', '#ffa500', '#f00']; // Escala de colores
+                createLegend(gradesInicios, colorsInicios, 'Inicios de Sesión').addTo(mapInicios);
 
-
-</script>
-
-<script>
-    fetch("{% url 'mapa_calor' %}", { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-    .then(response => {
-        if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
-        return response.json();
-    })
-    .then(data => {
-        console.log(data); // Para depurar los datos obtenidos
-
-        const heatData = data.data.map(point => [
-            parseFloat(point.lat),
-            parseFloat(point.lng),
-            point.count
-        ]);
-
-        // Agregar la capa de calor al mapa
-        L.heatLayer(heatData, { radius: 30,blur: 15,   // Suavizado de los bordes de calor
-            maxZoom: 17 }).addTo(map);
-    })
-    .catch(error => console.error('Error al cargar los datos del mapa:', error));
-    // Agregar la leyenda de referencia de colores
-    var legend = L.control({ position: 'bottomright' });
-
-    legend.onAdd = function (map) {
-        var div = L.DomUtil.create('div', 'info legend'),
-            grades = [0, 5, 10, 20, 40, 50], // Valores de referencia (ajustar a tus datos)
-            colors = ['#6800ff','#00FF00' ,'#FFFF00', '#FFA500', '#FF4500', '#bd0000']; // Colores de calor
-
-        // Crear el HTML de la leyenda
-        div.innerHTML += '<strong>Referencias</strong><br>';
-        for (var i = 0; i < grades.length; i++) {
-            div.innerHTML +=
-                '<i style="background:' + colors[i] + '; text-shadow:1px 1px 1px 2px black ; width: 18px; height: 18px; display: inline-block; margin-right: 5px;"></i> ' +
-                grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-        }
-        return div;
-    };
-
-    legend.addTo(map);
+                // Leyenda para ofertas más puntuadas
+                const gradesOfertas = [0, 1, 2, 3, 4]; // Promedio de puntuación (ajustar a tus datos)
+                const colorsOfertas =['#00f', '#0f0', '#ff0', '#ffa500', '#f00']; // Escala de colores
+                createLegend(gradesOfertas, colorsOfertas, 'Puntuación de Ofertas').addTo(mapOfertas);
+            })
+            .catch(error => console.error('Error al cargar los datos del mapa:', error));
+                          
+    });
 </script>
 {% endblock js %}
