@@ -11,7 +11,10 @@ class ComentarioForm(forms.ModelForm):
     class Meta:
         model=Comentario
         fields=['comentario']
-        widgets = {'comentario':forms.Textarea(attrs={'class':'form-control','placeholder':'Escribe tu comentario aquí','style': 'border: 1px solid #d1d5db; padding: 4px; border-radius: 4px;'}),}
+        widgets = {'comentario':forms.Textarea(attrs={
+            'class':' px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400',
+            'placeholder':'Escribe tu comentario aquí',
+            'style': 'border: 1px solid #d1d5db; padding: 4px; border-radius: 4px;'}),}
 class OfertaForm(forms.ModelForm):
     
     oferente = forms.ModelChoiceField(
