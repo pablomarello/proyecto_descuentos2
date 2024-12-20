@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,32 +10,38 @@
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
     <!-- SWEET ALERT -->
 
-     <!-- Select -->
+    <!-- Select -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-    
+
     <!-- Your code -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{% static 'admin/css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles_chat.css' %}">
     <style>
         #resultados {
-            max-height: 200px; /* Altura máxima del contenedor */
-            overflow-y: auto; /* Habilitar scroll si hay muchos resultados */
-            z-index: 1000; /* Asegurarse de que el contenedor esté sobre otros elementos */
+            max-height: 200px;
+            /* Altura máxima del contenedor */
+            overflow-y: auto;
+            /* Habilitar scroll si hay muchos resultados */
+            z-index: 1000;
+            /* Asegurarse de que el contenedor esté sobre otros elementos */
         }
+
         #resultados div {
             padding: 8px;
             border-bottom: 1px solid #f0f0f0;
         }
+
         #resultados div:hover {
             background-color: #f8f8f8;
             cursor: pointer;
         }
     </style>
-  
-  <!--ReCaptcha-->
+
+    <!--ReCaptcha-->
 </head>
+
 <body class="bg-gray-200">
     <header>
         <!-- Navbar Principal -->
@@ -43,47 +50,64 @@
             <div class="flex items-center space-x-2">
                 <a class="text-2xl font-bold" href="{% url 'index' %}">Descuentazos</a>
             </div>
-        
+
             <!-- Botón de Menú (Mobile) -->
             <div class="md:hidden">
                 <button id="menu-toggle" class="focus:outline-none text-white">
-                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16m-7 6h7" />
                     </svg>
                 </button>
             </div>
-        
+
             <!-- Buscador y enlaces (Desktop) -->
             <div class="hidden md:flex items-center space-x-6 text-sm">
                 <!-- Buscador -->
                 <div class="relative flex items-center bg-white rounded-full overflow-hidden mb-4">
-                    <span class="absolute left-3 text-red-600">
-                        <img src="{% static 'images/media/lupa.png' %}" class="h-6 w-auto">
-                    </span>
-                    <input type="text" id="buscador" name="q" placeholder="Buscar..." 
-                           class="pl-10 pr-4 py-2 w-full text-black outline-none placeholder-gray-400">
+                    
+                    <form action="{% url 'index' %}" method="get" class="flex items-center w-full">
+
+
+                        <input 
+                        type="text" 
+                        id="buscador" 
+                        name="q" 
+                        placeholder="Buscar..."
+                        class="pl-10 pr-4 py-2 w-full text-black outline-none placeholder-gray-400">
+
+                        <button type="submit"><span class="relative right-4 text-red-600">
+                            <img src="{% static 'images/media/lupa.png' %}" class="h-6 w-auto">
+                        </span></button>
+                        
+                    </form>
                     <!-- Contenedor de resultados -->
                     <div id="resultados" class="absolute top-full left-0 w-full bg-white rounded-lg shadow-md hidden">
                         <!-- Resultados predictivos aparecerán aquí -->
                     </div>
                 </div>
-        
+
                 <!-- Carrito -->
                 {% if user.is_authenticated %}
                 <a href="#" class="text-xl">🛒</a>
                 {% endif %}
-        
+
                 <!-- Menú Usuario -->
                 {% if user.is_authenticated %}
-                <div class="flex items-center relative">                    
+                <div class="flex items-center relative">
                     <!-- Notification Button -->
                     <div class="relative mr-4">
-                        <button id="notificationButton" class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <button id="notificationButton"
+                            class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             <span class="sr-only">View notifications</span>
                             <img src="{% static 'images/svg/white/header/notificacion.svg' %}" alt="" class="h-8 w-8">
-                            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white"></span>
+                            <span
+                                class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white"></span>
                         </button>
-                        <div id="notificationPanel" class="hidden absolute border border-white right-0 mt-2 w-80 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-20" role="menu" aria-orientation="vertical" aria-labelledby="notificationButton">
+                        <div id="notificationPanel"
+                            class="hidden absolute border border-white right-0 mt-2 w-80 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-20"
+                            role="menu" aria-orientation="vertical" aria-labelledby="notificationButton">
                             <div class="py-1" role="none">
                                 <div class="px-4 py-2 text-sm text-white border-b">
                                     <h3 class="font-bold">Notificaciones</h3>
@@ -106,26 +130,32 @@
                                 <div class="px-4 py-2 flex items-start space-x-2 hover:bg-gray-700">
                                     <div class="h-2 w-2 mt-2 rounded-full bg-yellow-500"></div>
                                     <div>
-                                        <p class="text-sm font-medium text-white">Recordatorio de cambio de contraseña</p>
+                                        <p class="text-sm font-medium text-white">Recordatorio de cambio de contraseña
+                                        </p>
                                         <p class="text-xs text-gray-300">Hace 1 día</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                
+
                     <!-- User Profile Dropdown -->
                     <div class="relative">
-                        <button type="button" id="userMenuButton" class="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-expanded="false" aria-haspopup="true">
+                        <button type="button" id="userMenuButton"
+                            class="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            aria-expanded="false" aria-haspopup="true">
                             <span class="sr-only">Abrir menú de usuario</span>
                             {% if user.foto %}
-                                <img src="{{ user.foto.url }}" alt="" class="h-8 w-8 rounded-full">
+                            <img src="{{ user.foto.url }}" alt="" class="h-8 w-8 rounded-full">
                             {% else %}
-                                <img src="{{ MEDIA_URL }}avatar_default.png" alt="Imagen por defecto" class="h-8 w-8 rounded-full">
+                            <img src="{{ MEDIA_URL }}avatar_default.png" alt="Imagen por defecto"
+                                class="h-8 w-8 rounded-full">
                             {% endif %}
-                            
+
                         </button>
-                        <div id="userMenuDropdown" class="hidden absolute border border-white right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                        <div id="userMenuDropdown"
+                            class="hidden absolute border border-white right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                            role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
                             <div class="px-4 py-2 text-sm text-gray-700 border-b">
                                 <p class="font-bold text-white">{{ user.username }}</p>
                                 <p class="text-xs text-gray-300">{{ user.email }}</p>
@@ -144,33 +174,46 @@
                         </div>
                     </div>
                 </div>
-                
+
                 {% else %}
-                  <!-- Usuario -->
-                    <a href="{% url 'login' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem">Iniciar Sesión</a>
-                    <a href="{% url 'registrar_persona' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem">Registrarse</a>
+                <!-- Usuario -->
+                <a href="{% url 'login' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700"
+                    role="menuitem">Iniciar Sesión</a>
+                <a href="{% url 'registrar_persona' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700"
+                    role="menuitem">Registrarse</a>
 
                 {% endif %}
             </div>
         </nav>
-        
+
         <!-- Menú Colapsable (Mobile) -->
         <div id="mobile-menu" class="bg-gray-900 text-white px-4 py-2 hidden md:hidden ">
             <!-- Buscador -->
             <div class="relative flex items-center bg-white rounded-full overflow-hidden mb-4">
-                <span class="absolute left-3 text-red-600">
-                    <img src="{% static 'images/media/lupa.png' %}" class="h-6 w-auto">
-                </span>
-                <input type="text" name="q" placeholder="Buscar..." class="pl-10 pr-4 py-2 w-full text-black outline-none placeholder-gray-400">
+                <form action="{% url 'index' %}" method="get" class="flex items-center w-full">
+
+
+                    <input 
+                    type="text" 
+                    id="buscador" 
+                    name="q" 
+                    placeholder="Buscar..."
+                    class="pl-10 pr-4 py-2 w-full text-black outline-none placeholder-gray-400">
+
+                    <button type="submit"><span class="relative right-4 text-red-600">
+                        <img src="{% static 'images/media/lupa.png' %}" class="h-6 w-auto">
+                    </span></button>
+                    
+                </form>
             </div>
-        
+
             <!-- Categorías -->
             <div class="flex flex-col space-y-2 ">
                 {% for categoria in categorias %}
                 <a href="{% url 'ofertas_por_categoria' categoria.id %}" class="hover: decoration-none">{{ categoria.nombre }}</a>
                 {% endfor %}
             </div>
-        
+
             <!-- Opciones de Usuario -->
             <div class="mt-4">
                 {% if user.is_authenticated %}
@@ -191,25 +234,26 @@
                 {% endif %}
             </div>
         </div>
-        
+
         <!-- Submenú (Desktop) -->
         <div class="bg-gray-900 text-white px-4 py-2 hidden md:flex items-center space-x-4 text-sm sticky top-0 z-40">
             {% for categoria in categorias %}
             <a href="{% url 'ofertas_por_categoria' categoria.id %}" class="hover:decoration-none">{{ categoria.nombre }}</a>
             {% endfor %}
         </div>
-    {% comment %}
+        {% comment %}
         <div class="bg-gray-800 border border-white px-4 py-4 flex items-center justify-between">
-             <!-- Logo y menú hamburguesa -->
+            <!-- Logo y menú hamburguesa -->
             <div class="flex items-center space-x-4 lg:w-1/4">
                 <!-- Menú hamburguesa (solo móvil) -->
                 <button id="menuButton" class="lg:hidden">
-                    <img src="{% static "images/svg/white/header/menu.svg" %}" alt="" class="h-6 w-auto">
+                    <img src="{% static " images/svg/white/header/menu.svg" %}" alt="" class="h-6 w-auto">
                 </button>
 
                 <!-- Logo -->
                 <div class="flex items-center">
-                  <a href="{% url "index" %}"><img src="{% static "images/svg/logo3.svg" %}" alt="Logo" class="h-10 w-auto"></a>
+                    <a href="{% url " index" %}"><img src="{% static " images/svg/logo3.svg" %}" alt="Logo"
+                            class="h-10 w-auto"></a>
                 </div>
             </div>
 
@@ -217,19 +261,22 @@
             <nav class="hidden lg:flex justify-center max-w space-x-8 lg:w-1/2">
                 <div class="relative">
                     <!-- Botón del dropdown -->
-                    <button class="text-white border border-gray-300 rounded-md px-4 py-2 text-sm font-medium hover:bg-gray-100 hover:text-black" id="dropdownButton">
+                    <button
+                        class="text-white border border-gray-300 rounded-md px-4 py-2 text-sm font-medium hover:bg-gray-100 hover:text-black"
+                        id="dropdownButton">
                         Categorías
                     </button>
-            
+
                     <!-- Contenido del dropdown -->
                     <div class="absolute hidden mt-2 w-48 bg-white rounded-md shadow-lg z-10" id="dropdownMenu">
                         <ul class="py-1">
                             {% for categoria in categorias %}
-                                <li>
-                                    <a href="{%url "ofertas_por_categoria" categoria.id%}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        {{ categoria.nombre }}
-                                    </a>
-                                </li>
+                            <li>
+                                <a href="{%url " ofertas_por_categoria" categoria.id%}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    {{ categoria.nombre }}
+                                </a>
+                            </li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -239,17 +286,14 @@
             </nav>
 
             <!-- Barra de búsqueda, usuario y carrito -->
-              <div class="flex items-center lg:justify-init space-x-2 lg:w-1/4 lg:justify-end">
+            <div class="flex items-center lg:justify-init space-x-2 lg:w-1/4 lg:justify-end">
                 <div class="hidden lg:flex items-center relative">
                     <form action="{% url 'index' %}" method="get" class="flex items-center w-full">
-                        <input 
-                            type="text" 
-                            name="q" 
-                            placeholder="Buscar producto..." 
-                            class="h-8 border border-gray-300 rounded-md w-full pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
+                        <input type="text" name="q" placeholder="Buscar producto..."
+                            class="h-8 border border-gray-300 rounded-md w-full pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <button type="submit" class="absolute right-0 h-8 w-8">
-                            <img src="{% static 'images/svg/white/header/buscar.svg' %}" alt="Buscar" class="h-8 w-8 bg-red-700 rounded-md">
+                            <img src="{% static 'images/svg/white/header/buscar.svg' %}" alt="Buscar"
+                                class="h-8 w-8 bg-red-700 rounded-md">
                         </button>
                     </form>
                 </div>
@@ -262,34 +306,36 @@
                 <!-- Barra de búsqueda móvil (oculta por defecto) -->
                 <div id="mobileSearchBar" class="hidden flex items-center mt-2 lg:hidden">
                     <form action="{% url 'index' %}" method="get" class="flex items-center w-full">
-                        <input 
-                            type="text" 
-                            name="q" 
-                            placeholder="Buscar producto..." 
-                            class="h-8 border border-gray-300 rounded-md w-full pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
+                        <input type="text" name="q" placeholder="Buscar producto..."
+                            class="h-8 border border-gray-300 rounded-md w-full pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <button type="submit" class="absolute right-0 h-8 w-8">
-                            <img src="{% static 'images/svg/white/header/buscar.svg' %}" alt="Buscar" class="h-8 w-8 bg-red-700 rounded-md">
+                            <img src="{% static 'images/svg/white/header/buscar.svg' %}" alt="Buscar"
+                                class="h-8 w-8 bg-red-700 rounded-md">
                         </button>
                     </form>
                 </div>
 
                 <!-- Carrito -->
                 <button id="cartButton">
-                <img src="{% static 'images/svg/white/header/lista de compras2.svg' %}" alt="Carrito" class="h-8 w-8">
+                    <img src="{% static 'images/svg/white/header/lista de compras2.svg' %}" alt="Carrito"
+                        class="h-8 w-8">
                 </button>
 
-                
+
                 {% if user.is_authenticated %}
-                <div class="flex items-center relative">                    
+                <div class="flex items-center relative">
                     <!-- Notification Button -->
                     <div class="relative mr-4">
-                        <button id="notificationButton" class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <button id="notificationButton"
+                            class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             <span class="sr-only">View notifications</span>
                             <img src="{% static 'images/svg/white/header/notificacion.svg' %}" alt="" class="h-8 w-8">
-                            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white"></span>
+                            <span
+                                class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white"></span>
                         </button>
-                        <div id="notificationPanel" class="hidden absolute border border-white right-0 mt-2 w-80 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-20" role="menu" aria-orientation="vertical" aria-labelledby="notificationButton">
+                        <div id="notificationPanel"
+                            class="hidden absolute border border-white right-0 mt-2 w-80 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-20"
+                            role="menu" aria-orientation="vertical" aria-labelledby="notificationButton">
                             <div class="py-1" role="none">
                                 <div class="px-4 py-2 text-sm text-white border-b">
                                     <h3 class="font-bold">Notificaciones</h3>
@@ -312,21 +358,26 @@
                                 <div class="px-4 py-2 flex items-start space-x-2 hover:bg-gray-700">
                                     <div class="h-2 w-2 mt-2 rounded-full bg-yellow-500"></div>
                                     <div>
-                                        <p class="text-sm font-medium text-white">Recordatorio de cambio de contraseña</p>
+                                        <p class="text-sm font-medium text-white">Recordatorio de cambio de contraseña
+                                        </p>
                                         <p class="text-xs text-gray-300">Hace 1 día</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                
+
                     <!-- User Profile Dropdown -->
                     <div class="relative">
-                        <button type="button" id="userMenuButton" class="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-expanded="false" aria-haspopup="true">
+                        <button type="button" id="userMenuButton"
+                            class="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            aria-expanded="false" aria-haspopup="true">
                             <span class="sr-only">Abrir menú de usuario</span>
                             <img class="h-8 w-8 rounded-full" src="" alt="">
                         </button>
-                        <div id="userMenuDropdown" class="hidden absolute border border-white right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                        <div id="userMenuDropdown"
+                            class="hidden absolute border border-white right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                            role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
                             <div class="px-4 py-2 text-sm text-gray-700 border-b">
                                 <p class="font-bold text-white">{{ user.username }}</p>
                                 <p class="text-xs text-gray-300">{{ user.email }}</p>
@@ -344,104 +395,116 @@
                         </div>
                     </div>
                 </div>
-                
+
                 {% else %}
-                  <!-- Usuario -->
-                    <button id="userButton" class="flex items-center">
-                        <img src="{% static 'images/svg/white/header/mi cuenta.svg' %}" alt="Mi Cuenta" class="h-8 w-8">
-                    </button>
-                    
-                    <!-- Menú desplegable para usuarios no autenticados -->
-                    <div id="guestMenuDropdown" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
-                        <a href="{% url 'login' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem">Iniciar Sesión</a>
-                        <a href="{% url 'registrar_persona' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem">Registrarse</a>
-                    </div>
+                <!-- Usuario -->
+                <button id="userButton" class="flex items-center">
+                    <img src="{% static 'images/svg/white/header/mi cuenta.svg' %}" alt="Mi Cuenta" class="h-8 w-8">
+                </button>
+
+                <!-- Menú desplegable para usuarios no autenticados -->
+                <div id="guestMenuDropdown"
+                    class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
+                    <a href="{% url 'login' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700"
+                        role="menuitem">Iniciar Sesión</a>
+                    <a href="{% url 'registrar_persona' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700"
+                        role="menuitem">Registrarse</a>
+                </div>
                 {% endif %}
-            </div> 
+            </div>
         </div>{% endcomment %}
     </header>
 
     <section>
-        
+
     </section>
 
-    
-
-  
 
 
 
-    <div id="searchSidebar" class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gray-800 shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+
+
+
+    <div id="searchSidebar"
+        class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gray-800 shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out z-50">
         <div class="p-6">
             <div class="flex items-center space-x-2 mb-4">
                 <button id="closeSearchButton">
-                    <img src="{% static "images/svg/white/header/sidebars/atras.svg" %} " alt="" class="h-6 w-6">
+                    <img src="{% static " images/svg/white/header/sidebars/atras.svg" %} " alt="" class=" h-6 w-6">
                 </button>
                 <div class="relative flex-grow">
-                    <input type="text" placeholder="Buscar" class="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    <img src="{% static "images/svg/black/header/buscar.svg" %}" alt="" class="absolute right-0 top-1/2 transform -translate-y-1/2 h-8 w-8">
+                    <input type="text" placeholder="Buscar"
+                        class="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <img src="{% static " images/svg/black/header/buscar.svg" %}" alt=""
+                        class="absolute right-0 top-1/2 transform -translate-y-1/2 h-8 w-8">
                 </div>
             </div>
             <div class="border-t pt-4">
                 <p class="text-white">
-                    <h2>Resultados de búsqueda para "{{ query }}"</h2>
+                <h2>Resultados de búsqueda para "{{ q }}"</h2>
 
-                    {% if ofertas %}
-                        <h3>Ofertas</h3>
-                        <ul>
-                            {% for oferta in ofertas %}
-                                <li>{{ oferta.nombre }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No se encontraron ofertas.</p>
-                    {% endif %}
+                {% if ofertas %}
+                <h3>Ofertas</h3>
+                <ul>
+                    {% for oferta in ofertas %}
+                    <li>{{ oferta.nombre }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No se encontraron ofertas.</p>
+                {% endif %}
                 </p>
             </div>
         </div>
     </div>
-    
 
-    <div id="userSidebar" class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gray-800 shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+
+    <div id="userSidebar"
+        class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gray-800 shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out z-50">
         <div class="p-6">
             <div class="flex items-center space-x-2 mb-2">
                 <button id="closeUserButton">
-                    <img src="{% static "images/svg/white/header/sidebars/atras.svg" %}" alt="" class="h-6 w-6">
+                    <img src="{% static " images/svg/white/header/sidebars/atras.svg" %}" alt="" class="h-6 w-6">
                 </button>
                 <h2 class="text-white text-2xl font-bold mb-0">Mi Cuenta</h2>
             </div>
             <nav class="border-t pt-4 flex flex-col space-y-4">
                 <div class="p-4 flex flex-col items-center">
                     <h1 class="text-white text-2xl font-bold mb-4">Bienvenido</h1>
-                    <p class="text-white">Al sitio de descuentos más grande 
+                    <p class="text-white">Al sitio de descuentos más grande
                         de la provincia.</p>
                 </div>
                 <div class="bg-gray-700 p-4 flex items-center">
-                    <img src="{% static "images/svg/white/header/sidebars/info.svg" %}" alt="" class="h-8 w-auto mr-4 self-start">
+                    <img src="{% static " images/svg/white/header/sidebars/info.svg" %}" alt=""
+                        class="h-8 w-auto mr-4 self-start">
                     <span class="text-white">
-                      Importante: Recuerda, iniciar sesión para calificar,
-                      comentar los descuentos y saber la ubicación del 
-                      comercio donde se encuentran los productos deseados.
+                        Importante: Recuerda, iniciar sesión para calificar,
+                        comentar los descuentos y saber la ubicación del
+                        comercio donde se encuentran los productos deseados.
                     </span>
-                  </div>
-                  
+                </div>
+
                 <div class="border p-4 flex flex-col items-center">
                     <h1 class="text-white font-bold mb-2">No tengo una cuenta</h1>
-                    <a href="{% url 'registrar_persona' %}" class="bg-blue-700 rounded h-8 w-full text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-center">Registrarse</a>
-                  </div>
+                    <a href="{% url 'registrar_persona' %}"
+                        class="bg-blue-700 rounded h-8 w-full text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-center">Registrarse</a>
+                </div>
                 <div class="border p-4 mt-4 flex flex-col items-center">
                     <h1 class="text-white font-bold mb-2">Ya tengo una cuenta</h1>
-                    <a href="{% url 'login' %}" class="bg-blue-700 rounded h-8 w-full text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-center">Iniciar Sesión</a>
+                    <a href="{% url 'login' %}"
+                        class="bg-blue-700 rounded h-8 w-full text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-center">Iniciar
+                        Sesión</a>
                 </div>
             </nav>
         </div>
     </div>
 
-    <div id="cartSidebar" class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gray-800 shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+    <div id="cartSidebar"
+        class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gray-800 shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out z-50">
         <div class="p-6">
             <div class="flex items-center space-x-2 mb-2">
                 <button id="closeCartButton">
-                    <img src="{% static "images/svg/white/header/sidebars/atras.svg" %}" alt="" class="h-6 w-6">
+                    <img src="{% static " images/svg/white/header/sidebars/atras.svg" %}" alt="" class="h-6 w-6">
                 </button>
                 <h2 class="text-white text-2xl font-bold mb-0">Lista de compras</h2>
             </div>
@@ -463,214 +526,229 @@
 
     <footer class="bg-gray-700 border-t border-gray-200 pt-10 pb-6">
         <div class="container mx-auto px-4">
-          <!-- Main footer content -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-            <!-- Column 1 -->
-            <div>
-              <h3 class="text-sm font-semibold text-gray-200 mb-4">Sobre nosotros</h3>
-              <ul class="space-y-2">
-                <li><p class="text-sm text-gray-300">Descuentos Catamarca es la plataforma que te permite descubrir las mejores ofertas en tu provincia, directamente desde tu dispositivo. Encuentra descuentos en productos y servicios de negocios locales y ubícalos fácilmente. Con Descuentos Catamarca, acceder a grandes promociones cercanas nunca ha sido tan fácil.</p></li>
-                
-              </ul>
-            </div>
-      
-            <!-- Column 2 -->
-            <div>
-              <h3 class="text-sm font-semibold text-gray-200 mb-4">Enlaces Rápidos</h3>
-              <ul class="space-y-2">
-                <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Inicio</a></li>
-                <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Categorías</a></li>
-                <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Contacto</a></li>
-                <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Ayuda</a></li>
-                <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Soporte</a></li>
-              </ul>
-            </div>
-      
-            <!-- Column 3 -->
-            <div>
-              <h3 class="text-sm font-semibold text-gray-200 mb-4">Ayuda</h3>
-              <ul class="space-y-2">
-                <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Registrar Mi Comercio</a></li>
-                <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Contacto</a></li>
-                <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Resolución de problemas</a></li>
-                <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Centro de seguridad</a></li>
-              </ul>
-            </div>
-      
-            <div>
-                <h3 class="text-sm font-semibold text-gray-200 mb-4">Contaco</h3>
-                <ul class="space-y-2">
-                    <div class="flex items-center">
-                        <img src="{% static "images/svg/white/header/sidebars/email.svg" %}" alt="" class="h-6 w-6 mr-2">
-                        <li><a class="text-sm text-gray-300">descuentoscatamarca@gmail.com</a></li>    
-                    </div>
-                    <div class="flex items-center">
-                        <img src="{% static "images/svg/white/header/sidebars/telefono.svg" %}" alt="" class="h-6 w-6 mr-2">
-                        <li><a class="text-sm text-gray-300">(3834) 95-4106</a></li>
-                    </div>
+            <!-- Main footer content -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <!-- Column 1 -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-200 mb-4">Sobre nosotros</h3>
+                    <ul class="space-y-2">
+                        <li>
+                            <p class="text-sm text-gray-300">Descuentos Catamarca es la plataforma que te permite
+                                descubrir las mejores ofertas en tu provincia, directamente desde tu dispositivo.
+                                Encuentra descuentos en productos y servicios de negocios locales y ubícalos fácilmente.
+                                Con Descuentos Catamarca, acceder a grandes promociones cercanas nunca ha sido tan
+                                fácil.</p>
+                        </li>
 
-                </ul>
+                    </ul>
+                </div>
+
+                <!-- Column 2 -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-200 mb-4">Enlaces Rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Inicio</a></li>
+                        <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Categorías</a></li>
+                        <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Contacto</a></li>
+                        <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Ayuda</a></li>
+                        <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Soporte</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3 -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-200 mb-4">Ayuda</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Registrar Mi Comercio</a></li>
+                        <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Contacto</a></li>
+                        <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Resolución de problemas</a>
+                        </li>
+                        <li><a href="#" class="text-sm text-gray-300 hover:text-red-500">Centro de seguridad</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-200 mb-4">Contaco</h3>
+                    <ul class="space-y-2">
+                        <div class="flex items-center">
+                            <img src="{% static " images/svg/white/header/sidebars/email.svg" %}" alt=""
+                                class="h-6 w-6 mr-2">
+                            <li><a class="text-sm text-gray-300">descuentoscatamarca@gmail.com</a></li>
+                        </div>
+                        <div class="flex items-center">
+                            <img src="{% static " images/svg/white/header/sidebars/telefono.svg" %}" alt=""
+                                class="h-6 w-6 mr-2">
+                            <li><a class="text-sm text-gray-300">(3834) 95-4106</a></li>
+                        </div>
+
+                    </ul>
+                </div>
+                <!-- Column 4 -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-200 mb-4">Redes sociales</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-blue-500">
+                            <span class="sr-only">Facebook</span>
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-500">
+                            <span class="sr-only">Instagram</span>
+                            <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd"
+                                    d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-blue-500">
+                            <span class="sr-only">Twitter</span>
+                            <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path
+                                    d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
             </div>
-            <!-- Column 4 -->
-            <div>
-              <h3 class="text-sm font-semibold text-gray-200 mb-4">Redes sociales</h3>
-              <div class="flex space-x-4">
-                <a href="#" class="text-gray-400 hover:text-blue-500">
-                  <span class="sr-only">Facebook</span>
-                  <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" />
-                  </svg>
-                </a>
-                <a href="#" class="text-gray-400 hover:text-blue-500">
-                  <span class="sr-only">Instagram</span>
-                  <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd" />
-                  </svg>
-                </a>
-                <a href="#" class="text-gray-400 hover:text-blue-500">
-                  <span class="sr-only">Twitter</span>
-                  <svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-          </div>
-      
-          <!-- Copyright and legal -->
-          <div class="border-t border-gray-200 pt-8">
-            <p class="text-2xl font-bold mb-0 text-gray-200 text-center">
-              Copyright © Descuentos Catamarca
-            </p>
-          </div>
         </div>
-      </footer>
-  <!--<script src="jquery.js"></script>
+
+        <!-- Copyright and legal -->
+        <div class="border-t border-gray-200 pt-8">
+            <p class="text-2xl font-bold mb-0 text-gray-200 text-center">
+                Copyright © Descuentos Catamarca
+            </p>
+        </div>
+        </div>
+    </footer>
+    <!--<script src="jquery.js"></script>
   <script src="{% static "js/utils/jquery_chained.js" %}%}"></script>-->
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script src="{% static 'js/utils/clickopen.js' %}"></script>
-  <script src="{% static 'js/utils/sidebars.js' %}"></script>
-  <script src="{% static 'js/utils/notificacionSwal.js' %}"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="{% static 'js/utils/clickopen.js' %}"></script>
+    <script src="{% static 'js/utils/sidebars.js' %}"></script>
+    <script src="{% static 'js/utils/notificacionSwal.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-<!-- Script para el menú mobile -->
-<script>
-    const menuToggle = document.getElementById('menu-toggle');
-    const mobileMenu = document.getElementById('mobile-menu');
+    <!-- Script para el menú mobile -->
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
 
-    menuToggle.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
-</script>
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
 
-<script>
-    function toggleSubcategorias(id) {
-        const subcategoriaDiv = document.getElementById(`subcategorias-${id}`);
-        subcategoriaDiv.classList.toggle('hidden');
-    }
-</script>
-<script>
-    // Script para mostrar/ocultar el menú dropdown
-    const dropdownButton = document.getElementById('dropdownButton');
-    const dropdownMenu = document.getElementById('dropdownMenu');
-
-    dropdownButton.addEventListener('click', () => {
-        dropdownMenu.classList.toggle('hidden');
-    });
-
-    // Ocultar el menú al hacer clic fuera del mismo
-    window.addEventListener('click', (event) => {
-        if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
-            dropdownMenu.classList.add('hidden');
+    <script>
+        function toggleSubcategorias(id) {
+            const subcategoriaDiv = document.getElementById(`subcategorias-${id}`);
+            subcategoriaDiv.classList.toggle('hidden');
         }
-    });
-</script>
+    </script>
+    <script>
+        // Script para mostrar/ocultar el menú dropdown
+        const dropdownButton = document.getElementById('dropdownButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
 
-<script>
-    document.getElementById('userButton').addEventListener('click', function(event) {
-        event.stopPropagation(); // Evita que el evento se propague
-        const menu = document.getElementById('guestMenuDropdown');
-        menu.classList.toggle('hidden'); // Alterna la clase 'hidden' para mostrar u ocultar
+        dropdownButton.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('hidden');
+        });
 
-        // Cierra el menú si se hace clic en cualquier lugar fuera de él
-        document.addEventListener('click', function(e) {
-            if (!menu.contains(e.target) && e.target !== document.getElementById('userButton')) {
-                menu.classList.add('hidden');
+        // Ocultar el menú al hacer clic fuera del mismo
+        window.addEventListener('click', (event) => {
+            if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.add('hidden');
             }
         });
-    });
-</script>
-<script>
-    // Mostrar/ocultar barra de búsqueda en móvil
-    document.getElementById('searchButton').addEventListener('click', function() {
-        const mobileSearchBar = document.getElementById('mobileSearchBar');
-        mobileSearchBar.classList.toggle('hidden');
-    });
-</script>
-  <script>
-    function onSubmit(token) {
-      document.getElementById("demo-form").submit();
-    }
-  </script>
+    </script>
 
-  <script>
-    const input = document.getElementById('buscador');
-    const resultados = document.getElementById('resultados');
+    <script>
+        document.getElementById('userButton').addEventListener('click', function (event) {
+            event.stopPropagation(); // Evita que el evento se propague
+            const menu = document.getElementById('guestMenuDropdown');
+            menu.classList.toggle('hidden'); // Alterna la clase 'hidden' para mostrar u ocultar
 
-    input.addEventListener('input', async function () {
-        const query = this.value.trim(); // Elimina espacios en blanco
-
-        if (query.length > 2) {
-            try {
-                // Solicitud al servidor con la consulta
-                const response = await fetch(`/buscar/?q=${query}`);
-                const data = await response.json();
-
-                // Limpiar resultados previos
-                resultados.innerHTML = '';
-                resultados.classList.remove('hidden');
-
-                // Mostrar resultados de Oferentes
-                if (data.oferentes.length > 0) {
-                    resultados.innerHTML += '<h3 class="font-bold text-lg">Oferentes</h3>';
-                    data.oferentes.forEach(oferente => {
-                        const div = document.createElement('div');
-                        div.classList.add('p-2', 'hover:bg-gray-100', 'cursor-pointer');
-                        div.textContent = oferente.nombrecomercio;
-                        resultados.appendChild(div);
-                    });
+            // Cierra el menú si se hace clic en cualquier lugar fuera de él
+            document.addEventListener('click', function (e) {
+                if (!menu.contains(e.target) && e.target !== document.getElementById('userButton')) {
+                    menu.classList.add('hidden');
                 }
-
-                // Mostrar resultados de Ofertas
-                if (data.ofertas.length > 0) {
-                    resultados.innerHTML += '<h3 class="font-bold text-lg mt-4">Ofertas</h3>';
-                    data.ofertas.forEach(oferta => {
-                        const div = document.createElement('div');
-                        div.classList.add('p-2', 'hover:bg-gray-100', 'cursor-pointer');
-                        div.textContent = `${oferta.titulo} - $${oferta.precio_oferta}`;
-                        resultados.appendChild(div);
-                    });
-                }
-
-                // Si no hay resultados
-                if (data.oferentes.length === 0 && data.ofertas.length === 0) {
-                    resultados.innerHTML = '<p class="p-2 text-gray-500">No se encontraron resultados</p>';
-                }
-
-            } catch (error) {
-                console.error('Error al buscar:', error);
-                resultados.classList.add('hidden'); // Ocultar en caso de error
-            }
-        } else {
-            resultados.classList.add('hidden'); // Ocultar si la consulta es corta
+            });
+        });
+    </script>
+    <script>
+        // Mostrar/ocultar barra de búsqueda en móvil
+        document.getElementById('searchButton').addEventListener('click', function () {
+            const mobileSearchBar = document.getElementById('mobileSearchBar');
+            mobileSearchBar.classList.toggle('hidden');
+        });
+    </script>
+    <script>
+        function onSubmit(token) {
+            document.getElementById("demo-form").submit();
         }
-    });
+    </script>
 
-</script>
-  {% block js %}
-  {% endblock %}
-   
+    <script>
+        const input = document.getElementById('buscador');
+        const resultados = document.getElementById('resultados');
+
+        input.addEventListener('input', async function () {
+            const query = this.value.trim(); // Elimina espacios en blanco
+
+            if (query.length > 2) {
+                try {
+                    // Solicitud al servidor con la consulta
+                    const response = await fetch(`/buscar/?q=${query}`);
+                    const data = await response.json();
+
+                    // Limpiar resultados previos
+                    resultados.innerHTML = '';
+                    resultados.classList.remove('hidden');
+
+                    // Mostrar resultados de Oferentes
+                    if (data.oferentes.length > 0) {
+                        resultados.innerHTML += '<h3 class="font-bold text-lg">Oferentes</h3>';
+                        data.oferentes.forEach(oferente => {
+                            const div = document.createElement('div');
+                            div.classList.add('p-2', 'hover:bg-gray-100', 'cursor-pointer');
+                            div.textContent = oferente.nombrecomercio;
+                            resultados.appendChild(div);
+                        });
+                    }
+
+                    // Mostrar resultados de Ofertas
+                    if (data.ofertas.length > 0) {
+                        resultados.innerHTML += '<h3 class="font-bold text-lg mt-4">Ofertas</h3>';
+                        data.ofertas.forEach(oferta => {
+                            const div = document.createElement('div');
+                            div.classList.add('p-2', 'hover:bg-gray-100', 'cursor-pointer');
+                            div.textContent = `${oferta.titulo} - $${oferta.precio_oferta}`;
+                            resultados.appendChild(div);
+                        });
+                    }
+
+                    // Si no hay resultados
+                    if (data.oferentes.length === 0 && data.ofertas.length === 0) {
+                        resultados.innerHTML = '<p class="p-2 text-gray-500">No se encontraron resultados</p>';
+                    }
+
+                } catch (error) {
+                    console.error('Error al buscar:', error);
+                    resultados.classList.add('hidden'); // Ocultar en caso de error
+                }
+            } else {
+                resultados.classList.add('hidden'); // Ocultar si la consulta es corta
+            }
+        });
+
+    </script>
+    {% block js %}
+    {% endblock %}
+
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script> -->
 </body>
+
 </html>

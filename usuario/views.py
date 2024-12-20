@@ -49,20 +49,25 @@ def index(request):
 
     baratos = Oferta.objects.filter(activo=True).order_by('precio_oferta')[:5]
     ofertas = Oferta.objects.filter(activo=True)
+    ofertas_busqueda=Oferta.objects.filter(activo=True)
     categorias = Categoria.objects.filter(eliminado=False)
     vencen_hoy = Oferta.objects.filter(activo=True, fecha_fin=hoy)
-
+    
     # Funcionalidad de búsqueda
+    cantidad_resultados=1
     query = request.GET.get('q', '').strip()
     if query:
-        ofertas = ofertas.filter(
+        ofertas_busqueda = ofertas_busqueda.filter(
             Q(titulo__icontains=query) |
             Q(descripcion__icontains=query) |
             Q(productos__nombre__icontains=query) |
             Q(productos__categoria__nombre__icontains=query) |
             Q(productos__categoria__categoria__nombre__icontains=query)
         ).distinct()
-
+        cantidad_resultados = ofertas_busqueda.count()
+    else:
+        ofertas_busqueda=Oferta.objects.filter(activo=True)
+    
     # Variables para ubicación y comercios
     ubicacion_usuario = None
     comercios_en_radio = []
@@ -121,6 +126,19 @@ def index(request):
             'calificacion_promedio': calificacion_promedio,
             'cantidad_calificaciones': cantidad_calificaciones,
         })
+    
+    ofertas_con_calificaciones_busqueda = []
+    for oferta in ofertas_busqueda:
+        calificaciones = Puntuacion.objects.filter(oferta=oferta)
+        cantidad_calificaciones = calificaciones.count()
+        calificacion_promedio = calificaciones.aggregate(Avg('calificacion'))['calificacion__avg'] or 0
+        
+
+        ofertas_con_calificaciones_busqueda.append({
+            'oferta': oferta,
+            'calificacion_promedio': calificacion_promedio,
+            'cantidad_calificaciones': cantidad_calificaciones,
+        })
         
     
     comercios = Oferente.objects.all()
@@ -129,7 +147,9 @@ def index(request):
     return render(request, 'usuarios/ind.html', {
         'categorias': categorias,
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
+        'ofertas_con_calificaciones_busqueda':ofertas_con_calificaciones_busqueda,
         'query': query,
+        'cantidad_resultados':cantidad_resultados,
         'hoy':hoy,
         'manana':manana,
         'vencen_hoy': vencen_hoy,
@@ -384,7 +404,7 @@ def ofertas_por_categoria(request, categoria_id):
             'calificacion_promedio': calificacion_promedio,
             'cantidad_calificaciones': cantidad_calificaciones,
         })
-
+    
     return render(request, 'usuarios/ind.html', {
         'categoria': categoria,
         'ofertas_con_calificaciones': ofertas_con_calificaciones,
