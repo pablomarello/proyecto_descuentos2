@@ -145,13 +145,10 @@
                             class="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             aria-expanded="false" aria-haspopup="true">
                             <span class="sr-only">Abrir menú de usuario</span>
-                            {% if user.foto %}
-                            <img src="{{ user.foto.url }}" alt="" class="h-8 w-8 rounded-full">
-                            {% else %}
-                            <img src="{{ MEDIA_URL }}avatar_default.png" alt="Imagen por defecto"
-                                class="h-8 w-8 rounded-full">
-                            {% endif %}
+                            <img src="{{ user.persona_id.foto.url }}" alt="Foto de perfil" class="h-8 w-8 rounded-full">
 
+                            
+                            
                         </button>
                         <div id="userMenuDropdown"
                             class="hidden absolute border border-white right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
@@ -166,9 +163,8 @@
                             {% else %}
                                 <a href="{% url 'verificar_cuit' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Registrar Mi Comercio</a>
                             {% endif %}
-                            
-                            
-                            <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Perfil</a>
+                              
+                            <a href="{% url 'perfil_usuario' request.user.id %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">Ver perfil</a>
                             <a href="{% url 'reset_password' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cambiar contraseña</a>
                             <a href="{% url 'cerrar_sesion' %}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700" role="menuitem" tabindex="-1">Cerrar Sesión</a>
                         </div>

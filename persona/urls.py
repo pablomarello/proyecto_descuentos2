@@ -1,6 +1,8 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('registrar',views.registrar_persona, name='registrar_persona'),
@@ -12,3 +14,6 @@ urlpatterns = [
     path('ajax/load-localidad/', views.load_localidad, name='ajax_load_localidad'),
     path('ajax/cordenadas_localidades/', views.cordenadas_localidades, name='ajax_cordenadas_localidades'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

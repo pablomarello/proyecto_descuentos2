@@ -337,6 +337,7 @@ def descuentos_destacados(request):
     # Ordenar las ofertas por calificación promedio y limitar a las mejores 3
     ofertas_con_calificaciones = sorted(ofertas_con_calificaciones, key=lambda x: x['calificacion_promedio'], reverse=True)[:5]
     manana = hoy + datetime.timedelta(days=1)
+    
     # Renderizado de la plantilla
     return render(request, 'usuarios/descuento.html', {
         'categorias': categorias,
@@ -585,7 +586,13 @@ def iniciar_sesion(request):
 def cerrar_sesion(request):
     logout(request)
     messages.success(request, 'Cerraste la sesión')
-    return redirect('login') 
+    return redirect('login')
+
+def perfil_usuario(request, usuario_id):
+    usuario = get_object_or_404(Usuario, id=usuario_id)
+    persona = usuario.persona_id
+
+    return render(request, 'usuarios/perfil_usuario.html', {'usuario': usuario, 'persona':persona})
 
 #cambiar contraseña
 
