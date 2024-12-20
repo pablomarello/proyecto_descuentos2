@@ -120,7 +120,6 @@ def estadisticas_oferente(request, categoria_id=None):
         estadisticas_por_comercio = [
             
             {
-                
                 "comercio": oferente.nombrecomercio,
                 "total_ofertas": ofertas.filter(oferente=oferente).count(),
                 "ofertas_mayor_4": ofertas_mas_puntuadas.filter(oferente=oferente, promedio_puntuacion__gt=3.9).count(),

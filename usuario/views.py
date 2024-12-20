@@ -27,11 +27,12 @@ import random
 import folium
 from django.db.models import Q
 from django.db.models import Avg
-from django.db.models import Avg
+from django.db.models import Avg, Count
 import datetime
 from django.db.models import Q, Avg
 from django.shortcuts import render, redirect, get_object_or_404
 import datetime
+from django.core.paginator import Paginator, EmptyPage
 from geopy.distance import geodesic
 from geopy.distance import distance
 
@@ -167,6 +168,47 @@ def buscar(request):
 
     # Si no hay consulta, devolver lista vacía
     return JsonResponse({'oferentes': [], 'ofertas': []}, safe=False)
+
+def cargar_ofertas(request):
+    try:
+        page = int(request.GET.get('page', 1))
+    except ValueError:
+        page = 1
+
+    ofertas = Oferta.objects.annotate(
+        calificacion_promedio=Avg('puntuacion__calificacion'),
+        cantidad_calificaciones=Count('puntuacion'),
+    ).order_by('-id').filter(activo=True)
+
+    paginator = Paginator(ofertas, 4)
+    try:
+        ofertas_paginadas = paginator.page(page)
+    except EmptyPage:
+        return JsonResponse({'ofertas': [], 'has_next': False})
+
+    hoy = now().date()
+    manana = hoy + datetime.timedelta(days=1)
+
+    data = [
+        {
+            'id': oferta.id,
+            'titulo': oferta.titulo,
+            'imagen': oferta.imagen.url if oferta.imagen else None,
+            'precio_normal': oferta.precio_normal,
+            'precio_oferta': oferta.precio_oferta,
+            'calificacion_promedio': round(oferta.calificacion_promedio or 0, 1),
+            'cantidad_calificaciones': oferta.cantidad_calificaciones,
+            'etiqueta_fecha': 'Hasta hoy' if oferta.fecha_fin == hoy else 'Hasta mañana' if oferta.fecha_fin == manana else None,
+            'estrellas_html': ''.join(
+                '<label class="text-xl text-orange-400">★</label>' if i <= (oferta.calificacion_promedio or 0) else '<label class="text-xl text-gray-300">★</label>'
+                for i in range(1, 6)
+            ),
+            'url_detalle': reverse('detalle_oferta', args=[oferta.id]), 
+        }
+        for oferta in ofertas_paginadas
+    ]
+
+    return JsonResponse({'ofertas': data, 'has_next': ofertas_paginadas.has_next()})
 
 def descuentos_destacados(request):
     # Consultas de ofertas y categorías
