@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Perfil de usuario
+{% endblock title %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col bg-gray-100">
+  <!-- Breadcrumb -->
+  <nav class="flex text-gray-700 text-sm m-2" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+      <!-- Inicio -->
+      <li class="inline-flex items-center">
+        <a href="{% url 'index' %}" class="inline-flex items-center text-gray-500 hover:text-blue-600">
+          <svg class="w-4 h-4 mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M10 20a1 1 0 01-1-1V8.414L2.293 14.293a1 1 0 01-1.414-1.414l8-8a1 1 0 011.414 0l8 8a1 1 0 01-1.414 1.414L11 8.414V19a1 1 0 01-1 1z"/>
+          </svg>
+          Inicio
+        </a>
+      </li>
+      <!-- Separador -->
+      <li>
+        <div class="flex items-center">
+          <svg class="w-4 h-4 text-gray-400" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 18l6-6-6-6"></path>
+          </svg>
+        </div>
+      </li>
+      <!-- Página actual (sin enlace) -->
+      <li class="inline-flex items-center">
+        <span class="text-gray-400">Perfil</span>
+      </li>
+    </ol>
+  </nav>
+
+  <h2 class="mt-4 mb-2 text-center text-3xl font-extrabold text-gray-900">Perfil</h2>
+  <div class="flex flex-auto ">
+    <div class="sm:mx-auto sm:w-full sm:max-w-sm  px-2 py-2">
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">{{ usuario.username }}</h3>
+        </div>
+        <div class="border-t border-gray-200">
+          <dl>
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Email</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ usuario.email }}</dd>
+            </div>
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Dni</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ persona.identificacion }}</dd>
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Nombre</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ persona.nombres }}</dd>
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Apellido</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ persona.apellidos }}</dd>
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Teléfono</dt>
+              {% if usuario.telefono %}
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ usuario.telefono }}</dd>
+              {% else %}
+                <span>-</span>
+              {% endif %}
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Género</dt>
+              {% if persona.genero %}
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ persona.genero }}</dd>
+              {% else %}
+                <span>-</span>
+              {% endif %}
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Imagen de perfil</dt>
+              {% if persona.foto %}
+                <img src="{{ persona.foto.url }}" alt="Imagen de perfil de {{ persona.nombres }}" class="h-24 w-24">
+              {% else %}
+                <span>No hay imagen de perfil disponible</span>
+              {% endif %}
+            </div>
+            
+            <!-- Agregar más campos según lo necesites -->
+          </dl>
+        </div>
+        <div class="flex justify-center mt-4">
+          <button type="button" id=""
+              class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none">
+              Editar
+          </button>
+          <!-- <button type="submit" id=""
+              class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-700 focus:outline-none">
+              Eliminar
+          </button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
